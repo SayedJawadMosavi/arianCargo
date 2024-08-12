@@ -1,0 +1,92 @@
+.page-header{
+    margin:0;
+}
+.header-brand-img {
+    line-height: 2rem;
+    vertical-align: middle;
+    width: 172px;
+}
+
+
+legend {
+    border: none;
+    padding: 5px;
+    background-color: none !important;
+    margin-left: 35px;
+    margin-bottom: 0;
+    box-shadow: none !important;
+    font-size: 15px;
+    width: auto;
+    color: #3c8dbc;
+    font-weight: bold;
+}
+
+fieldset {
+    border-radius: 5px;
+    border: 1px solid #3c8dbc;
+    padding: 20px;
+}
+.gallery-modal {
+    cursor: pointer;
+}
+
+.table>thead>tr>th{
+    font-weight: 600 !important;
+}
+
+
+td[contenteditable="true"] {
+    border: 2px solid #3498db !important; /* You can adjust the color as needed */
+    padding: 5px; /* Add some padding for better visibility */
+}
+
+.nav.panel-tabs.panel-success a.active{
+    background-color: #6c5ffc !important;
+    color: white !important;
+}
+.nav.panel-tabs.panel-success a{
+    color:  #6c5ffc!important;
+
+}
+.month-grid-box .title{
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    min-height: 0 !important;
+}
+
+.dark-mode.sidebar-mini.sidenav-toggled .app-sidebar .side-header .header-brand-img.toggle-logo {
+    display: block;
+    height: auto !important;
+}
+
+.dark-mode .datepicker-plot-area .datepicker-day-view .month-grid-box .header .header-row-cell {
+    color: white !important;
+}
+.dark-mode div.dataTables_wrapper div.dataTables_filter label, .dark-mode div.dataTables_wrapper div.dataTables_length label, .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dark-mode div.dataTables_wrapper div.dataTables_length select{
+    color: white !important;
+}
+.dark-mode button.dt-button, .dark-mode div.dt-button, .dark-mode a.dt-button, .dark-mode input.dt-button{
+    color: white !important;
+}
+.dark-mode div.dataTables_wrapper div.dataTables_info{
+    color: white !important;
+}
+.dark-mode div.dataTables_wrapper div.dataTables_filter input{
+    color:white !important;
+}
+
+.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button{
+    color:white !important;
+}
+
+.select2-container {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+.rtl table.dataTable thead th, table.dataTable thead td{
+    text-align: right !important;
+}
+.card-header{
+    background-color: lightcyan !important;
+}

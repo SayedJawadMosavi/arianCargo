@@ -1,0 +1,25 @@
+- Product waste
+- discount
+- per carton
+- sell return edit/delete
+
+
+<VirtualHost *:80>
+    ServerName sarafi.com
+    ServerAlias www.sarafi.com
+    DocumentRoot "E:\mis\Sarafi\public"
+    <Directory "E:\mis\Sarafi\public">
+        AllowOverride All
+        Order Deny,Allow
+        Allow from all
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+
+6- stock->product->sub_product add expense option, divide on available and show as Transfer Expense, also calculate in profit and loss as well.   --LATER REQUIRED
+
+
+1- multi language error msgs
+2- sell->create, show WEIGHT as well in append
+3- main transfer append and add bill and show the available in separate column --DONE
