@@ -36,11 +36,6 @@
                             <i class="fe fe-shopping-cart"></i> {{ __('home.new_sell') }}
                             </a>
                         @endcan
-                        @can('purchase.create')
-                            <a href="{{ route('purchase.create') }}" class="mx-3">
-                                <i class="fe fe-box"></i> {{ __('home.new_purchase') }}
-                            </a>
-                        @endcan
 
                         <div class="d-flex order-lg-2 ms-auto header-right-icons">
                             <!-- SEARCH -->

@@ -131,12 +131,12 @@ class SellController extends Controller
     {
 
         try {
-            $currency = ClientCurrency::where('client_id', $id)->with('currency')->first();
+            $currency = ClientCurrency::where('client_id', $id)->with('currency','client')->first();
 
 
             $data=Account::with('currency')->Where('currency_id',$currency->currency_id)->get();
 
-            return response()->json(['data' => $data,]);
+            return response()->json(['data' => $data,'client'  =>$currency]);
         } catch (\Throwable $th) {
             return response()->json($th->getMessage(), 500);
         }

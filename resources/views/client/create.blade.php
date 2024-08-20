@@ -80,7 +80,7 @@
                 @endif
 
                 <div class="col-xl-4 col-sm-4 mb-3">
-                    <label for="validationServer01">{{ __('home.nid') }}</label>
+                    <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
                     <input type="text" class="form-control @error('nid') {{'is-invalid'}} @enderror" id="nid" name="nid" value="{{isset($client) ? $client->nid : old('nid')}}" autocomplete="off">
                     @error('nid')
                     <div id="" class="invalid-feedback">{{$message}}</div>

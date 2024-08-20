@@ -392,6 +392,12 @@ return [
     'all_incomes'            =>      'تمام عواید',
     'unreceived_products'            =>      'محصولات دریافت ناشده',
     'print'            =>      'چاپ',
+    'print'            =>      'چاپ',
+    'sender'            =>      'فرستنده',
+    'receiver'            =>      'گیرنده',
+    'receiver_info'            =>      'مشخصات گیرنده ',
+    'zipcode'            =>      ' زیپ کود ',
+    'country'            =>      'کشور',
 
 
 ];

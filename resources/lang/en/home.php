@@ -392,6 +392,12 @@ return [
     'all_incomes'            =>      'All Incomes',
     'unreceived_products'            =>      'Unreceived Products',
     'print'            =>      'Print',
+    'sender'            =>      'Sender',
+    'receiver'            =>      'Receiver',
+    'receiver_info'            =>      'Receiver Info',
+    'zipcode'            =>      'Zip Code',
+    'country'            =>      'Country',
+    'cargo'            =>      'Cargo',
 
 
 ];

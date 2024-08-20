@@ -40,7 +40,7 @@
 
             <div class="form-row mb-3">
                 <div class="col-xl-4 mb-3">
-                    <label for="validationServer04">{{ __('home.client') }}</label>
+                    <label for="validationServer04">{{ __('home.sender') }}</label>
                     <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="client_id" aria-describedby="validationServer04Feedback" required name="client_id">
                         <option> {{__('home.please_select')}}</option>
                         <option value="new"> {{__('home.new_customer')}}</option>
@@ -53,44 +53,65 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-xl-4 mb-3" style="display: none;" id="my_div">
+                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
                     <label for="validationServer01">{{ __('home.name') }}</label>
                     <input type="text" class="form-control form-control" name="client_name" autocomplete="off" id="client_name" value="{{isset($sell) ? $sell->client_name : old('client_name')}}" autocomplete="off">
                     @error('client_name')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
+                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
+                    <label for="validationServer01">{{ __('home.phone') }}</label>
+                    <input type="text" class="form-control form-control" name="client_phone" autocomplete="off" id="client_phone" value="{{isset($sell) ? $sell->client_phone : old('client_phone')}}" autocomplete="off">
+                    @error('client_phone')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
+                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
+                    <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
+                    <input type="text" class="form-control form-control" name="client_tazkira_no" autocomplete="off" id="client_tazkira_no" value="{{isset($sell) ? $sell->client_tazkira_no : old('client_tazkira_no')}}" autocomplete="off">
+                    @error('client_tazkira_no')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
+                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
+                    <label for="validationServer01">{{ __('home.address') }}</label>
+                    <input type="text" class="form-control form-control" name="client_address" autocomplete="off" id="client_address" value="{{isset($sell) ? $sell->client_address : old('client_address')}}" autocomplete="off">
+                    @error('client_address')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
 
                 @if(isset($sell))
-                    <div class="col-xl-4 mb-3">
-                        <label for="validationServer04">{{ __('home.account') }}</label>
-                        <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
-                            <option> {{__('home.please_select')}}</option>
-                            @foreach($accounts as $account)
-                            <option value="{{$account->id}}" @if(isset($sell)) @if($sell->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
-                            @endforeach
-                        </select>
-                        @error('account_id')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
+                <div class="col-xl-4 mb-3">
+                    <label for="validationServer04">{{ __('home.account') }}</label>
+                    <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                        <option> {{__('home.please_select')}}</option>
+                        @foreach($accounts as $account)
+                        <option value="{{$account->id}}" @if(isset($sell)) @if($sell->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
+                        @endforeach
+                    </select>
+                    @error('account_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
                 @else
-                    <div class="col-xl-4 mb-3">
-                        <label for="validationServer04">{{ __('home.account') }}</label>
-                        <input type="hidden" name="currency_id" id="currency_id">
+                <div class="col-xl-4 mb-3">
+                    <label for="validationServer04">{{ __('home.account') }}</label>
+                    <input type="hidden" name="currency_id" id="currency_id">
 
-                        <select class="form-select form-control @error('account') {{'is-invalid'}} @enderror" onchange="showCurrency(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                    <select class="form-select form-control @error('account') {{'is-invalid'}} @enderror" onchange="showCurrency(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
 
-                        </select>
-                        @error('account_id')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
+                    </select>
+                    @error('account_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
                 @endif
                 <div class="col-xl-4 mb-3">
                     <label for="validationServer01">{{ __('home.rate') }}</label>
                     <input type="text" class="form-control form-control @error('rate') {{'is-invalid'}} @enderror" readonly name="rate" autocomplete="off" id="rate" value="1" step="0.001">
-                    <input type="hidden" class="form-control form-control @error('operation') {{'is-invalid'}} @enderror" readonly name="operation" autocomplete="off" id="operation" >
+                    <input type="hidden" class="form-control form-control @error('operation') {{'is-invalid'}} @enderror" readonly name="operation" autocomplete="off" id="operation">
                     @error('operation')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
@@ -129,7 +150,68 @@
                 </div>
 
             </div>
+            <fieldset class="mt-3">
+                <legend> {{ __('home.receiver_info') }} </legend>
+                <div class="form-row align-items-center">
+                    <div class="col-md-3 mb-3">
+                        <label for="validationServer01">نام</label>
+                        <input type="text" class="form-control @error('relation_name') {{'is-invalid'}} @enderror" id="receiver_name" name="receiver_name" value="{{isset($sell) ? $sell->receiver_name : old('receiver_name')}}">
+                        @error('relation_name')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
 
+                    <div class="col-md-3 mb-3">
+                        <label for="validationServer01"> {{ __('home.name') }} </label>
+                        <input type="text" class="form-control @error('relation_phone') {{'is-invalid'}} @enderror" id="receiver_phone" name="receiver_phone" value="{{isset($sell) ? $sell->receiver_phone : old('receiver_phone')}}">
+                        @error('receiver_phone')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationServer01"> {{ __('home.phone') }} </label>
+                        <input type="text" class="form-control @error('receiver_phone') {{'is-invalid'}} @enderror" id="receiver_phone" name="receiver_phone" value="{{isset($sell) ? $sell->receiver_phone : old('receiver_phone')}}">
+                        @error('receiver_phone')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationServer01"> {{ __('home.tazkira_no') }} </label>
+                        <input type="text" class="form-control @error('tazkira_no') {{'is-invalid'}} @enderror" id="receiver_tazkira_no" name="receiver_tazkira_no" value="{{isset($sell) ? $sell->receiver_tazkira_no : old('receiver_tazkira_no')}}">
+                        @error('receiver_tazkira_no')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationServer01"> {{ __('home.zipcode') }} </label>
+                        <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($sell) ? $sell->zipcode : old('zipcode')}}">
+                        @error('zipcode')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+                    <div class="col-xl-3 mb-3">
+                        <label for="validationServer04">{{ __('home.country') }}</label>
+                        <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                            <option> {{__('home.please_select')}}</option>
+                            @foreach($accounts as $account)
+                            <option value="{{$account->id}}" @if(isset($sell)) @if($sell->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
+                            @endforeach
+                        </select>
+                        @error('account_id')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+                    <div class="col-xl-6 mb-3">
+                        <label for="validationServer01">{{ __('home.addre   ss') }}</label>
+                        <input type="text" class="form-control @error('receiver_address') {{'is-invalid'}} @enderror" id="receiver_address" name="receiver_address" value="{{isset($sell) ? $sell->receiver_address : old('receiver_address')}}" autocomplete="off">
+                        @error('receiver_address')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
+
+
+                </div>
+            </fieldset>
             @if(!isset($sell))
             <div class="form-row mb-3">
 
@@ -252,7 +334,7 @@
             html += ' <input type="hidden" name="purchase[]" readonly id="purchases' + count + '" oninput="calculateSell(this)" class="form-control" value="0" /></td>';
             html += '<td><input type="number" name="quantity[]" oninput="calculate()" class="form-control" value="0" /></td>';
             html += '<td><input type="hidden" step="0.01" name="original_sell[]"id="original_sell' + count + '"  oninput="calculate()" class="form-control" value="0.00" />';
-                html += ' <input type="number" step="0.01" name="cost[]"id="costs' + count + '"  oninput="calculate()" class="form-control" value="0.00" /></td>';
+            html += ' <input type="number" step="0.01" name="cost[]"id="costs' + count + '"  oninput="calculate()" class="form-control" value="0.00" /></td>';
 
             html += '<td><input type="hidden" step="0.01" name="height[]"id="height' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="hidden" step="0.01" name="width[]"id="width' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="hidden" step="0.01" name="length[]"id="length' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="number" id="cbm' + count + '" name="cbm[]" readonly oninput="calculate()" class="form-control" value="0" /></td>';
             html += '<td><input type="number" name="total[]" readonly oninput="calculate()" class="form-control" value="0" /></td>';
@@ -290,7 +372,7 @@
                 var length = parseFloat($(this).find('[name="length[]"]').val()) || 0;
 
                 var total = quantity * (cost + expense);
-                var total_cbm = (height/100) * (width/100) * (length/100);
+                var total_cbm = (height / 100) * (width / 100) * (length / 100);
                 grandTotal += total;
                 grandTotalCBM += total_cbm;
 
@@ -302,7 +384,7 @@
             // Update the grand_total input field
             paid = $('#paid').val();
             $('#total').val(grandTotal.toFixed(2));
-            $('#balance').val((grandTotal-paid).toFixed(2));
+            $('#balance').val((grandTotal - paid).toFixed(2));
             $('#total_cbm').val(grandTotalCBM.toFixed(2));
 
         });
@@ -311,35 +393,35 @@
     });
 
     function loadProducts(select, count) {
-    var stockProductId = $(select).val();
+        var stockProductId = $(select).val();
 
-    $.ajax({
-        url: '/get-products/' + stockProductId,
-        type: 'GET',
-        success: function(response) {
-            var products = response.products;
-            var currency = response.currency;
+        $.ajax({
+            url: '/get-products/' + stockProductId,
+            type: 'GET',
+            success: function(response) {
+                var products = response.products;
+                var currency = response.currency;
 
-            var options = "<option value=''>Select Product</option>";
-            products.forEach(function(product) {
-                if (product.sub_products && product.sub_products.length > 0) {
-                    // console.log('insdie if');
-                    var totalAvailable = product.sub_products.reduce(function(acc, sub_products) {
-                        return acc + parseFloat(sub_products.available);
-                    }, 0);
-                } else {
-                    var totalAvailable = 0;
-                }
+                var options = "<option value=''>Select Product</option>";
+                products.forEach(function(product) {
+                    if (product.sub_products && product.sub_products.length > 0) {
+                        // console.log('insdie if');
+                        var totalAvailable = product.sub_products.reduce(function(acc, sub_products) {
+                            return acc + parseFloat(sub_products.available);
+                        }, 0);
+                    } else {
+                        var totalAvailable = 0;
+                    }
 
-                options += "<option value='" + product.id + "' data-cost='" + (product.product.income_price + product.product.expense) + "' data-height='" + product.product.height + "' data-width='" + product.product.width + "' data-length='" + product.product.length + "'  data-original_purchase='" + (product.product.cost + product.product.expense) + "' data-original_sell='" + (product.product.sell ? product.product.sell : 0) + "' data-currency='" + (product.product.currency_id) + "' data-sell='" + (product.product.sell ? product.product.sell : 0) + "' data-available='" + totalAvailable +  "' data-weight='" + product.product.weight +"'>" + product.product.name + " (Avail: " + totalAvailable + ")</option>";
-            });
-            $('.products' + count).html(options);
-        },
-        error: function(xhr, status, error) {
-            // console.error(error);
-        }
-    });
-}
+                    options += "<option value='" + product.id + "' data-cost='" + (product.product.income_price + product.product.expense) + "' data-height='" + product.product.height + "' data-width='" + product.product.width + "' data-length='" + product.product.length + "'  data-original_purchase='" + (product.product.cost + product.product.expense) + "' data-original_sell='" + (product.product.sell ? product.product.sell : 0) + "' data-currency='" + (product.product.currency_id) + "' data-sell='" + (product.product.sell ? product.product.sell : 0) + "' data-available='" + totalAvailable + "' data-weight='" + product.product.weight + "'>" + product.product.name + " (Avail: " + totalAvailable + ")</option>";
+                });
+                $('.products' + count).html(options);
+            },
+            error: function(xhr, status, error) {
+                // console.error(error);
+            }
+        });
+    }
 
     function calculate() {
         var grandTotal = 0;
@@ -357,7 +439,7 @@
 
             var total = quantity * (cost + expense);
             // var total_cbm = height * width * length;
-            var total_cbm = (height/100) * (width/100) * (length/100);
+            var total_cbm = (height / 100) * (width / 100) * (length / 100);
 
             // console.log(total_cbm);
             total_cbm = parseFloat(total_cbm);
@@ -368,7 +450,7 @@
             // Update the total input field in the current row
             $(this).find('[name="total[]"]').val(total.toFixed(2));
             $(this).find('[name="cbm[]"]').val(total_cbm.toFixed(6));
-            });
+        });
 
         grandTotalCBM = grandTotalCBM;
         // Update the grand_total input field
@@ -443,7 +525,13 @@
                 var options = "<option value=''>Select Account</option>";
                 data.forEach(function(account) {
                     options += "<option value='" + account.id + "'>" + account.name + " (" + account.amount + '-' + account.currency.name + ")</option>";
+                    console.log('ss', response.client.client.type)
+                    if (response.client.client.type == 'walkin') {
+                        $(".my_div").css('display', "block")
+                    } else {
+                        $(".my_div").css('display', "none")
 
+                    }
                 });
                 $('#account_id').html(options);
                 $('#rate').val(0);
@@ -454,12 +542,7 @@
 
             }
         });
-        if (value == 1) {
-            $("#my_div").css('display', "block")
-        } else {
-            $("#my_div").css('display', "none")
 
-        }
 
 
     }
@@ -483,18 +566,19 @@
 
 
     function CurrencyData(select, count) {
-        var rate = 1; var action = 'multiply';
+        var rate = 1;
+        var action = 'multiply';
         $.ajax({
             url: '/get-product-currency/' + select,
             type: 'GET',
             success: function(response) {
                 var data = response.data;
-                $('#cbm' + count).val((data.product.height/100) * (data.product.width/100) * (data.product.length/100));
+                $('#cbm' + count).val((data.product.height / 100) * (data.product.width / 100) * (data.product.length / 100));
                 rate = parseFloat($('#rate').val());
                 action = $('#operation').val();
-                if(action == 'multiply'){
+                if (action == 'multiply') {
                     $('#costs' + count).val(data.product.sell_price / rate);
-                }else{
+                } else {
                     $('#costs' + count).val(data.product.sell_price * rate);
                 }
             },
@@ -562,6 +646,13 @@
                             <label for="validationServer01">{{ __('home.mobile') }}</label>
                             <input type="text" class="form-control @error('mobile') {{'is-invalid'}} @enderror" id="mobile" name="mobile" value="">
                             @error('mobile')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-4 col-sm-4 mb-3">
+                            <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
+                            <input type="text" class="form-control @error('nid') {{'is-invalid'}} @enderror" id="nid" name="nid" value="">
+                            @error('nid')
                             <div id="" class="invalid-feedback">{{$message}}</div>
                             @enderror
                         </div>

@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
                 'address_en' => 'Kabul',
                 'facebook' => 'facebook.com/nethub.af',
                 'twitter' => 'ftw.com',
+                'currency_id' => 2,
                 // 'youtbue' => 'you.com',
                 'instagram' => 'insta.com',
                 'linkedin' => 'linkedin.com',

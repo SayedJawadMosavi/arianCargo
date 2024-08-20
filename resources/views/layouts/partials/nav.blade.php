@@ -17,54 +17,32 @@
                     class="side-menu__icon fe fe-book"></i><span
                     class="side-menu__label">{{__('home.journal')}} </span></a>
         </li>
-        @canany(['product.create', 'product.view', 'category.create', 'category.view' ])
 
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-grid"></i><span class="side-menu__label">{{__('home.products')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @canany(['product.view', 'product.create', 'product.edit'])
-                <li><a href="{{route('product.index')}}" class="slide-item"> {{__('home.view_products')}}</a></li>
-                @endcanany
-                <li><a href="{{route('product.min_stock')}}" class="slide-item"> {{__('home.min_stock')}}</a></li>
-                @canany(['category.view', 'category.create', 'category.edit'])
-                <li><a href="{{route('category.index')}}" class="slide-item"> {{__('home.view_categories')}}</a></li>
-                @endcanany
-            </ul>
-        </li>
-        @endcanany
 
-        @canany(['purchase.create', 'purchase.view', 'purchase.edit', 'purchase.delete', 'sell.create', 'sell.view', 'sell.edit', 'sell.delete','sell_return.create', 'sell_return.view', 'sell_return.edit', 'sell_return.delete'  ])
+        @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete','sell_return.create'])
         <li class="slide">
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">{{__('home.operation')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
-                @canany(['purchase.create', 'purchase.view', 'purchase.edit', 'purchase.delete' ])
-                <li><a href="{{route('purchase.index')}}" class="slide-item"> {{__('home.view_purchases')}}</a></li>
-                @endcanany
+
                 @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete' ])
-                <li><a href="{{route('sell.index')}}" class="slide-item"> {{__('home.view_sells')}}</a></li>
+                <li><a href="{{route('sell.index')}}" class="slide-item"> {{__('home.cargo')}}</a></li>
                 @endcanany
-                @canany(['sell_return.create', 'sell_return.view', 'sell_return.edit', 'sell_return.delete' ])
-                <li><a href="{{route('sellreturn.index')}}" class="slide-item"> {{__('home.view_returns')}}</a></li>
-                @endcanany
+
                 <li><a href="{{route('client.receivable')}}" class="slide-item"> {{ __('home.client_receivable') }}</a></li>
                 <li><a href="{{route('client.payable')}}" class="slide-item"> {{ __('home.client_payable') }} </a></li>
             </ul>
         </li>
         @endcanany
 
-        @canany(['vendor.create', 'vendor.view', 'vendor.edit', 'vendor.delete','client.create', 'client.view', 'client.edit', 'client.delete','shareholder.create', 'shareholder.view', 'shareholder.edit', 'shareholder.delete' ])
+        @canany(['client.create', 'client.view', 'client.edit', 'client.delete' ])
         <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-users"></i><span class="side-menu__label">{{__('home.contacts')}}</span><i class="angle fe fe-chevron-right"></i></a>
+            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-users"></i><span class="side-menu__label">{{__('home.client')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
-                @canany(['vendor.create', 'vendor.view', 'vendor.edit', 'vendor.delete'])
-                <li><a href="{{route('vendors.index')}}" class="slide-item"> {{__('home.view_vendors')}}</a></li>
-                @endcanany
+
                 @canany(['client.create', 'client.view', 'client.edit', 'client.delete'])
                 <li><a href="{{route('client.index')}}" class="slide-item"> {{__('home.view_clients')}}</a></li>
                 @endcanany
-                @canany(['shareholder.create', 'shareholder.view', 'shareholder.edit', 'shareholder.delete'])
-                <li class=""><a href="{{route('shareholder.index')}}" class="slide-item"> {{__('home.view_shareholders')}}</a></li>
-                @endcanany
+
             </ul>
         </li>
         @endcanany
@@ -126,50 +104,10 @@
             </ul>
         </li>
         @endcanany
-        @canany(['asset.create', 'asset.view', 'asset.edit', 'asset.delete'])
 
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-box"></i><span class="side-menu__label">{{__('home.assets')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @canany(['asset.view', 'asset.create', 'asset.edit', 'asset.delete'])
-                <li><a href="{{route('asset.index')}}" class="slide-item"> {{__('home.view_assets')}}</a></li>
-               @endcanany
-               @canany(['category.view', 'category.create', 'category.edit'])
-                <li><a href="{{route('asset_category.index')}}" class="slide-item"> {{__('home.view_categories')}}</a></li>
-                @endcanany
 
-            </ul>
-        </li>
-        @endcanany
 
-        @canany(['stock.create', 'stock.view', 'stock.edit', 'stock.delete'])
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-server"></i><span class="side-menu__label">{{__('home.stocks')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @canany(['stock.view', 'stock.edit', 'stock.create', 'stock.delete'])
-                <li><a href="{{route('stock.index')}}" class="slide-item"> {{__('home.view_stocks')}}</a></li>
-               @endcanany
-               <li><a href="{{route('stock.main_stock')}}" class="slide-item"> {{__('home.main_stock')}}</a></li>
-                {{-- @can('stock.view') --}}
-                <li><a href="{{route('stock.productsList')}}" class="slide-item"> {{__('home.other_stocks')}}</a></li>
-               {{-- @endcan --}}
-            </ul>
-        </li>
-        @endcanany
 
-        @canany(['main_transfer.create', 'main_transfer.view', 'main_transfer.edit', 'main_transfer.delete', 'stock_transfer.create', 'stock_transfer.view', 'stock_transfer.edit', 'stock_transfer.delete'])
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-truck"></i><span class="side-menu__label">{{__('home.transfers')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @canany(['main_transfer.view', 'main_transfer.create', 'main_transfer.edit', 'main_transfer.delete'])
-                <li><a href="{{route('main_transfer.index')}}" class="slide-item"> {{__('home.main_transfers')}}</a></li>
-                @endcanany
-                @canany(['stock_transfer.view', 'stock_transfer.create', 'stock_transfer.edit', 'stock_transfer.delete'])
-                <li><a href="{{route('stock_transfer.index')}}" class="slide-item"> {{__('home.stock_transfers')}}</a></li>
-                @endcanany
-            </ul>
-        </li>
-        @endcanany
           @canany(['document.create', 'document.view', 'document.edit', 'document.delete'])
 
         <li class="slide">
@@ -185,6 +123,40 @@
             </ul>
         </li>
         @endcanany
+
+        <li class="slide">
+            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-book-open"></i><span class="side-menu__label">{{__('home.reports')}}</span><i class="angle fe fe-chevron-right"></i></a>
+            <ul class="slide-menu">
+
+                @can('report.sell')
+                <li><a href="{{route('report.sell')}}" class="slide-item"> {{__('home.sell_report')}}</a></li>
+                @endcan
+                @can('report.expense')
+                <li><a href="{{route('report.expense')}}" class="slide-item"> {{__('home.expense_report')}}</a></li>
+                @endcan
+
+                @can('report.due_clients')
+                <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
+                @endcan
+
+
+            </ul>
+        </li>
+        <li class="slide">
+            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-user"></i><span class="side-menu__label">{{__('home.users')}}</span><i class="angle fe fe-chevron-right"></i></a>
+            <ul class="slide-menu">
+                @canany(['users.view', 'users.create', 'users.edit', 'users.delete'])
+                <li><a href="{{route('users.index')}}" class="slide-item"> {{__('home.view_users')}}</a></li>
+                @endcanany
+                @canany(['roles.view', 'roles.create', 'roles.edit', 'roles.delete'])
+                <li><a href="{{route('roles.index')}}" class="slide-item"> {{__('home.view_roles')}}</a></li>
+                @endcanany
+
+                <!-- @canany(['permissions.view','permissions.create','permissions.edit','permissions.delete'])
+                <li><a href="{{route('permissions.index')}}" class="slide-item"> {{__('home.view_permissions')}}</a></li>
+                @endcanany -->
+            </ul>
+        </li>
         <li class="slide">
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-slack"></i><span class="side-menu__label">{{__('home.settings')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
@@ -202,73 +174,6 @@
 
             </ul>
         </li>
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-book-open"></i><span class="side-menu__label">{{__('home.reports')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @can('report.purchase')
-                <li><a href="{{route('report.purchase')}}" class="slide-item"> {{__('home.purchase_report')}}</a></li>
-                @endcan
-                @can('report.sell')
-                <li><a href="{{route('report.sell')}}" class="slide-item"> {{__('home.sell_report')}}</a></li>
-                @endcan
-                @can('report.expense')
-                <li><a href="{{route('report.expense')}}" class="slide-item"> {{__('home.expense_report')}}</a></li>
-                @endcan
-                @can('report.sell_return')
-                <li><a href="{{route('report.income')}}" class="slide-item"> {{__('home.income_report')}}</a></li>
-                @endcan
-                @can('report.available_stock')
-                <li><a href="{{route('report.available_stock')}}" class="slide-item"> {{__('home.available_stock_report')}}</a></li>
-                @endcan
-                @can('report.main_stock_report')
-                <li><a href="{{route('report.main_stock_report')}}" class="slide-item"> {{__('home.main_stock_report')}}</a></li>
-                @endcan
-                @can('report.stock_transfer_report')
-                <li><a href="{{route('report.stock_transfer_report')}}" class="slide-item"> {{__('home.stock_transfer_report')}}</a></li>
-                @endcan
-                @can('report.main_transfer_report')
-                <li><a href="{{route('report.main_transfer_report')}}" class="slide-item"> {{__('home.main_transfer_report')}}</a></li>
-                @endcan
-                @can('report.due_clients')
-                <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
-                @endcan
-                @can('report.due_vendor')
-                <li><a href="{{route('report.due_vendor')}}" class="slide-item"> {{__('home.due_vendor_report')}}</a></li>
-                @endcan
-
-                @can('report.all_vailable_report')
-                <li><a href="{{route('report.all_vailable_report')}}" class="slide-item"> {{__('home.all_vailable_report')}}</a></li>
-                @endcan
-                @can('report.profit_loss')
-                <li><a href="{{route('report.profit_lost_report')}}" class="slide-item"> {{__('home.profit_lost_report')}}</a></li>
-                @endcan
-                @can('report.itemwise_sell')
-                <li><a href="{{route('report.item_wise_sell_report')}}" class="slide-item"> {{__('home.item_wise_sell_report')}}</a></li>
-                @endcan
-                @can('report.itemwise_purchase')
-                <li><a href="{{route('report.item_wise_purchase_report')}}" class="slide-item"> {{__('home.item_wise_purchase_report')}}</a></li>
-                @endcan
-
-
-
-            </ul>
-        </li>
-        <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-user"></i><span class="side-menu__label">{{__('home.users')}}</span><i class="angle fe fe-chevron-right"></i></a>
-            <ul class="slide-menu">
-                @canany(['users.view', 'users.create', 'users.edit', 'users.delete'])
-                <li><a href="{{route('users.index')}}" class="slide-item"> {{__('home.view_users')}}</a></li>
-                @endcanany
-                @canany(['roles.view', 'roles.create', 'roles.edit', 'roles.delete'])
-                <li><a href="{{route('roles.index')}}" class="slide-item"> {{__('home.view_roles')}}</a></li>
-                @endcanany
-
-                @canany(['permissions.view','permissions.create','permissions.edit','permissions.delete'])
-                <li><a href="{{route('permissions.index')}}" class="slide-item"> {{__('home.view_permissions')}}</a></li>
-                @endcanany
-            </ul>
-        </li>
-
 
         <li class="slide">
             <a class="side-menu__item has-link" data-bs-toggle="slide" href="{{route('logout')}}"><i
