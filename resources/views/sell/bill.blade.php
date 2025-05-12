@@ -67,7 +67,7 @@
                 </tbody>
             </table>
         </div>
-       
+
     </div>
     <div class="card-footer text-end d-print-none">
         <button type="button" class="btn btn-primary mb-1" onclick="printCardContent();"><i class="si si-wallet"></i> {{ __('home.print') }}</button>

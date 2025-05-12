@@ -117,13 +117,13 @@ return [
     'edit_purchase' => 'Edit Purchase',
     'purchase_details' => 'Purchase Details',
 
-    'sell' => 'Sell',
-    'sells' => 'Sells',
-    'all_sells' => 'All Sells',
-    'view_sells' => 'Sells',
-    'new_sell' => 'New Sell',
-    'edit_sell' => 'Edit Sell',
-    'sell_details' => 'Sell Details',
+    'sell' => 'Cargo',
+    'sells' => 'Cargos',
+    'all_sells' => 'All Cargo',
+    'view_sells' => 'Cargo',
+    'new_sell' => 'New Cargo',
+    'edit_sell' => 'Edit Cargo',
+    'sell_details' => 'Cargo Details',
 
     'return' => 'Return',
     'returns' => 'Returns',
@@ -335,7 +335,6 @@ return [
     'rent' => ' Rent',
     'received' => 'Received',
     'cbm' => 'CBM',
-    'total_cbm' => 'Grand Total CBM',
     'available_stock_report' => 'Available Stock Report',
     'main_stock_report' => 'Main Stock Report',
     'stock_transfer_report' => 'Stock Transfer Report',
@@ -398,6 +397,15 @@ return [
     'zipcode'            =>      'Zip Code',
     'country'            =>      'Country',
     'cargo'            =>      'Cargo',
+    'select'            =>      'Select One',
+    'items'            =>      'Items Name',
+    'per_weight'            =>      'per Weight Cost',
+    'total_weight' => ' Total Weight ',
+    'value' => ' Item Value ',
+    'sender_tazkira' => ' Sender Tazkira ',
+    'pay_now' => ' Pay Now ',
+    'payment' => ' Payment List ',
+
 
 
 ];

@@ -18,6 +18,8 @@ class CreateClientsTable extends Migration
             $table->string('name')->unique();
             $table->string('mobile')->nullable();
             $table->string('address')->nullable();
+            $table->string('zipcode')->nullable();
+            $table->unsignedBigInteger('country')->nullable();
             $table->string('nid')->nullable();
             $table->string('photo')->nullable();
             $table->integer('active')->default(1);

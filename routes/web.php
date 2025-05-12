@@ -43,7 +43,7 @@ Route::group([ 'middleware' => ['auth']], function () {
     require __DIR__ . '/all/vendor_routes.php';
     require __DIR__ . '/all/account_routes.php';
     require __DIR__ . '/all/purchase_routes.php';
-    require __DIR__ . '/all/sell_routes.php';
+    require __DIR__ . '/all/cargo_routes.php';
     require __DIR__ . '/all/unit_routes.php';
     require __DIR__ . '/all/shareholder_routes.php';
     require __DIR__ . '/all/expense_routes.php';

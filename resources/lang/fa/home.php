@@ -115,13 +115,13 @@ return [
     'edit_purchase' => 'ویرایش خرید',
     'purchase_details' => 'جزیات خرید',
 
-    'sell' => 'فروش',
-    'sells' => 'فروشات',
-    'all_sells' => 'تمام فروشات',
-    'view_sells' => 'لست فروشات',
-    'new_sell' => 'فروش جدید',
-    'edit_sell' => 'ویرایش فروش',
-    'sell_details' => 'جزیات فروش',
+    'sell' => 'کارگو',
+    'sells' => 'کارگو ها',
+    'all_sells' => 'تمام کارگو',
+    'view_sells' => 'لست کارگو',
+    'new_sell' => 'کارگو جدید',
+    'edit_sell' => 'ویرایش کارگو',
+    'sell_details' => 'جزیات کارگو',
 
     'return' => 'واپسی',
     'returns' => 'واپسی ها',
@@ -331,7 +331,7 @@ return [
     'all_assets' => 'همه دارایی ها',
     'new_asset' => 'دارایی جدید',
     'edit_asset' => 'ویرایش دارایی',
-    'asset_value' => ' ارزش دارایی',
+    'value' => ' ارزش جنس',
     'rent' => ' کرایه',
     'received' => 'دریافت شده',
     'cbm' => 'متر مکعب',
@@ -398,6 +398,13 @@ return [
     'receiver_info'            =>      'مشخصات گیرنده ',
     'zipcode'            =>      ' زیپ کود ',
     'country'            =>      'کشور',
+    'select'            =>      'انتخاب نمایید ',
+    'items'            =>      ' اسم جنس ',
+    'per_weight'                     =>     'قیمت فی وزن',
+    'total_weight'                     =>     ' مجموع وزن',
+    'sender_tazkira'                     =>     '  تذکره فرستنده',
+    'pay_now'                     =>     '  پرداختی',
+    'payment'                     =>     '  لست پرداختی',
 
 
 ];

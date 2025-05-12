@@ -10,8 +10,7 @@ use App\Models\Expense;
 use App\Models\Partner;
 use App\Models\Post;
 use App\Models\Product;
-use App\Models\Purchase;
-use App\Models\Sell;
+// use App\Models\Purchase;
 use App\Models\Setting;
 use App\Models\Slider;
 use Illuminate\Http\Request;
@@ -42,31 +41,31 @@ class DashboardController extends Controller
         $costs=0;
         // $products = Product::branch()->count('quantity');
         // $costs = Product::branch()->sum('cost');
-        $daily_total_sell = Sell::branch()->where($column, $today)->sum('total');
-        $daily_total_purchase = Purchase::branch()->where($column, $today)->sum('total');
-        $daily_total_expense = Expense::branch()->where('type', 'expense')->where($column, $today)->sum('amount');
-        $daily_total_cash_received = Expense::branch()->where('type', 'income')->where($column, $today)->sum('amount');
+        // $daily_total_sell = Sell::branch()->where($column, $today)->sum('total');
+        // $daily_total_purchase = Purchase::branch()->where($column, $today)->sum('total');
+        // $daily_total_expense = Expense::branch()->where('type', 'expense')->where($column, $today)->sum('amount');
+        // $daily_total_cash_received = Expense::branch()->where('type', 'income')->where($column, $today)->sum('amount');
 
-        $dailySales = Sell::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('SUM(total) as total_sales')
-        )
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
-            ->get();
+        // $dailySales = Sell::select(
+        //     DB::raw('DATE(created_at) as date'),
+        //     DB::raw('SUM(total) as total_sales')
+        // )
+        //     ->groupBy(DB::raw('DATE(created_at)'))
+        //     ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
+        //     ->get();
 
         // Fetch total purchase amount for each day
-        $dailyPurchases = Purchase::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('SUM(total) as total_purchases')
-        )
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
-            ->get();
+        // $dailyPurchases = Purchase::select(
+        //     DB::raw('DATE(created_at) as date'),
+        //     DB::raw('SUM(total) as total_purchases')
+        // )
+        //     ->groupBy(DB::raw('DATE(created_at)'))
+        //     ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
+        //     ->get();
 
         $settings = Setting::where('branch_id', auth()->user()->branch_id)->first();
 
-        return view('dashboard', compact('products', 'costs', 'dailySales', 'dailyPurchases', 'daily_total_sell', 'daily_total_purchase', 'daily_total_expense', 'daily_total_cash_received', 'settings'));
+        return view('dashboard', compact('products', 'costs', 'settings'));
     }
 
     public function journal()

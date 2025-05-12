@@ -32,7 +32,7 @@
                             <button class="btn px-0 pt-2"><i class="fe fe-search" aria-hidden="true"></i></button>
                         </div> --}}
                         @can('sell.create')
-                            <a href="{{ route('sell.create') }}" class="mx-3">
+                            <a href="{{ route('cargo.create') }}" class="mx-3">
                             <i class="fe fe-shopping-cart"></i> {{ __('home.new_sell') }}
                             </a>
                         @endcan

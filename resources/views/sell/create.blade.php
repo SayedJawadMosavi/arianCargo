@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'New sell')
+@section('title', 'New Cargo')
 @section('content')
 
 <div class="card mt-4">
@@ -11,13 +11,13 @@
 
     <div class="card-header d-flex justify-content-between">
         <h4 class="card-title">
-            @if(isset($sell))
+            @if(isset($cargo))
             {{ __('home.edit_sell') }}
             @else
             {{ __('home.new_sell') }}
             @endif
         </h4>
-        <a href="{{route('sell.index')}}" class="btn btn-primary">{{ __('home.all_sells') }}</a>
+        <a href="{{route('cargo.index')}}" class="btn btn-primary">{{ __('home.all_sells') }}</a>
 
         @if ($errors->any())
         <div class="alert alert-danger">
@@ -30,9 +30,9 @@
         @endif
     </div>
     <div class="card-body ">
-        <form action="{{isset($sell) ? route('sell.update', $sell) : route('sell.store')}}" method="POST" enctype="multipart/form-data">
+        <form action="{{isset($cargo) ? route('cargo.update', $cargo) : route('cargo.store')}}" id="dynamicForm" method="POST" enctype="multipart/form-data">
             @csrf
-            @if(isset($sell))
+            @if(isset($cargo))
             @method('PUT')
             @else
             @method('POST')
@@ -41,86 +41,41 @@
             <div class="form-row mb-3">
                 <div class="col-xl-4 mb-3">
                     <label for="validationServer04">{{ __('home.sender') }}</label>
-                    <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="client_id" aria-describedby="validationServer04Feedback" required name="client_id">
+                    <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" id="client_id" aria-describedby="validationServer04Feedback" required name="client_id">
                         <option> {{__('home.please_select')}}</option>
                         <option value="new"> {{__('home.new_customer')}}</option>
                         @foreach($clients as $client)
 
-                        <option value="{{$client->id}}" @if(isset($sell)) @if($sell->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+                        <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                         @endforeach
                     </select>
                     @error('client_id')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
-                    <label for="validationServer01">{{ __('home.name') }}</label>
-                    <input type="text" class="form-control form-control" name="client_name" autocomplete="off" id="client_name" value="{{isset($sell) ? $sell->client_name : old('client_name')}}" autocomplete="off">
-                    @error('client_name')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
-                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
-                    <label for="validationServer01">{{ __('home.phone') }}</label>
-                    <input type="text" class="form-control form-control" name="client_phone" autocomplete="off" id="client_phone" value="{{isset($sell) ? $sell->client_phone : old('client_phone')}}" autocomplete="off">
-                    @error('client_phone')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
-                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
-                    <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
-                    <input type="text" class="form-control form-control" name="client_tazkira_no" autocomplete="off" id="client_tazkira_no" value="{{isset($sell) ? $sell->client_tazkira_no : old('client_tazkira_no')}}" autocomplete="off">
-                    @error('client_tazkira_no')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
-                <div class="col-xl-4 mb-3 my_div" style="display: none;" id="">
-                    <label for="validationServer01">{{ __('home.address') }}</label>
-                    <input type="text" class="form-control form-control" name="client_address" autocomplete="off" id="client_address" value="{{isset($sell) ? $sell->client_address : old('client_address')}}" autocomplete="off">
-                    @error('client_address')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
-
-                @if(isset($sell))
                 <div class="col-xl-4 mb-3">
-                    <label for="validationServer04">{{ __('home.account') }}</label>
-                    <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                    <label for="validationServer04">{{ __('home.receiver') }}</label>
+                    <select class="form-select form-control select2 @error('receiver_id') {{'is-invalid'}} @enderror" id="receiver_id" aria-describedby="validationServer04Feedback" required name="receiver_id">
                         <option> {{__('home.please_select')}}</option>
-                        @foreach($accounts as $account)
-                        <option value="{{$account->id}}" @if(isset($sell)) @if($sell->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
+                        <option value="new"> {{__('home.new_customer')}}</option>
+                        @foreach($clients as $client)
+
+                        <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->receiver_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                         @endforeach
                     </select>
-                    @error('account_id')
+                    @error('receiver_id')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                @else
-                <div class="col-xl-4 mb-3">
-                    <label for="validationServer04">{{ __('home.account') }}</label>
-                    <input type="hidden" name="currency_id" id="currency_id">
 
-                    <select class="form-select form-control @error('account') {{'is-invalid'}} @enderror" onchange="showCurrency(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
 
-                    </select>
-                    @error('account_id')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
-                @endif
-                <div class="col-xl-4 mb-3">
-                    <label for="validationServer01">{{ __('home.rate') }}</label>
-                    <input type="text" class="form-control form-control @error('rate') {{'is-invalid'}} @enderror" readonly name="rate" autocomplete="off" id="rate" value="1" step="0.001">
-                    <input type="hidden" class="form-control form-control @error('operation') {{'is-invalid'}} @enderror" readonly name="operation" autocomplete="off" id="operation">
-                    @error('operation')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
+
+
                 @if ($settings->date_type=='shamsi')
 
                 <div class="col-xl-3 mb-3">
                     <label for="validationServer01">{{ __('home.date') }}</label>
-                    <input type="text" class="form-control form-control @error('date') {{'is-invalid'}} @enderror" name="shamsi_date" autocomplete="off" id="dates" value="{{isset($sell) ? $sell->shamsi_date : old('date')}}">
+                    <input type="text" class="form-control form-control @error('date') {{'is-invalid'}} @enderror" name="shamsi_date" autocomplete="off" id="dates" value="{{isset($cargo) ? $cargo->shamsi_date : old('date')}}">
                     @error('date')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
@@ -128,7 +83,7 @@
                 @else
                 <div class="col-xl-3 mb-3">
                     <label for="validationServer01">{{ __('home.date') }}</label>
-                    <input type="date" class="form-control @error('date') {{'is-invalid'}} @enderror" id="date" name="miladi_date" value="{{ isset($sell) ? $sell->miladi_date : date('Y-m-d') }}">
+                    <input type="date" class="form-control @error('date') {{'is-invalid'}} @enderror" id="date" name="miladi_date" value="{{ isset($cargo) ? $cargo->miladi_date : date('Y-m-d') }}">
                     @error('date')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
@@ -136,83 +91,29 @@
                 @endif
                 <div class="col-xl-2 mb-3">
                     <label for="validationServer01">{{ __('home.bill') }}</label>
-                    <input type="text" class="form-control form-control @error('bill') {{'is-invalid'}} @enderror" name="bill" autocomplete="off" id="bill" value="{{isset($sell) ? $sell->bill : old('bill')}}">
+                    <input type="text" class="form-control form-control @error('bill') {{'is-invalid'}} @enderror" name="bill" autocomplete="off" id="bill" value="{{isset($cargo) ? $cargo->bill : old('bill')}}">
+                    @error('bill')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
+                <div class="col-xl-2 mb-3">
+                    <label for="validationServer01">{{ __('home.sn') }}</label>
+                    <input type="text" class="form-control form-control @error('bill') {{'is-invalid'}} @enderror" name="number" autocomplete="off" id="number" value="{{isset($cargo) ? $cargo->number : old('number')}}">
                     @error('bill')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
                 <div class="col-xl-7 mb-3">
                     <label for="validationServer01">{{ __('home.description') }}</label>
-                    <input type="text" class="form-control @error('description') {{'is-invalid'}} @enderror" id="description" name="description" value="{{isset($sell) ? $sell->description : old('description')}}" autocomplete="off">
+                    <input type="text" class="form-control @error('description') {{'is-invalid'}} @enderror" id="description" name="description" value="{{isset($cargo) ? $cargo->description : old('description')}}" autocomplete="off">
                     @error('description')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
 
             </div>
-            <fieldset class="mt-3">
-                <legend> {{ __('home.receiver_info') }} </legend>
-                <div class="form-row align-items-center">
-                    <div class="col-md-3 mb-3">
-                        <label for="validationServer01">نام</label>
-                        <input type="text" class="form-control @error('relation_name') {{'is-invalid'}} @enderror" id="receiver_name" name="receiver_name" value="{{isset($sell) ? $sell->receiver_name : old('receiver_name')}}">
-                        @error('relation_name')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
 
-                    <div class="col-md-3 mb-3">
-                        <label for="validationServer01"> {{ __('home.name') }} </label>
-                        <input type="text" class="form-control @error('relation_phone') {{'is-invalid'}} @enderror" id="receiver_phone" name="receiver_phone" value="{{isset($sell) ? $sell->receiver_phone : old('receiver_phone')}}">
-                        @error('receiver_phone')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="validationServer01"> {{ __('home.phone') }} </label>
-                        <input type="text" class="form-control @error('receiver_phone') {{'is-invalid'}} @enderror" id="receiver_phone" name="receiver_phone" value="{{isset($sell) ? $sell->receiver_phone : old('receiver_phone')}}">
-                        @error('receiver_phone')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="validationServer01"> {{ __('home.tazkira_no') }} </label>
-                        <input type="text" class="form-control @error('tazkira_no') {{'is-invalid'}} @enderror" id="receiver_tazkira_no" name="receiver_tazkira_no" value="{{isset($sell) ? $sell->receiver_tazkira_no : old('receiver_tazkira_no')}}">
-                        @error('receiver_tazkira_no')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="validationServer01"> {{ __('home.zipcode') }} </label>
-                        <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($sell) ? $sell->zipcode : old('zipcode')}}">
-                        @error('zipcode')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-                    <div class="col-xl-3 mb-3">
-                        <label for="validationServer04">{{ __('home.country') }}</label>
-                        <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
-                            <option> {{__('home.please_select')}}</option>
-                            @foreach($accounts as $account)
-                            <option value="{{$account->id}}" @if(isset($sell)) @if($sell->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
-                            @endforeach
-                        </select>
-                        @error('account_id')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-                    <div class="col-xl-6 mb-3">
-                        <label for="validationServer01">{{ __('home.addre   ss') }}</label>
-                        <input type="text" class="form-control @error('receiver_address') {{'is-invalid'}} @enderror" id="receiver_address" name="receiver_address" value="{{isset($sell) ? $sell->receiver_address : old('receiver_address')}}" autocomplete="off">
-                        @error('receiver_address')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
-
-
-                </div>
-            </fieldset>
-            @if(!isset($sell))
+            @if(!isset($cargo))
             <div class="form-row mb-3">
 
                 <div class="col-sm-12 mt-3">
@@ -225,15 +126,13 @@
                         <table class="table table-bordered table-striped" id="user_table">
                             <thead>
                                 <tr>
-                                    <th width="15%">{{__('home.stock')}}</th>
-                                    <th width="15%">{{__('home.product')}}</th>
-                                    {{-- <th width="15%">{{__('home.type')}}</th> --}}
-                                    {{-- <th width="1%">{{__('home.currency')}}</th> --}}
-                                    {{-- <th width="10%">{{__('home.sell_price')}}</th> --}}
+                                    <th width="15%">{{__('home.items')}}</th>
+
                                     <th width="10%">{{__('home.quantity')}}</th>
-                                    <th width="10%">{{__('home.sell')}}</th>
-                                    <th width="11%">{{__('home.cbm')}}</th>
-                                    <th width="11%">{{__('home.total')}}</th>
+                                    <th width="15%">{{__('home.cbm')}}</th>
+
+                                    <th width="11%">{{__('home.type')}}</th>
+                                    <th width="11%">{{__('home.value')}}</th>
                                     <th width="5%">{{__('home.action')}}</th>
                                 </tr>
                             </thead>
@@ -247,35 +146,49 @@
 
             </div>
             @endif
-            <div class=" row mb-4" dir="{{App::getLocale() == 'en' ? 'ltr' : 'rtl'}}">
-                <label class="col-md-2 {{App::getLocale() == 'en' ? 'offset-sm-7' : ''}} form-label text-right fw-bold">{{ __('home.grand_total') }}</label>
-                <div class="col-md-3">
-                    <input type="number" step="0.01" id="total" name="total" class="form-control" readonly="" value="{{isset($sell) ? $sell->total : old('total')}}">
+            <div class="row mb-4" dir="{{ App::getLocale() == 'en' ? 'ltr' : 'rtl' }}">
+                <div class="col-md-2">
+                    <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.total_weight') }}</label>
+                    <input type="number" step="0.01" id="total_weight" name="total_weight" class="form-control" value="{{ isset($cargo) ? $cargo->total_weight : old('total_weight') }}">
                 </div>
-            </div>
-            <div class=" row mb-4" dir="{{App::getLocale() == 'en' ? 'ltr' : 'rtl'}}">
-                <label class="col-md-2 {{App::getLocale() == 'en' ? 'offset-sm-7' : ''}} form-label text-right fw-bold">{{ __('home.total_cbm') }}</label>
-                <div class="col-md-3">
-                    <input type="number" step="0.01" id="total_cbm" name="total_cbm" class="form-control" readonly="" value="{{isset($sell) ? $sell->total_cbm : old('total_cbm')}}">
+
+                <div class="col-md-2">
+                    <label for="per_weight" class="form-label fw-bold text-right d-block">{{ __('home.per_weight') }}</label>
+                    <input type="number" step="0.01" id="per_weight" name="per_weight" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight : old('per_weight') }}">
                 </div>
-            </div>
-            <div class=" row mb-4" dir="{{App::getLocale() == 'en' ? 'ltr' : 'rtl'}}">
-                <label class="col-md-2 {{App::getLocale() == 'en' ? 'offset-sm-7' : ''}} form-label text-right fw-bold">{{ __('home.paid') }}</label>
-                <div class="col-md-3">
-                    <input type="number" step="0.01" id="paid" name="paid" class="form-control" value="{{isset($sell) ? $sell->paid : old('paid', 0) }}">
+
+                <div class="col-md-2">
+                    <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.grand_total') }}</label>
+                    <input type="number" step="0.01" id="total" readonly name="total" class="form-control" value="{{ isset($cargo) ? $cargo->total : old('total') }}">
                 </div>
-            </div>
-            <div class=" row mb-4" dir="{{App::getLocale() == 'en' ? 'ltr' : 'rtl'}}">
-                <label class="col-md-2 {{App::getLocale() == 'en' ? 'offset-sm-7' : ''}} form-label text-right fw-bold">{{ __('home.balance') }}</label>
-                <div class="col-md-3">
-                    <input type="number" step="0.01" id="balance" name="balance" class="form-control" readonly="" value="{{isset($sell) ? $sell->balance : old('balance')}}">
+                <div class="col-xl-2 mb-3">
+                    <label for="validationServer04">{{ __('home.account') }}</label>
+                    <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                        <option value="0"> {{__('home.please_select')}}</option>
+                        @foreach($accounts as $account)
+                        <option value="{{$account->id}}" @if(isset($cargo)) @if($cargo->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
+                        @endforeach
+                    </select>
+                    @error('account_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
                 </div>
+                <div class="col-md-2">
+                    <label for="paid" class="form-label fw-bold text-right d-block">{{ __('home.paid') }}</label>
+                    <input type="number" step="0.01" id="paid" name="paid" class="form-control" value="{{ isset($cargo) ? $cargo->paid : old('paid', 0) }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="balance" class="form-label fw-bold text-right d-block">{{ __('home.balance') }}</label>
+                    <input type="number" step="0.01" id="balance" name="balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->balance : old('balance') }}">
+                </div>
+
             </div>
+
 
 
 
             <div class="form-footer mt-2">
-                <input type="submit" class="btn btn-primary" value="@if(isset($sell))
+                <input type="submit" class="btn btn-primary" value="@if(isset($cargo))
                     {{ __('home.update') }}
                 @else
                     {{ __('home.save') }}
@@ -315,29 +228,16 @@
 
         function dynamic_field(number) {
             html = '<tr>';
-            html += "<td>" +
-                '<select class="form-select form-control select2" onchange="loadProducts(this, ' + count + ')"  name="stocks[]" id="to_currency">' +
-                "<option value=''>Select Stock</option>" + // Add this line for default selection
-                +"@foreach ($stocks as $obj)" +
-                "<option value='{{$obj->id}}' >" + '{{$obj->name}}' + "</option>" +
-                "@endforeach" +
-                "</select> " +
-                "</td>"
+            html += '<td class=""><input type="text"  name="item_name[]"id="item_name' + count + '" class="form-control" value="" />';
 
-            html += "<td>" +
-                '<select class="form-select form-control select2 products' + count + '" onchange="CurrencyData(this.value, ' + count + ')"  name="product[]" id="to_currency">' +
-                "<option value=''>Select Product</option>" + // Add this line for default selection
-                "</select> " +
-                "</td>"
 
-            html += '<td class="d-none"><input type="hidden" step="0.01" name="original_purchase[]"id="original_purchase' + count + '"  oninput="calculate()" class="form-control" value="0.00" />';
-            html += ' <input type="hidden" name="purchase[]" readonly id="purchases' + count + '" oninput="calculateSell(this)" class="form-control" value="0" /></td>';
-            html += '<td><input type="number" name="quantity[]" oninput="calculate()" class="form-control" value="0" /></td>';
-            html += '<td><input type="hidden" step="0.01" name="original_sell[]"id="original_sell' + count + '"  oninput="calculate()" class="form-control" value="0.00" />';
-            html += ' <input type="number" step="0.01" name="cost[]"id="costs' + count + '"  oninput="calculate()" class="form-control" value="0.00" /></td>';
+            html += '<td><input type="number" name="quantity[]"oninput="validateQuantity(this)";  class="form-control" value="0" /></td>';
+            html += '<td><input type="text" name="cbm[]"  class="form-control"  /></td>';
+            html += '<td><input type="text" name="type[]"  class="form-control"  /></td>';
+            html += '<td><input type="text" name="values[]"  class="form-control"  /></td>';
 
-            html += '<td><input type="hidden" step="0.01" name="height[]"id="height' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="hidden" step="0.01" name="width[]"id="width' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="hidden" step="0.01" name="length[]"id="length' + count + '"  oninput="calculate()" class="form-control" value="0.00" /><input type="number" id="cbm' + count + '" name="cbm[]" readonly oninput="calculate()" class="form-control" value="0" /></td>';
-            html += '<td><input type="number" name="total[]" readonly oninput="calculate()" class="form-control" value="0" /></td>';
+
+
             if (number > 1) {
                 html += '<td><button type="button" name="remove" id="" class="btn btn-danger remove"> <i class="fa fa-minus"></i></button></td></tr>';
                 $('#tbody').append(html);
@@ -360,104 +260,43 @@
             $(this).closest("tr").remove();
 
 
-            var grandTotal = 0;
-            var balance = 0;
-            var grandTotalCBM = 0;
-            $('#tbody tr').each(function() {
-                var quantity = parseFloat($(this).find('[name="quantity[]"]').val()) || 0;
-                var cost = parseFloat($(this).find('[name="cost[]"]').val()) || 0;
-                var expense = parseFloat($(this).find('[name="expense[]"]').val()) || 0;
-                var height = parseFloat($(this).find('[name="height[]"]').val()) || 0;
-                var width = parseFloat($(this).find('[name="width[]"]').val()) || 0;
-                var length = parseFloat($(this).find('[name="length[]"]').val()) || 0;
-
-                var total = quantity * (cost + expense);
-                var total_cbm = (height / 100) * (width / 100) * (length / 100);
-                grandTotal += total;
-                grandTotalCBM += total_cbm;
-
-                // Update the total input field in the current row
-                $(this).find('[name="total[]"]').val(total.toFixed(2));
-                $(this).find('[name="cbm[]"]').val(total_cbm.toFixed(2));
-            });
-
-            // Update the grand_total input field
-            paid = $('#paid').val();
-            $('#total').val(grandTotal.toFixed(2));
-            $('#balance').val((grandTotal - paid).toFixed(2));
-            $('#total_cbm').val(grandTotalCBM.toFixed(2));
 
         });
 
 
     });
 
-    function loadProducts(select, count) {
-        var stockProductId = $(select).val();
+    document.getElementById('dynamicForm').addEventListener('submit', function(e) {
 
-        $.ajax({
-            url: '/get-products/' + stockProductId,
-            type: 'GET',
-            success: function(response) {
-                var products = response.products;
-                var currency = response.currency;
-
-                var options = "<option value=''>Select Product</option>";
-                products.forEach(function(product) {
-                    if (product.sub_products && product.sub_products.length > 0) {
-                        // console.log('insdie if');
-                        var totalAvailable = product.sub_products.reduce(function(acc, sub_products) {
-                            return acc + parseFloat(sub_products.available);
-                        }, 0);
-                    } else {
-                        var totalAvailable = 0;
-                    }
-
-                    options += "<option value='" + product.id + "' data-cost='" + (product.product.income_price + product.product.expense) + "' data-height='" + product.product.height + "' data-width='" + product.product.width + "' data-length='" + product.product.length + "'  data-original_purchase='" + (product.product.cost + product.product.expense) + "' data-original_sell='" + (product.product.sell ? product.product.sell : 0) + "' data-currency='" + (product.product.currency_id) + "' data-sell='" + (product.product.sell ? product.product.sell : 0) + "' data-available='" + totalAvailable + "' data-weight='" + product.product.weight + "'>" + product.product.name + " (Avail: " + totalAvailable + ")</option>";
-                });
-                $('.products' + count).html(options);
-            },
-            error: function(xhr, status, error) {
-                // console.error(error);
+        let valid = true;
+        document.querySelectorAll('input[name="item_name[]"],input[name="quantity[]"], input[name="cbm[]"],input[name="type[]"], input[name="values[]"]').forEach(function(input) {
+            if (!validateQuantity(input)) {
+                valid = false;
             }
         });
+
+        if (!valid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+    function validateQuantity(input) {
+        if (input.value === '') {
+            input.style.border = '1px solid red';
+            return false;
+        } else {
+            input.style.border = '';
+            return true;
+        }
     }
+    $('#total_weight, #per_weight').on('keyup change', function() {
+        var weight = parseFloat($('#total_weight').val()) || 0;
+        var perWeight = parseFloat($('#per_weight').val()) || 0;
+        var total = weight * perWeight;
 
-    function calculate() {
-        var grandTotal = 0;
-        var grandTotalCBM = 0;
-        var balance = 0;
+        $('#total').val(total.toFixed(2));
+    });
 
-        $('#tbody tr').each(function() {
-            var quantity = parseFloat($(this).find('[name="quantity[]"]').val()) || 0;
-            var cost = parseFloat($(this).find('[name="cost[]"]').val()) || 0;
-            var expense = parseFloat($(this).find('[name="expense[]"]').val()) || 0;
-
-            var height = parseFloat($(this).find('[name="height[]"]').val()) || 0;
-            var width = parseFloat($(this).find('[name="width[]"]').val()) || 0;
-            var length = parseFloat($(this).find('[name="length[]"]').val()) || 0;
-
-            var total = quantity * (cost + expense);
-            // var total_cbm = height * width * length;
-            var total_cbm = (height / 100) * (width / 100) * (length / 100);
-
-            // console.log(total_cbm);
-            total_cbm = parseFloat(total_cbm);
-            // console.log(total_cbm);
-            grandTotal += total;
-            grandTotalCBM += quantity * total_cbm;
-
-            // Update the total input field in the current row
-            $(this).find('[name="total[]"]').val(total.toFixed(2));
-            $(this).find('[name="cbm[]"]').val(total_cbm.toFixed(6));
-        });
-
-        grandTotalCBM = grandTotalCBM;
-        // Update the grand_total input field
-        $('#total').val(grandTotal.toFixed(2));
-        $('#total_cbm').val(grandTotalCBM.toFixed(6));
-        $('#balance').val(grandTotal.toFixed(2));
-    }
 
     $('#paid').keyup(function() {
 
@@ -469,6 +308,12 @@
 
     $('#client_id').change(function() {
         if ($('#client_id').find(":selected").val() == 'new') {
+            $('#clientForm').modal('show');
+            // RELOAD DROPDOWN WITH NEW CLIENT NAME
+        }
+    });
+    $('#receiver_id').change(function() {
+        if ($('#receiver_id').find(":selected").val() == 'new') {
             $('#clientForm').modal('show');
             // RELOAD DROPDOWN WITH NEW CLIENT NAME
         }
@@ -630,17 +475,6 @@
                             <div id="" class="invalid-feedback">{{$message}}</div>
                             @enderror
                         </div>
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.currency') }}</label>
-                            <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" id="treasury" name="treasury">
-                                <option> {{__('home.please_select')}}</option>
-
-                                @foreach($currencies as $obj)
-
-                                <option value="{{$obj->id}}">{{$obj->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
                         <div class="col-xl-4 col-sm-4 mb-3">
                             <label for="validationServer01">{{ __('home.mobile') }}</label>
@@ -656,7 +490,26 @@
                             <div id="" class="invalid-feedback">{{$message}}</div>
                             @enderror
                         </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationServer01"> {{ __('home.zipcode') }} </label>
+                            <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($cargo) ? $cargo->zipcode : old('zipcode')}}">
+                            @error('zipcode')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-3 mb-3">
+                            <label for="validationServer04">{{ __('home.country') }}</label>
+                            <select class="form-control " name="country" id="country">
 
+                                <option value="">{{ __('home.select') }}</option>
+
+                                <option value="1">afghanistan</option>
+                                <option value="2">United States</option>
+                            </select>
+                            @error('country')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
                         <div class="col-xl-12 col-sm-12 mb-3">
                             <label for="validationServer01">{{ __('home.address') }}</label>
                             <input type="text" class="form-control @error('address') {{'is-invalid'}} @enderror" id="address" name="address" value="">

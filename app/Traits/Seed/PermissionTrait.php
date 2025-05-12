@@ -268,40 +268,7 @@ trait PermissionTrait
         //end
         //  permission group table
 
-        $g = (new PermissionGroup())->where('name', 'product')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'product',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'product.view',
-                'display_name'    => "View Product"
-            ],
-            [
-                'name' => 'product.create',
-                'display_name'    => "Create Product"
-            ],
-            [
-                'name' => 'product.edit',
-                'display_name'    => "Edit Product"
-            ],
-            [
-                'name' => 'product.delete',
-                'display_name'    => "Delete Product"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        //end
+
 
         // end post management
         //  permission group table
@@ -413,113 +380,6 @@ trait PermissionTrait
         }
         //end
 
-        // end slider management
-        //  permission group table
-
-        $g = (new PermissionGroup())->where('name', 'vendor')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'vendor',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'vendor.view',
-                'display_name'    => "View Vendor"
-            ],
-            [
-                'name' => 'vendor.create',
-                'display_name'    => "Create Vendor"
-            ],
-            [
-                'name' => 'vendor.edit',
-                'display_name'    => "Edit Vendor"
-            ],
-            [
-                'name' => 'vendor.delete',
-                'display_name'    => "Delete Vendor"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        // start of shareholder permission
-        $g = (new PermissionGroup())->where('name', 'shareholder')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'shareholder',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'shareholder.view',
-                'display_name'    => "View shareholder"
-            ],
-            [
-                'name' => 'shareholder.create',
-                'display_name'    => "Create shareholder"
-            ],
-            [
-                'name' => 'shareholder.edit',
-                'display_name'    => "Edit shareholder"
-            ],
-            [
-                'name' => 'shareholder.delete',
-                'display_name'    => "Delete shareholder"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        //end
-        $g = (new PermissionGroup())->where('name', 'shareholder_transaction')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'shareholder_transaction',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'shareholder_transaction.view',
-                'display_name'    => "View shareholder Transaction"
-            ],
-            [
-                'name' => 'shareholder_transaction.create',
-                'display_name'    => "Create shareholder Transaction"
-            ],
-            [
-                'name' => 'shareholder_transaction.edit',
-                'display_name'    => "Edit shareholder Transaction"
-            ],
-            [
-                'name' => 'shareholder_transaction.delete',
-                'display_name'    => "Delete shareholder Transaction"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        //end
-
-        // end partner management
         //  permission group table
 
         $g = (new PermissionGroup())->where('name', 'sell')->first();
@@ -561,87 +421,6 @@ trait PermissionTrait
         }
         //end
 
-        // end team management
-        //  permission group table
-
-        $g = (new PermissionGroup())->where('name', 'purchase')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'purchase',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'purchase.view',
-                'display_name'    => "View Purchase"
-            ],
-            [
-                'name' => 'purchase.create',
-                'display_name'    => "Create Purchase"
-            ],
-            [
-                'name' => 'purchase.edit',
-                'display_name'    => "Edit Purchase"
-            ],
-            [
-                'name' => 'purchase.delete',
-                'display_name'    => "Delete Purchase"
-            ],
-            [
-                'name' => 'purchase.details',
-                'display_name'    => "Purchase Details"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        //end
-
-        // end front page management
-
-        //  permission group table
-
-        $g = (new PermissionGroup())->where('name', 'sell_return')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'sell_return',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'sell_return.view',
-                'display_name'    => "View Sell Return"
-            ],
-            [
-                'name' => 'sell_return.create',
-                'display_name'    => "Create Sell Return"
-            ],
-            [
-                'name' => 'sell_return.edit',
-                'display_name'    => "Edit Sell Return"
-            ],
-            [
-                'name' => 'sell_return.delete',
-                'display_name'    => "Delete Sell Return"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        //end
-        //  permission group table
 
         $g = (new PermissionGroup())->where('name', 'expense')->first();
         if (!$g) {
@@ -711,41 +490,7 @@ trait PermissionTrait
             }
         }
         //end
-        $g = (new PermissionGroup())->where('name', 'shareholder')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'shareholder',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'shareholder.view',
-                'display_name'    => "View Shareholder"
-            ],
-            [
-                'name' => 'shareholder.create',
-                'display_name'    => "Create Shareholder"
-            ],
-            [
-                'name' => 'shareholder.edit',
-                'display_name'    => "Edit Shareholder"
-            ],
-            [
-                'name' => 'shareholder.delete',
-                'display_name'    => "Delete Shareholder"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        // end menu management
-        //  permission group table
+
 
         $g = (new PermissionGroup())->where('name', 'setting')->first();
         if (!$g) {
@@ -996,144 +741,7 @@ trait PermissionTrait
             }
         }
         //    ---------------------------------------
-        $g = (new PermissionGroup())->where('name', 'stock')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'stock',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'stock.view',
-                'display_name'    => "View Stock"
-            ],
-            [
-                'name' => 'stock.create',
-                'display_name'    => "Create Stock"
-            ],
-            [
-                'name' => 'stock.edit',
-                'display_name'    => "Edit Stock"
-            ],
-            [
-                'name' => 'stock.delete',
-                'display_name'    => "Delete Stock"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        // ---------------------------------------
-        $g = (new PermissionGroup())->where('name', 'main_transfer')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'main_transfer',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'main_transfer.view',
-                'display_name'    => "View Main Transfer"
-            ],
-            [
-                'name' => 'main_transfer.create',
-                'display_name'    => "Create Main Transfer"
-            ],
-            [
-                'name' => 'main_transfer.edit',
-                'display_name'    => "Edit Main Transfer"
-            ],
-            [
-                'name' => 'main_transfer.delete',
-                'display_name'    => "Delete Main Transfer"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        // ---------------------------------------
-        // ---------------------------------------
-        $g = (new PermissionGroup())->where('name', 'stock_transfer')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'stock_transfer',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'stock_transfer.view',
-                'display_name'    => "View Stock Transfer"
-            ],
-            [
-                'name' => 'stock_transfer.create',
-                'display_name'    => "Create Stock Transfer"
-            ],
-            [
-                'name' => 'stock_transfer.edit',
-                'display_name'    => "Edit Stock Transfer"
-            ],
-            [
-                'name' => 'stock_transfer.delete',
-                'display_name'    => "Delete Stock Transfer"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
 
-        // end chat permission
-        $g = (new PermissionGroup())->where('name', 'asset')->first();
-        if (!$g) {
-            $g = PermissionGroup::create([
-                'name' => 'asset',
-                'category' => 'admin',
-            ]);
-        }
-        //  permission  table
-        $permissions = [
-            [
-                'name' => 'asset.view',
-                'display_name'    => "View Asset"
-            ],
-            [
-                'name' => 'asset.create',
-                'display_name'    => "Create Asset"
-            ],
-            [
-                'name' => 'asset.edit',
-                'display_name'    => "Edit Asset"
-            ],
-            [
-                'name' => 'asset.delete',
-                'display_name'    => "Delete Asset"
-            ],
-        ];
-        foreach ($permissions as $key => $value) {
-            $p = (new Permission())->where('name', $value)->first();
-            if (!$p) {
-                $p = Permission::create($value);
-                $g->permissions()->sync($p->id, false);
-            }
-        }
-        // document
 
         $g = (new PermissionGroup())->where('name', 'document')->first();
         if (!$g) {
@@ -1191,30 +799,7 @@ trait PermissionTrait
                  'name' => 'report.expense',
                  'display_name'    => "Expense Report"
              ],
-             [
-                 'name' => 'report.available_stock',
-                 'display_name'    => "Available Stock Report"
-             ],
-             [
-                 'name' => 'report.main_stock_report',
-                 'display_name'    => "Main Stock Report"
-             ],
-             [
-                 'name' => 'report.stock_transfer_report',
-                 'display_name'    => "Stock Transfer Report"
-             ],
-             [
-                 'name' => 'report.main_transfer_report',
-                 'display_name'    => "Main Transfer Report"
-             ],
-             [
-                 'name' => 'report.due_clients',
-                 'display_name'    => "Due Client Report"
-             ],
-             [
-                 'name' => 'report.due_vendor',
-                 'display_name'    => "Due Vendor Report"
-             ],
+
              [
                  'name' => 'report.all_vailable_report',
                  'display_name'    => "All Available Report"
@@ -1223,34 +808,13 @@ trait PermissionTrait
                  'name' => 'report.sell',
                  'display_name'    => "Sell Report"
              ],
-             [
-                 'name' => 'report.purchase',
-                 'display_name'    => "Purchase Report"
-             ],
-             [
-                 'name' => 'report.sell_return',
-                 'display_name'    => "Sell Return Report"
-             ],
+
              [
                  'name' => 'report.account_log',
                  'display_name'    => "Account Log Report"
              ],
-             [
-                 'name' => 'report.due_clients',
-                 'display_name'    => "Due Client Report"
-             ],
-             [
-                 'name' => 'report.profit_loss',
-                 'display_name'    => "Profit and Loss Report"
-             ],
-             [
-                 'name' => 'report.itemwise_sell',
-                 'display_name'    => "Itemwise Sell Report"
-             ],
-             [
-                 'name' => 'report.itemwise_purchase',
-                 'display_name'    => "Itemwise Purchase Report"
-             ],
+
+
 
          ];
          foreach ($permissions as $key => $value) {

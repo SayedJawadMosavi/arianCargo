@@ -158,7 +158,7 @@ class SellController extends Controller
      */
     public function store(StoreSellRequest $request)
     {
-
+        dd($request->all());
         DB::beginTransaction();
         try {
             $balance = $request->total - $request->paid;

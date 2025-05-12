@@ -87,17 +87,11 @@ class DatabaseSeeder extends Seeder
                 'user_id' => 1
             )
         );
-        DB::table('categories')->insert(
-            array(
-                'name' => 'BEKO',
-                'active' => 1,
-                'user_id' => 1
-            )
-        );
+
 
         DB::table('accounts')->insert(
             array(
-                'name' => 'Safe afn',
+                'name' => 'Vault afn',
                 'amount' => 0,
                 'currency_id' => 1,
                 'branch_id' => 1,
@@ -108,7 +102,7 @@ class DatabaseSeeder extends Seeder
         );
         DB::table('accounts')->insert(
             array(
-                'name' => 'Safe usd',
+                'name' => 'Vault usd',
                 'amount' => 0,
                 'currency_id' => 2,
                 'branch_id' => 1,
@@ -117,49 +111,8 @@ class DatabaseSeeder extends Seeder
                 'user_id' => 1
             )
         );
-        DB::table('clients')->insert(
-            array(
-                'name' => 'walkin AFN',
-                'type' => 'walkin',
-                'branch_id' => 1,
-                'active' => 1,
-                'user_id' => 1
-            )
-        );
-        DB::table('client_currencies')->insert(
-            array(
-                'client_id' => 1,
-                'currency_id' => 1,
-                'branch_id' => 1,
-                'amount' => 0,
-            )
-        );
 
-        DB::table('clients')->insert(
-            array(
-                'name' => 'walkin USD',
-                'type' => 'walkin',
-                'branch_id' => 1,
-                'active' => 1,
-                'user_id' => 1
-            )
-        );
-        DB::table('client_currencies')->insert(
-            array(
-                'client_id' => 2,
-                'currency_id' => 2,
-                'branch_id' => 1,
-                'amount' => 0,
-            )
-        );
-        DB::table('stocks')->insert(
-            array(
-                'name' => 'Kabul',
-                'contact_person' => 'Ahmad',
-                'user_id' => 1,
-                'branch_id' => 1,
-            )
-        );
+
 
         DB::table('rates')->insert(
             array(

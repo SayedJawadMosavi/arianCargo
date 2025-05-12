@@ -92,21 +92,21 @@ class ClientController extends Controller
             $attributes['branch_id'] = auth()->user()->branch_id;
             $client =  $client->create($attributes);
 
-            $treasuries = $request->treasury;
-            $amount = $request->amount;
+            // $treasuries = $request->treasury;
+            // $amount = $request->amount;
 
-            // if (isset($treasuries)) {
+            // // if (isset($treasuries)) {
 
-            // foreach($treasuries as $index => $treasury) {
-            $am = $amount;
-            $description =  ' حساب ' . $request->name . ' افتتاح گردید ';
-            // if(isset($amount) && $amount != 0) {
-                $am > 0 ? $type = 'deposit' : $type = 'withdraw';
-                $curr = $this->GetClientCurrency($client->id, $treasuries, $am);
-                $this->InsertClientLog($client->id, $curr->id, $type, abs($am), $description, $curr->amount, 'client', null, $request->issue_date);
-            // }
-            // }
-            // }
+            // // foreach($treasuries as $index => $treasury) {
+            // $am = $amount;
+            // $description =  ' حساب ' . $request->name . ' افتتاح گردید ';
+            // // if(isset($amount) && $amount != 0) {
+            //     $am > 0 ? $type = 'deposit' : $type = 'withdraw';
+            //     $curr = $this->GetClientCurrency($client->id, $treasuries, $am);
+            //     $this->InsertClientLog($client->id, $curr->id, $type, abs($am), $description, $curr->amount, 'client', null, $request->issue_date);
+            // // }
+            // // }
+            // // }
         });
         $clients = Client::branch()->get();
         $trashed = Client::branch()->onlyTrashed()->get();

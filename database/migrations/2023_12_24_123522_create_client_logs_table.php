@@ -21,7 +21,7 @@ class CreateClientLogsTable extends Migration
             $table->double('amount', 16, 2, true);
             $table->double('available', 16, 2);
             $table->tinyText('description')->nullable();
-            $table->enum('action', ['direct', 'client', 'payment', 'sell', 'purchase','client_transaction'])->default('payment');
+            $table->enum('action', ['direct', 'client', 'payment', 'cargo', 'purchase','client_transaction','cargo_payment'])->default('payment');
             $table->integer('action_id')->nullable();
             $table->string('shamsi_date')->nullable();
             $table->string('clearance_date_shamsi')->nullable();

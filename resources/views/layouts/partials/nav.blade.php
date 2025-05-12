@@ -25,7 +25,7 @@
             <ul class="slide-menu">
 
                 @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete' ])
-                <li><a href="{{route('sell.index')}}" class="slide-item"> {{__('home.cargo')}}</a></li>
+                <li><a href="{{route('cargo.index')}}" class="slide-item"> {{__('home.cargo')}}</a></li>
                 @endcanany
 
                 <li><a href="{{route('client.receivable')}}" class="slide-item"> {{ __('home.client_receivable') }}</a></li>
