@@ -288,7 +288,7 @@ return [
     'reports'                     =>     ' راپور ها',
     'expense_report'                     =>     ' راپور مصارف',
     'income_report'                     =>     ' راپور عواید',
-    'sell_report'                     =>     ' راپور فروش',
+    'cargo_report'                     =>     ' راپور فروش',
     'purchase_report'                     =>     ' راپور خرید',
     'client_report'                     =>     ' راپور مشتریان',
     'account_report'                     =>     ' راپور حسابات',
@@ -382,7 +382,7 @@ return [
     'vendor_receivable'            =>      'قابل دریافت از معامله داران',
     'available'            =>      'موجود',
     'other_stocks'            =>      'محصولات سایر گدام ها',
-    'item_wise_sell_report'            =>      'راپور فروش یک محصول',
+    'item_wise_cargo_report'            =>      'راپور فروش یک محصول',
     'item_wise_purchase_report'            =>      'راپور خرید یک محصول',
     'client_receivable'            =>      'قابل دریافت از مشتریان',
     'client_payable'            =>      'قابل پرداخت به مشتریان',
@@ -405,6 +405,9 @@ return [
     'sender_tazkira'                     =>     '  تذکره فرستنده',
     'pay_now'                     =>     '  پرداختی',
     'payment'                     =>     '  لست پرداختی',
+    'dimensions'                     =>     '   ابعاد',
+    'cargo_report'                     =>     ' راپور کارگو ',
+    'new_country'            =>      'افزودن کشور ',
 
 
 ];

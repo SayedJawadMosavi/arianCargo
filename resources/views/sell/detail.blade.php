@@ -37,7 +37,7 @@
                                                 <th>{{ __('home.items') }}</th>
 
                                                 <th>{{ __('home.quantity') }}</th>
-                                                <th>{{ __('home.cbm') }}</th>
+                                                <th>{{ __('home.dimensions') }}</th>
                                                 <th>{{__('home.type')}}</th>
 
                                                 <th>{{ __('home.value') }}</th>
@@ -130,7 +130,7 @@
                                                                 <th width="15%">{{__('home.items')}}</th>
 
                                                                 <th width="10%">{{__('home.quantity')}}</th>
-                                                                <th width="15%">{{__('home.cbm')}}</th>
+                                                                <th width="15%">{{__('home.dimensions')}}</th>
 
                                                                 <th width="11%">{{__('home.type')}}</th>
                                                                 <th width="11%">{{__('home.value')}}</th>

@@ -6,9 +6,12 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Http\Traits\CurrencyTrait;
 use App\Http\Traits\ClientLogTrait;
+use App\Models\Cargo;
+use App\Models\CargoDetail;
 use App\Models\Client;
 use App\Models\ClientCurrency;
 use App\Models\ClientLog;
+use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Sell;
 use App\Models\SellDetail;
@@ -70,8 +73,8 @@ class ClientController extends Controller
     public function create()
     {
 
-        $currencies = Currency::active()->get();
-        return view('client.create', compact('currencies'));
+        $countries = Country::active()->get();
+        return view('client.create', compact('countries'));
     }
 
     /**
@@ -221,11 +224,11 @@ class ClientController extends Controller
 
         return view('client.statement', compact('logs', 'client'));
     }
-    public function getSellDetail($id)
+    public function getsCargoDetail($id)
     {
-        $sells = Sell::where('client_id', $id)->get();
-        $sellIds = $sells->pluck('id')->toArray();
-        $details = SellDetail::with('sell')->whereIn('sell_id', $sellIds)->get();
+        $cargos = Cargo::where('client_id', $id)->get();
+        $cargoIds = $cargos->pluck('id')->toArray();
+        $details = CargoDetail::with('cargo')->whereIn('cargo_id', $cargoIds)->get();
 
         return view('client.detail', compact('details'));
     }

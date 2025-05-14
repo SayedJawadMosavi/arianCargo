@@ -5,7 +5,7 @@
 
 <div class="card mt-4">
     @if (session()->has('success') || session()->has('error') )
-        @include('layouts.partials.components.alert')
+    @include('layouts.partials.components.alert')
     @endif
     <div class="card-header d-flex justify-content-between">
         <h4 class="card-title">
@@ -58,18 +58,27 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                @if(!isset($client))
-                <div class="col-xl-4 col-sm-4 mb-3">
-                    <label for="validationServer01">{{ __('home.currency') }}</label>
-                    <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" id="treasury" name="treasury">
-                        <option> {{__('home.please_select')}}</option>
 
-                        @foreach($currencies as $obj)
-
-                        <option value="{{$obj->id}}">{{$obj->name}}</option>
-                        @endforeach
-                    </select>
+                <div class="col-md-3 mb-3">
+                    <label for="validationServer01"> {{ __('home.zipcode') }} </label>
+                    <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($cargo) ? $cargo->zipcode : old('zipcode')}}">
+                    @error('zipcode')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
                 </div>
+
+                <div class="col-xl-3 mb-3">
+                        <label for="validationServer04">{{ __('home.country') }}</label>
+                        <select class="form-select form-control @error('country') {{'is-invalid'}} @enderror" id="validationServer04" aria-describedby="validationServer04Feedback" required name="country_id">
+                            <option selected disabled value="">Choose...</option>
+                            @foreach($countries as $country)
+                                <option value="{{$country->id}}" @if(isset($client)) @if($client->country_id == $country->id) selected = 'selected' @endif @endif> {{ $country->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('country_id')
+                        <div id="" class="invalid-feedback">{{$message}}</div>
+                        @enderror
+                    </div>
                 <div class="col-xl-4 col-sm-4 mb-3 d-none">
                     <label for="validationServer01">{{ __('home.previous_balance') }}</label>
                     <input type="number" class="form-control @error('amount') {{'is-invalid'}} @enderror" id="amount" name="amount" value="{{isset($client) ? $client->amount : old('amount', 0)}}" autocomplete="off">
@@ -77,7 +86,7 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                @endif
+
 
                 <div class="col-xl-4 col-sm-4 mb-3">
                     <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
@@ -86,7 +95,7 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-xl-8 col-sm-8 mb-3">
+                <div class="col-xl-4 col-sm-4 mb-3">
                     <label for="validationServer01">{{ __('home.address') }}</label>
                     <input type="text" class="form-control @error('address') {{'is-invalid'}} @enderror" id="address" name="address" value="{{isset($client) ? $client->address : old('address')}}" autocomplete="off">
                     @error('address')
@@ -139,43 +148,6 @@
 
 @section('pagescript')
 
-<script>
-    // $(document).ready(function() {
 
-    //     var count = 1;
-
-    //     dynamic_field(count);
-
-    //     function dynamic_field(number) {
-    //         html = '<tr>';
-    //         html += "<td>" +
-    //             '<select class="form-control jstreasury"  name="treasury[]" id="to_currency">' +
-    //             +"@foreach ($currencies as $obj)" +
-    //             "<option value='{{$obj->id}}' >" + '{{$obj->name}}' + "</option>" +
-    //             "@endforeach" +
-    //             "</select> " +
-    //             "</td>"
-    //         html += '<td><input type="number" name="amount[]" class="form-control jsamount" value="0" /></td>';
-    //         if (number > 1) {
-    //             html += '<td><button type="button" name="remove" id="" class="btn btn-danger remove"> <i class="fa fa-minus"></i></button></td></tr>';
-    //             $('#tbody').append(html);
-    //         } else {
-    //             html += '<td><button type="button" name="add" id="add" class="btn btn-success btn btn-primary"> <i class="fa fa-plus"></i></button></td></tr>';
-    //             $('#tbody').html(html);
-    //         }
-    //     }
-
-    //     $(document).on('click', '#add', function() {
-    //         count++;
-    //         dynamic_field(count);
-    //     });
-
-    //     $(document).on('click', '.remove', function() {
-    //         count--;
-    //         $(this).closest("tr").remove();
-    //     });
-
-    // });
-</script>
 
 @endsection

@@ -21,7 +21,7 @@
 
         @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete','sell_return.create'])
         <li class="slide">
-            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">{{__('home.operation')}}</span><i class="angle fe fe-chevron-right"></i></a>
+            <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">{{__('home.cargo')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
 
                 @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete' ])
@@ -85,10 +85,10 @@
             <ul class="slide-menu">
                 @canany(['staff.view', 'staff.create', 'staff.edit', 'staff.delete'])
                 <li><a href="{{route('staff.index')}}" class="slide-item"> {{__('home.view_staff')}}</a></li>
-               @endcanany
+                @endcanany
                 @canany(['staff_salary.view', 'staff_salary.create', 'staff_salary.edit', 'staff_salary.delete'])
                 <li><a href="{{route('staff_salary.index')}}" class="slide-item"> {{__('home.view_staff_salary')}}</a></li>
-               @endcanany
+                @endcanany
             </ul>
         </li>
         @endcanany
@@ -99,7 +99,7 @@
             <ul class="slide-menu">
                 @canany(['branch.view', 'branch.create', 'branch.edit', 'branch.delete'])
                 <li><a href="{{route('branch.index')}}" class="slide-item"> {{__('home.view_branch')}}</a></li>
-               @endcanany
+                @endcanany
 
             </ul>
         </li>
@@ -108,15 +108,15 @@
 
 
 
-          @canany(['document.create', 'document.view', 'document.edit', 'document.delete'])
+        @canany(['document.create', 'document.view', 'document.edit', 'document.delete'])
 
         <li class="slide">
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-box"></i><span class="side-menu__label">{{__('home.documents')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
                 @canany(['document.view', 'document.create', 'document.edit', 'document.delete'])
                 <li><a href="{{route('document.index')}}" class="slide-item"> {{__('home.view_documents')}}</a></li>
-               @endcanany
-               @canany(['category.view', 'category.create', 'category.edit'])
+                @endcanany
+                @canany(['category.view', 'category.create', 'category.edit'])
                 <li><a href="{{route('document_category.index')}}" class="slide-item"> {{__('home.view_categories')}}</a></li>
                 @endcanany
 
@@ -129,15 +129,20 @@
             <ul class="slide-menu">
 
                 @can('report.sell')
-                <li><a href="{{route('report.sell')}}" class="slide-item"> {{__('home.sell_report')}}</a></li>
+                <li><a href="{{route('report.cargo')}}" class="slide-item"> {{__('home.cargo_report')}}</a></li>
                 @endcan
                 @can('report.expense')
                 <li><a href="{{route('report.expense')}}" class="slide-item"> {{__('home.expense_report')}}</a></li>
                 @endcan
 
+                <li><a href="{{route('report.income')}}" class="slide-item"> {{__('home.income_report')}}</a></li>
+
                 @can('report.due_clients')
                 <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
                 @endcan
+
+                <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
+
 
 
             </ul>
@@ -167,7 +172,7 @@
                 <li><a href="{{route('currency.index')}}" class="slide-item"> {{__('home.currencies')}}</a></li>
                 @endcanany
                 @canany(['unit.view', 'unit.create', 'unit.edit'])
-                <li><a href="{{route('unit.index')}}" class="slide-item"> {{__('home.units')}}</a></li>
+                <li><a href="{{route('country.index')}}" class="slide-item"> {{__('home.country')}}</a></li>
                 @endcanany
                 <li><a href="{{url('backups')}}" class="slide-item"> {{__('home.backup')}}</a></li>
                 <li><a href="{{url('rate')}}" class="slide-item"> {{__('home.rate')}}</a></li>

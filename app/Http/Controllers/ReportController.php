@@ -28,6 +28,7 @@ use App\Models\Vendor;
 use App\Models\VendorCurrency;
 use App\Http\Traits\AccountLogTrait;
 use App\Models\Assets;
+use App\Models\Cargo;
 use App\Models\Rate;
 use App\Models\ShareholderCurrency;
 use App\Models\StockSubProduct;
@@ -115,23 +116,24 @@ class ReportController extends Controller
         return view('report.income', compact('logs', 'categories'));
     }
 
-    public function sellReport()
+    public function cargoReport()
     {
-        return view('report.sell');
+         $settings = Setting::branch()->first();
+        return view('report.cargo', compact('settings'));
+
     }
 
-    public function getSellReport(Request $request)
+    public function getCargoReport(Request $request)
     {
-        if ($this->settings->date_type == 'shamsi') {
-            $from =  datenow();
-            $to =  datenow();
+         if ($this->settings->date_type == 'shamsi') {
+            $to = $request->to_shamsi;
+            $from = $request->from_shamsi;
             $column = 'shamsi_date';
         } else {
-            $from = date("Y-m-d");
-            $to = date("Y-m-d");
+            $to = $request->to_miladi;
+            $from = $request->from_miladi;
             $column = 'miladi_date';
         }
-
         // if ($this->settings->date_type == 'shamsi') {
         //     $to = $request->to_shamsi;
         //     $from = $request->from_shamsi;
@@ -141,11 +143,10 @@ class ReportController extends Controller
         //     $from = $request->from_miladi;
         //     $column = 'miladi_date';
         // }
-        $logs = SellDetail::where('s.branch_id', auth()->user()->branch_id)->join('sells AS s', 's.id', 'sell_details.sell_id')
-            ->whereBetween('s.' . $column, [$from, $to])->get();
-
+         $logs = Cargo::branch()->with('currency', 'receiver')->whereBetween($column, [$from, $to])->get();
+        // dd($logs);
         $branch_base = $this->branch_base;
-        return view('report.sell', compact('logs', 'branch_base'));
+        return view('report.cargo', compact('logs', 'branch_base'));
     }
 
     public function purchaseReport()

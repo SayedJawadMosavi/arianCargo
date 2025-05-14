@@ -292,7 +292,7 @@ return [
     'reports'                     =>     ' Reports',
     'expense_report'                     =>     ' Expense Report',
     'income_report'                     =>     ' Income Report',
-    'sell_report'                     =>     ' Sell Report',
+    'cargo_report'                     =>     ' Cargo Report',
     'purchase_report'                     =>     ' Purchase Report',
     'client_report'                     =>     ' Client Report',
     'account_report'                     =>     ' Account Report',
@@ -381,7 +381,7 @@ return [
     'vendor_receivable'            =>      'Vendor Receivable',
     'available'            =>      'Avail.',
     'other_stocks'            =>      'Other Stocks',
-    'item_wise_sell_report'            =>      'Itemwise Sell Report',
+    'item_wise_cargo_report'            =>      'Itemwise Sell Report',
     'item_wise_purchase_report'            =>      'Itemwise Purchase Report',
     'client_receivable'            =>      'Client Receivable',
     'client_payable'            =>      'Client Payable',
@@ -396,6 +396,7 @@ return [
     'receiver_info'            =>      'Receiver Info',
     'zipcode'            =>      'Zip Code',
     'country'            =>      'Country',
+    'new_country'            =>      'New Country',
     'cargo'            =>      'Cargo',
     'select'            =>      'Select One',
     'items'            =>      'Items Name',
@@ -405,6 +406,7 @@ return [
     'sender_tazkira' => ' Sender Tazkira ',
     'pay_now' => ' Pay Now ',
     'payment' => ' Payment List ',
+    'dimensions' => ' Dimensions  ',
 
 
 

@@ -27,45 +27,38 @@
                                             <tr>
                                                 <th class="d-none">{{ __('home.no') }}</th>
                                                 <th>{{ __('home.no') }}</th>
-                                                <th>{{ __('home.bill') }}</th>
-                                                <th>{{ __('home.date') }}</th>
-                                                <th>{{ __('home.product') }}</th>
-                                                <th>{{ __('home.model') }}</th>
+                                                <th>{{ __('home.items') }}</th>
 
                                                 <th>{{ __('home.quantity') }}</th>
-                                                <th>{{ __('home.cost') }}</th>
+                                                <th>{{ __('home.dimensions') }}</th>
+                                                <th>{{__('home.type')}}</th>
 
-                                                <th>{{ __('home.total') }}</th>
+                                                <th>{{ __('home.value') }}</th>
 
                                             </tr>
                                         </thead>
+
                                         <tbody>
                                             @php $c =1; @endphp
+
                                             @foreach($details as $detail)
                                             <tr>
                                                 <td class="d-none">{{$detail->id}}</td>
                                                 <td>{{$c++}}</td>
-                                                <td>{{$detail->sell_id}}</td>
-                                                <td>
-                                                    @if ($settings->date_type=='shamsi')
-                                                    {{$detail->sell->shamsi_date}}
-                                                    @else
-                                                    {{$detail->sell->miladi_date}}
-                                                    @endif
-                                                </td>
-                                                <td>{{$detail->product->name}}</td>
+                                                <td>{{$detail->item_name}}</td>
 
-                                                <td>{{$detail->product->model}}</td>
 
                                                 <td>{{ number_format($detail->quantity) }}</td>
-                                                <td>{{ ($detail->cost) }}</td>
+                                                <td>{{ ($detail->cbm) }}</td>
+                                                <td>{{ ($detail->type) }}</td>
+                                                <td>{{ ($detail->item_value) }}</td>
 
-                                                <td>{{ number_format($detail->cost * $detail->quantity) }}</td>
 
                                             </tr>
                                             @php $c++; @endphp
 
                                             @endforeach
+
                                         </tbody>
                                     </table>
                                 </div>

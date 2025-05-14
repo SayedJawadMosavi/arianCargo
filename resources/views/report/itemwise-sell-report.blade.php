@@ -10,11 +10,11 @@
     @endif
 
     <div class="card-header ">
-        <h3 class="card-title">{{ __('home.item_wise_sell_report') }}</h3>
+        <h3 class="card-title">{{ __('home.item_wise_cargo_report') }}</h3>
     </div>
     <div class="card-body pt-4">
         <div class="col-sm-12 my-3">
-            <form action="{{ route('report.item_wise_sell_report.post') }}" method="POST">
+            <form action="{{ route('report.item_wise_cargo_report.post') }}" method="POST">
                 {{-- <x-date-component :data="$categories"/> --}}
                 @csrf
                 @method('POST')

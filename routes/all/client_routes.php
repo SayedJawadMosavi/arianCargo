@@ -14,6 +14,6 @@ Route::delete('force-delete-client/{id}', [ClientController::class, 'forceDelete
 Route::post('client-status/{value}/{id}', [ClientController::class, 'client.changeStatus']);
 Route::get('/getClientCurrency/{data}', [ClientTransactionController::class, 'getClientCurrency']);
 Route::get('/findCurrency/{account_id}/{currency_id}', [ClientTransactionController::class, 'findCurrency']);
-Route::get('client/{id}/detail', [ClientController::class, 'getsellDetail'])->name('client.detail.get');
+Route::get('client/{id}/detail', [ClientController::class, 'getsCargoDetail'])->name('client.detail.get');
 Route::post('client/statment', [ClientController::class, 'filterStatment'])->name('clientstatement.filter');
 Route::post('client-client_clearance', [ClientController::class, 'clientClearanceSstore'])->name('client_clearance.store');
