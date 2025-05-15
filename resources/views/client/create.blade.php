@@ -68,17 +68,17 @@
                 </div>
 
                 <div class="col-xl-3 mb-3">
-                        <label for="validationServer04">{{ __('home.country') }}</label>
-                        <select class="form-select form-control @error('country') {{'is-invalid'}} @enderror" id="validationServer04" aria-describedby="validationServer04Feedback" required name="country_id">
-                            <option selected disabled value="">Choose...</option>
-                            @foreach($countries as $country)
-                                <option value="{{$country->id}}" @if(isset($client)) @if($client->country_id == $country->id) selected = 'selected' @endif @endif> {{ $country->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('country_id')
-                        <div id="" class="invalid-feedback">{{$message}}</div>
-                        @enderror
-                    </div>
+                    <label for="validationServer04">{{ __('home.country') }}</label>
+                    <select class="form-select form-control select2 @error('country') {{'is-invalid'}} @enderror" id="validationServer04" aria-describedby="validationServer04Feedback" required name="country_id">
+                        <option selected disabled value="">Choose...</option>
+                        @foreach($countries as $country)
+                        <option value="{{$country->id}}" @if(isset($client)) @if($client->country_id == $country->id) selected = 'selected' @endif @endif> {{ $country->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('country_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
                 <div class="col-xl-4 col-sm-4 mb-3 d-none">
                     <label for="validationServer01">{{ __('home.previous_balance') }}</label>
                     <input type="number" class="form-control @error('amount') {{'is-invalid'}} @enderror" id="amount" name="amount" value="{{isset($client) ? $client->amount : old('amount', 0)}}" autocomplete="off">
@@ -147,7 +147,14 @@
 @endsection
 
 @section('pagescript')
+<script>
+    $(document).ready(function() {
+        $('.select2').select2();
 
+
+
+    });
+</script>
 
 
 @endsection

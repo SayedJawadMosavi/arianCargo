@@ -41,13 +41,18 @@
             <div class="form-row mb-3">
                 <div class="col-xl-4 mb-3">
                     <label for="validationServer04">{{ __('home.sender') }}</label>
-                    <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" id="client_id" aria-describedby="validationServer04Feedback" required name="client_id">
-                        <option> {{__('home.please_select')}}</option>
-                        <option value="new"> {{__('home.new_customer')}}</option>
-                        @foreach($clients as $client)
+                    {{-- <select class="form-select form-control select2 @error('client_id') {{'is-invalid'}} @enderror" id="client_id" aria-describedby="validationServer04Feedback" required name="client_id">
+                    <option> {{__('home.please_select')}}</option>
+                    <option value="new"> {{__('home.new_customer')}}</option>
+                    @foreach($clients as $client)
 
-                        <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
-                        @endforeach
+                    <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+                    @endforeach
+                    </select>--}}
+                    <select id="client" name="client" class="form-control" style="width: 100%">
+                        @if(isset($cargo))
+                        <option value="{{$client->id}}" selected @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+                        @endif
                     </select>
                     @error('client_id')
                     <div id="" class="invalid-feedback">{{$message}}</div>
@@ -199,7 +204,76 @@
 
     </div>
 </div>
+<div class="modal fade " id="clientForm">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">{{ __('home.new_client') }}</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
 
+                <div class="modal-body">
+                    <div class="form-row mb-3">
+
+                        <div class="col-xl-4 col-sm-4 mb-3">
+                            <label for="validationServer01">{{ __('home.name') }}</label>
+                            <input type="text" class="form-control @error('name') {{'is-invalid'}} @enderror" id="name" name="name" value="">
+                            <input type="hidden" class="form-control" name="from_sell" value="1">
+                            <input type="hidden" class="form-control" name="amount" value="0">
+                            @error('name')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-xl-4 col-sm-4 mb-3">
+                            <label for="validationServer01">{{ __('home.mobile') }}</label>
+                            <input type="text" class="form-control @error('mobile') {{'is-invalid'}} @enderror" id="mobile" name="mobile" value="">
+                            @error('mobile')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-4 col-sm-4 mb-3">
+                            <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
+                            <input type="text" class="form-control @error('nid') {{'is-invalid'}} @enderror" id="nid" name="nid" value="">
+                            @error('nid')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="validationServer01"> {{ __('home.zipcode') }} </label>
+                            <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($cargo) ? $cargo->zipcode : old('zipcode')}}">
+                            @error('zipcode')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-4 mb-3">
+                            <label for="validationServer04">{{ __('home.country') }}</label>
+                            <select class="form-select form-control  @error('country') {{'is-invalid'}} @enderror" id="country" aria-describedby="validationServer04Feedback" required name="country_id" style="width: 100%;">
+                                <option selected disabled value="">Choose...</option>
+                                @foreach($countries as $country)
+                                <option value="{{$country->id}}"> {{ $country->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('country_id')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-12 col-sm-12 mb-3">
+                            <label for="validationServer01">{{ __('home.address') }}</label>
+                            <input type="text" class="form-control @error('address') {{'is-invalid'}} @enderror" id="address" name="address" value="">
+                            @error('address')
+                            <div id="" class="invalid-feedback">{{$message}}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('home.cancel') }}</button>
+                    <button type="button"id="ajaxSubmit" class="btn btn-primary">{{ __('home.save') }}</button>
+                </div>
+
+        </div>
+    </div>
+</div>
 @endsection
 
 
@@ -219,6 +293,95 @@
         }
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var element = document.getElementById('country');
+        var choices = new Choices(element, {
+            searchEnabled: true,
+            removeItemButton: true,
+        });
+
+    });
+</script>
+<script>
+
+    $(document).ready(function () {
+            // Add a short delay to ensure #client is in the DOM
+            setTimeout(function () {
+                if ($('#client').length === 0) {
+                    console.warn('#client not found in DOM');
+                    return;
+                }
+
+                console.log('#client found, initializing Select2');
+
+                $('#client').select2({
+                    placeholder: '{{ __("home.select") }}',
+                    minimumInputLength: 1,
+                    ajax: {
+                        url: '/clients/select2',
+                        dataType: 'json',
+                        delay: 1000,
+                        data: function (params) {
+                            return {
+                                q: params.term
+                            };
+                        },
+                        processResults: function (data) {
+                            let results = data.map(client => ({
+                                id: client.id,
+                                text: client.text
+                            }));
+
+                            results.unshift({
+                                id: 'new',
+                                text: '{{ __("home.new_customer") }}',
+                                isNew: true
+                            });
+
+                            return { results };
+                        }
+                    }
+                });
+
+                // "New client" handler
+                $('#client').on('select2:select', function (e) {
+                    const data = e.params.data;
+                    if (data.id === 'new') {
+                        $('#clientForm').modal('show');
+                        $('#client').val(null).trigger('change');
+                    }
+                });
+
+                // Preselect client if editing
+                @if(isset($cargo) && $cargo->client)
+                    let selectedClient = {
+                        id: {{ $cargo->client->id }},
+                        text: "{{  $cargo->client->name }} - {{ $cargo->client->mobile }}"
+                    };
+                    let select = $('#client');
+                    let option = new Option(selectedClient.text, selectedClient.id, true, true);
+                    select.append(option).trigger('change');
+                @endif
+            }, 100); // delay of 100ms
+        });
+
+
+        // @if(isset($cargo) && $cargo->client)
+        //     var selectedClient = {
+        //         id: {{ $cargo->client->id }},
+        //         text: "{{ $cargo->client->type == 'corporate' ? $cargo->client->company : $cargo->client->name }} - {{ $cargo->client->mobile }}"
+        //     };
+
+        //     let select = $('#client');
+        //     let option = new Option(selectedClient.text, selectedClient.id, true, true);
+        //     select.append(option).trigger('change');
+        // @endif
+
+
+
+    </script>
 <script>
     $(document).ready(function() {
 
@@ -280,6 +443,7 @@
             alert('Please fill in all required fields.');
         }
     });
+
     function validateQuantity(input) {
         if (input.value === '') {
             input.style.border = '1px solid red';
@@ -392,48 +556,8 @@
 
     }
 
-    function showCurrency(value) {
-        $.ajax({
-            url: '/get_latest_exchange_rate/' + value,
-            type: 'GET',
-            success: function(response) {
-                var data = response.rate;
-                // console.log(data.rate);
-                // console.log(data.operation);
-                $('#rate').val(data.rate);
-                $('#operation').val(data.operation);
-            },
-            error: function(xhr, status, error) {
-                // console.error(error);
-            }
-        });
-    }
 
 
-    function CurrencyData(select, count) {
-        var rate = 1;
-        var action = 'multiply';
-        $.ajax({
-            url: '/get-product-currency/' + select,
-            type: 'GET',
-            success: function(response) {
-                var data = response.data;
-                $('#cbm' + count).val((data.product.height / 100) * (data.product.width / 100) * (data.product.length / 100));
-                rate = parseFloat($('#rate').val());
-                action = $('#operation').val();
-                if (action == 'multiply') {
-                    $('#costs' + count).val(data.product.sell_price / rate);
-                } else {
-                    $('#costs' + count).val(data.product.sell_price * rate);
-                }
-            },
-            error: function(xhr, status, error) {
-                // console.error(error);
-            }
-        });
-
-
-    }
 
     $(document).on('change', 'select.select2', function() {
         // Call calculateSell when product[] dropdown changes
@@ -453,78 +577,62 @@
         });
 
     });
+    $('#ajaxSubmit').click(function(){
+
+    // console.log('btn clicked');
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+       url: "/client",
+       method: 'post',
+       data: {
+          name: $('#name').val(),
+          nid: $('#nid').val(),
+          zipcode: $('#zipcode').val(),
+          country_id: $('#country_id').val(),
+
+          address: $('#address').val(),
+       },
+       success: function(result){
+           if(result.errors)
+           {
+               $('.alert-danger').html('');
+               $.each(result.errors, function(key, value){
+                   $('.alert-danger').show();
+                   $('.alert-danger').append('<li>'+value+'</li>');
+               });
+           }
+           else
+           {
+               $('.alert-danger').hide();
+               $('#open').hide();
+               $('#clientForm').modal('hide');
+            // RELOAD DROPDOWN WITH NEW CLIENT NAME
+               $.ajax({
+                    url: "/client/reload",
+                    method: 'GET',
+                    success: function(data) {
+                        $('#client').html(data.html);
+
+                        // $("#father").val(data.father);
+                    }
+                });
+                $('#name').val('');
+                $('#country_id').val('');
+                $('#mobile').val('');
+                $('#zipcode').val('');
+                // $('#is_sanctioned').val('');
+                // $('#is_pep').val('');
+                // $('#risk_level').val('');
+                $('#address').val('');
+
+           }
+       }
+    });
+});
 </script>
-<div class="modal fade " id="clientForm">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title">{{ __('home.new_client') }}</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <form action="{{ route('client.store') }}" method="POST" class="d-inline">
-                @method('POST')
-                @csrf
-                <div class="modal-body">
-                    <div class="form-row mb-3">
 
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.name') }}</label>
-                            <input type="text" class="form-control @error('name') {{'is-invalid'}} @enderror" id="name" name="name" value="">
-                            <input type="hidden" class="form-control" name="from_sell" value="1">
-                            <input type="hidden" class="form-control" name="amount" value="0">
-                            @error('name')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.mobile') }}</label>
-                            <input type="text" class="form-control @error('mobile') {{'is-invalid'}} @enderror" id="mobile" name="mobile" value="">
-                            @error('mobile')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
-                            <input type="text" class="form-control @error('nid') {{'is-invalid'}} @enderror" id="nid" name="nid" value="">
-                            @error('nid')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="validationServer01"> {{ __('home.zipcode') }} </label>
-                            <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($cargo) ? $cargo->zipcode : old('zipcode')}}">
-                            @error('zipcode')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-3 mb-3">
-                            <label for="validationServer04">{{ __('home.country') }}</label>
-                            <select class="form-control " name="country" id="country">
-
-                                <option value="">{{ __('home.select') }}</option>
-
-                                <option value="1">afghanistan</option>
-                                <option value="2">United States</option>
-                            </select>
-                            @error('country')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-12 col-sm-12 mb-3">
-                            <label for="validationServer01">{{ __('home.address') }}</label>
-                            <input type="text" class="form-control @error('address') {{'is-invalid'}} @enderror" id="address" name="address" value="">
-                            @error('address')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('home.cancel') }}</button>
-                    <button type="submit" class="btn btn-primary">{{ __('home.save') }}</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endsection

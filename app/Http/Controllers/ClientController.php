@@ -59,7 +59,8 @@ class ClientController extends Controller
             $sums[$obj->name] = ClientCurrency::where('currency_id', $obj->id)->branch()->sum('amount');
         }
 
-        $clients = Client::with('currency')->branch()->get();
+        $clients = Client::with('currency','country')->branch()->get();
+
         // dd($clients->toArray());
         $trashed = Client::branch()->onlyTrashed()->get();
         return view('client.index', compact('clients', 'trashed', 'sums'));
@@ -113,6 +114,10 @@ class ClientController extends Controller
         });
         $clients = Client::branch()->get();
         $trashed = Client::branch()->onlyTrashed()->get();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Client created successfully.']);
+        }
         if ($request->from_sell == 1) {
             return redirect()->back()->with('Client registered successfully');
         }
@@ -265,6 +270,53 @@ class ClientController extends Controller
         })->get();
 
         return view('client.payable', compact('clients', 'sums'));
+    }
+      public function select2(Request $request)
+    {
+        $search = $request->q;
+
+        $clients = Client::select('id', 'name', 'mobile','address','zipcode')
+            ->where('active', 1)
+
+            ->where('branch_id', auth()->user()->branch_id)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->orWhere('zipcode', 'like', "%$search%")
+                        ->orWhere('mobile', 'like', "%$search%");
+                });
+            })
+            ->limit(20)
+            ->get();
+
+
+        return response()->json($clients->map(function ($client) {
+            return [
+                'id' => $client->id,
+                'text' => ( $client->name) . ' - ' . $client->mobile,
+
+            ];
+        }));
+    }
+
+
+    public function reload()
+    {
+        $html = '';
+        $clients = Client::branch()->get();
+        // dd($clients);
+        $last = Client::latest()->limit(1)->first();
+        $html .= '<option>Please Select</option>';
+        $html .= '<option value="new">مشتری جدید</option>';
+
+        foreach ($clients as $client) {
+            if ($last->id == $client->id) {
+                $html .= '<option value="' . $client->id . '" selected data-mobile="' . $client->mobile . '" data-country_id="' . $client->country_id . '" data-address="' . $client->address . '" data-zipcode="' . $client->zipcode . '">' . $client->name . ' - ' . $client->mobile . '</option>';
+            } else {
+                $html .= '<option value="' . $client->id . '"  data-mobile="' . $client->mobile . '" data-country_id="' . $client->country_id . '" data-address="' . $client->address . '"  data-zipcode="' . $client->zipcode . '" >' . $client->name . ' - ' . $client->mobile . '</option>';
+            }
+        }
+        return response()->json(['html' => $html, 'mobile' => $client->mobile]);
     }
 
 }

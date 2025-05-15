@@ -31,6 +31,7 @@
                                                 <th>{{ __('home.balance') }}</th>
                                                 <th>{{ __('home.mobile') }}</th>
                                                 <th>{{ __('home.address') }}</th>
+                                                <th>{{ __('home.country') }}</th>
                                                 <th>{{ __('home.nid') }}</th>
                                                 <th>{{ __('home.active') }}</th>
                                                 <th>{{ __('home.action') }}</th>
@@ -45,6 +46,8 @@
                                                 <td>{{isset($obj->currency) ? $obj->currency->currency->name : ''}}: {{ isset($obj->currency) ?$obj->currency->amount :''}}</td>
                                                 <td>{{$obj->mobile}}</td>
                                                 <td>{{$obj->address}}</td>
+                                                <td>{{ $obj->country?->name ?? '' }}</td>
+
                                                 <td>{{$obj->nid}}</td>
                                                 <td>
                                                     @if($obj->active ==1 )

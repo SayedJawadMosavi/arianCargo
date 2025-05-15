@@ -81,7 +81,7 @@
 <script src="{{asset('/jalali/src/persian-datepicker.js')}}"></script>
 <script src="{{asset('sweetalert2/sweetalert2.min.js')}}"></script>
 <script src="{{asset('/js/toastr.min.js')}}"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script type="text/javascript">
 
     @if(isset($client))

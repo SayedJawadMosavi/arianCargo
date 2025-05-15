@@ -19,6 +19,7 @@
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{asset('/back/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" />
     <script src="{{ asset('js/chart.min.js') }}"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 
     <!-- STYLE CSS -->
     <link href="{{asset('/back/css/style.min.css')}}" rel="stylesheet" />

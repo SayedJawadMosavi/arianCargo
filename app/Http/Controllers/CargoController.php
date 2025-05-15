@@ -15,6 +15,7 @@ use App\Models\CargoPayment;
 use App\Models\Client;
 use App\Models\ClientCurrency;
 use App\Models\ClientLog;
+use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -84,9 +85,10 @@ class CargoController extends Controller
         $clients = Client::branch()->get();
         $accounts = Account::branch()->orderBy('default', 'DESC')->get();
         // $products = Product::where('quantity', '>', 0)->branch()->get();
+        $countries = Country::active()->get();
 
         $currencies = Currency::active()->branch()->get();
-        return view('sell.create', compact('clients', 'accounts', 'currencies'));
+        return view('sell.create', compact('clients', 'accounts', 'currencies','countries'));
     }
 
     /**
