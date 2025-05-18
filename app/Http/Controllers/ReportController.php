@@ -28,12 +28,14 @@ use App\Models\Vendor;
 use App\Models\VendorCurrency;
 use App\Http\Traits\AccountLogTrait;
 use App\Models\Assets;
+use App\Models\Branch;
 use App\Models\Cargo;
 use App\Models\Rate;
 use App\Models\ShareholderCurrency;
 use App\Models\StockSubProduct;
 use App\Models\StockTransferDetail;
 use App\Models\SubProduct;
+use Illuminate\Support\Facades\Auth;
 
 include "PersianCalendar.php";
 
@@ -59,44 +61,103 @@ class ReportController extends Controller
     public function expenseReport()
     {
         $categories =  ExpenseCategory::where('type', 'expense')->get();
-        return view('report.expense', compact('categories'));
+        $branches = Branch::all();
+
+        return view('report.expense', compact('categories', 'branches'));
     }
 
     public function getExpenseReport(Request $request)
     {
-        $from = isset($request->from) ? $request->from : datenow();
-        $to = isset($request->to) ? $request->to : datenow();
+        $from = $request->from ?? datenow();
+        $to = $request->to ?? datenow();
 
-        if ($this->settings->date_type == 'shamsi') {
-            $to = $request->to_shamsi;
-            $from = $request->from_shamsi;
-            $column = 'shamsi_date';
-        } else {
-            $to = $request->to_miladi;
-            $from = $request->from_miladi;
-            $column = 'miladi_date';
-        }
-        if ($request->category_id == 'all') {
-            $logs = Expense::branch()->whereBetween($column, [$from, $to])->where('type', 'expense')->get();
-        } else {
-            $logs = Expense::branch()->whereBetween($column, [$from, $to])->where(['expense_category_id' => $request->category_id, 'type' => 'expense'])->get();
-        }
-        $categories =  ExpenseCategory::where('type', 'expense')->get();
+        $column = $this->settings->date_type == 'shamsi' ? 'shamsi_date' : 'miladi_date';
+        $from = $this->settings->date_type == 'shamsi' ? $request->from_shamsi : $request->from_miladi;
+        $to = $this->settings->date_type == 'shamsi' ? $request->to_shamsi : $request->to_miladi;
 
-        return view('report.expense', compact('logs', 'categories'));
+        // Start query
+        $query = Expense::query()
+            ->whereBetween($column, [$from, $to])
+            ->where('type', 'expense');
+
+        // Apply category filter if not 'all'
+        if ($request->category_id && $request->category_id != 'all') {
+            $query->where('expense_category_id', $request->category_id);
+        }
+
+        // If admin: allow all branches or a selected one
+        if (Auth::user()->hasRole('admin')) {
+            if ($request->branch_id && $request->branch_id != 'all') {
+
+                $query->where('branch_id', $request->branch_id);
+            }
+        } else {
+            // Non-admin users only see their own branch
+            $query->where('branch_id', Auth::user()->branch_id);
+        }
+
+        $logs = $query->get();
+        $categories = ExpenseCategory::where('type', 'expense')->get();
+        $branches = Branch::all();
+
+        return view('report.expense', compact('logs', 'categories', 'branches'));
     }
+
+
 
     public function incomeReport()
     {
         $categories =  ExpenseCategory::where('type', 'income')->get();
-        return view('report.income', compact('categories'));
+        $branches = Branch::all();
+
+        return view('report.income', compact('categories', 'branches'));
     }
 
     public function getIncomeReport(Request $request)
     {
-        $from = isset($request->from) ? $request->from : datenow();
-        $to = isset($request->to) ? $request->to : datenow();
+        $from = $request->from ?? datenow();
+        $to = $request->to ?? datenow();
 
+        $column = $this->settings->date_type == 'shamsi' ? 'shamsi_date' : 'miladi_date';
+        $from = $this->settings->date_type == 'shamsi' ? $request->from_shamsi : $request->from_miladi;
+        $to = $this->settings->date_type == 'shamsi' ? $request->to_shamsi : $request->to_miladi;
+
+        $query = Expense::query()
+            ->whereBetween($column, [$from, $to])
+            ->where('type', 'income');
+
+        // Filter by category
+        if ($request->category_id && $request->category_id != 'all') {
+            $query->where('expense_category_id', $request->category_id);
+        }
+
+        // Branch filter
+        if (Auth::user()->hasRole('admin')) {
+            if ($request->branch_id && $request->branch_id != 'all') {
+                $query->where('branch_id', $request->branch_id);
+            }
+        } else {
+            $query->where('branch_id', Auth::user()->branch_id);
+        }
+
+        $logs = $query->get();
+        $categories = ExpenseCategory::where('type', 'income')->get();
+        $branches = Branch::all();
+
+        return view('report.income', compact('logs', 'categories', 'branches'));
+    }
+
+
+    public function cargoReport()
+    {
+        $settings = Setting::branch()->first();
+        $branches = Branch::all();
+
+        return view('report.cargo', compact('settings', 'branches'));
+    }
+
+    public function getCargoReport(Request $request)
+    {
         if ($this->settings->date_type == 'shamsi') {
             $to = $request->to_shamsi;
             $from = $request->from_shamsi;
@@ -106,48 +167,38 @@ class ReportController extends Controller
             $from = $request->from_miladi;
             $column = 'miladi_date';
         }
-        if ($request->category_id == 'all') {
-            $logs = Expense::branch()->whereBetween($column, [$from, $to])->where('type', 'income')->get();
+
+        $query = Cargo::with('currency', 'receiver');
+
+        // Apply branch filtering
+        if (Auth::user()->hasRole('admin')) {
+            if ($request->branch_id && $request->branch_id !== 'all') {
+                $query->where('branch_id', $request->branch_id);
+            }
         } else {
-            $logs = Expense::branch()->whereBetween($column, [$from, $to])->where(['expense_category_id' => $request->category_id, 'type' => 'income'])->get();
+            $query->where('branch_id', Auth::user()->branch_id);
         }
-        $categories =  ExpenseCategory::where('type', 'income')->get();
 
-        return view('report.income', compact('logs', 'categories'));
-    }
-
-    public function cargoReport()
-    {
-         $settings = Setting::branch()->first();
-        return view('report.cargo', compact('settings'));
-
-    }
-
-    public function getCargoReport(Request $request)
-    {
-         if ($this->settings->date_type == 'shamsi') {
-            $to = $request->to_shamsi;
-            $from = $request->from_shamsi;
-            $column = 'shamsi_date';
-        } else {
-            $to = $request->to_miladi;
-            $from = $request->from_miladi;
-            $column = 'miladi_date';
+        // Apply date range filter
+        if ($from && $to) {
+            $query->whereBetween($column, [$from, $to]);
         }
-        // if ($this->settings->date_type == 'shamsi') {
-        //     $to = $request->to_shamsi;
-        //     $from = $request->from_shamsi;
-        //     $column = 'shamsi_date';
-        // } else {
-        //     $to = $request->to_miladi;
-        //     $from = $request->from_miladi;
-        //     $column = 'miladi_date';
-        // }
-         $logs = Cargo::branch()->with('currency', 'receiver')->whereBetween($column, [$from, $to])->get();
-        // dd($logs);
+
+        $logs = $query->get();
+
+        $branches = Branch::all();
         $branch_base = $this->branch_base;
-        return view('report.cargo', compact('logs', 'branch_base'));
+
+        return view('report.cargo', [
+            'logs' => $logs,
+            'branches' => $branches,
+            'branch_base' => $branch_base,
+            'from' => $from,
+            'to' => $to,
+            'selectedBranch' => $request->branch_id ?? 'all',
+        ]);
     }
+
 
     public function purchaseReport()
     {
@@ -209,7 +260,7 @@ class ReportController extends Controller
         if ($request->category_id == "all") {
             $logs = SubProduct::with('product')->branch()->where('available', '>', 0)->get();
         } else {
-            $logs =  SubProduct::with('product')->branch()->where('available', '>', 0)->whereHas('product', function($q) use ($request){
+            $logs =  SubProduct::with('product')->branch()->where('available', '>', 0)->whereHas('product', function ($q) use ($request) {
                 $q->where('category_id', $request->category_id);
             })->get();
         }
@@ -240,11 +291,11 @@ class ReportController extends Controller
         }
         if ($request->from_stock == "all") {
             // dd('hey');
-            $logs = StockTransferDetail::branch()->whereHas('stock_transfer', function($q) use($column, $to, $from){
+            $logs = StockTransferDetail::branch()->whereHas('stock_transfer', function ($q) use ($column, $to, $from) {
                 $q->whereBetween($column, [$from, $to]);
             })->get();
         } else {
-            $logs = StockTransferDetail::branch()->whereHas('stock_transfer', function($q) use($column, $to, $from, $request){
+            $logs = StockTransferDetail::branch()->whereHas('stock_transfer', function ($q) use ($column, $to, $from, $request) {
                 $q->whereBetween($column, [$from, $to])->where('sender_stock_id', $request->from_stock);
             })->get();
         }
@@ -284,32 +335,65 @@ class ReportController extends Controller
     public function DueClientReport()
     {
         $clients =  Client::get();
-        return view('report.due_client', compact('clients'));
+        $branches = Branch::all();
+
+        return view('report.due_client', compact('clients','branches'));
     }
 
-    public function getDueClientReport(Request $request)
-    {
+   public function getDueClientReport(Request $request)
+{
+    $query = ClientCurrency::with('currency', 'client')->where('amount', '<', 0);
 
-        if ($request->client_id == "all") {
-
-            $sums = [];
-            foreach (Currency::get() as $obj) {
-                $sums[$obj->name] = ClientCurrency::where('currency_id', $obj->id)->where('amount', '<', 0)->sum('amount');
-            }
-
-            $logs = ClientCurrency::with('currency', 'client')->where('amount', '<', 0)->get();
-        } else {
-            $sums = [];
-
-            foreach (Currency::get() as $obj) {
-                $sums[$obj->name] = ClientCurrency::where('currency_id', $obj->id)->where('client_id', $request->client_id)->where('amount', '<', 0)->sum('amount');
-            }
-            $logs =  ClientCurrency::with('currency', 'client')->where('amount', '<', 0)->where('client_id', $request->client_id)->get();
+    // Get base client IDs based on role and branch filter
+    if (Auth::user()->hasRole('admin')) {
+        if ($request->branch_id && $request->branch_id != 'all') {
+            $clientIds = Client::where('branch_id', $request->branch_id)->pluck('id');
+            $query->whereIn('client_id', $clientIds);
         }
-        $clients =  Client::get();
-
-        return view('report.due_client', compact('logs', 'clients', 'sums'));
+    } else {
+        // Non-admin: force base clients only
+        $clientIds = Client::where('branch_id', Auth::user()->branch_id)->pluck('id');
+        $query->whereIn('client_id', $clientIds);
     }
+
+    // Filter by selected client
+    if ($request->client_id && $request->client_id != 'all') {
+        $query->where('client_id', $request->client_id);
+    }
+
+    $logs = $query->get();
+
+    // Currency total calculations
+    $sums = [];
+    $currencies = Currency::get();
+
+    foreach ($currencies as $currency) {
+        $sumQuery = ClientCurrency::where('currency_id', $currency->id)->where('amount', '<', 0);
+
+        // Apply same branch/client filters
+        if (isset($clientIds)) {
+            $sumQuery->whereIn('client_id', $clientIds);
+        }
+
+        if ($request->client_id && $request->client_id != 'all') {
+            $sumQuery->where('client_id', $request->client_id);
+        }
+
+        $sums[$currency->name] = $sumQuery->sum('amount');
+    }
+
+    $clients = Client::get();
+    $branches = Branch::all();
+
+    return view('report.due_client', [
+        'logs' => $logs,
+        'clients' => $clients,
+        'branches' => $branches,
+        'sums' => $sums,
+        'selectedClient' => $request->client_id ?? 'all',
+        'selectedBranch' => $request->branch_id ?? 'all',
+    ]);
+}
 
     public function DueVendorReport()
     {
@@ -373,14 +457,14 @@ class ReportController extends Controller
         $vendorCurrency2 =   VendorCurrency::branch()->where('amount', '<', 0)->get();
         $shareholderCurrency =   ShareholderCurrency::branch()->get();
         $assets =   Assets::branch()->get();
-        $stock_products =   StockSubProduct::branch()->where('available','>',0)->get();
-        $products =   SubProduct::branch()->where('available','>',0)->get();
+        $stock_products =   StockSubProduct::branch()->where('available', '>', 0)->get();
+        $products =   SubProduct::branch()->where('available', '>', 0)->get();
 
         $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
 
         //  $branch_base = $this->GetBranchTreasury($base_currency->currency_id); //
         $branch_base = $base_currency->currency_id; //
-        if(!$branch_base || $branch_base == ''){
+        if (!$branch_base || $branch_base == '') {
             return redirect()->back()->with('error', 'Please set your Base currency from the settings');
         }
         $treasury = Currency::all();
@@ -492,7 +576,7 @@ class ReportController extends Controller
         }
         $main_stocks_amount = 0;
         foreach ($products as $obj) {
-            $product=  Product::where('id',$obj->product_id)->first();
+            $product =  Product::where('id', $obj->product_id)->first();
 
             if ($obj->currency_id != $branch_base) {
 
@@ -504,35 +588,34 @@ class ReportController extends Controller
                 } else {
                     $main_stock_amount += ($obj->available * $obj->income_price) / $rate;
                 }
-            }else{
+            } else {
                 $main_stocks_amount += ($obj->available * $obj->income_price);
             }
         }
         $all_stock_total = 0;
         foreach ($stock_products as $obj) {
-              $product=  SubProduct::with('product')->where('id',$obj->sub_product_id)->first();
+            $product =  SubProduct::with('product')->where('id', $obj->sub_product_id)->first();
             //   dd($product);
-                if ($obj->currency_id != $branch_base) {
+            if ($obj->currency_id != $branch_base) {
 
-                    $from = Rate::where('from_treasury', $product->product->currency_id)->where('to_treasury', $branch_base)->latest()->branch()->first();
-                    $operation = isset($from->operation) ? $from->operation : 'multiply';
-                    $rate = isset($from->rate) ? $from->rate : 1;
-                    if ($operation == 'multiply') {
-                        $all_stock_amount += ($obj->available * $obj->income_price) * $rate;
-                    } else {
-                        $all_stock_amount += ($obj->available * $obj->income_price) / $rate;
-                    }
-                }else{
-                    $all_stock_total += ($obj->available * $obj->income_price);
+                $from = Rate::where('from_treasury', $product->product->currency_id)->where('to_treasury', $branch_base)->latest()->branch()->first();
+                $operation = isset($from->operation) ? $from->operation : 'multiply';
+                $rate = isset($from->rate) ? $from->rate : 1;
+                if ($operation == 'multiply') {
+                    $all_stock_amount += ($obj->available * $obj->income_price) * $rate;
+                } else {
+                    $all_stock_amount += ($obj->available * $obj->income_price) / $rate;
                 }
-
+            } else {
+                $all_stock_total += ($obj->available * $obj->income_price);
+            }
         }
 
         $account_amount = Account::where('currency_id', $branch_base)->sum('amount');
-        $client_currency_amount = ClientCurrency::where('currency_id', $branch_base)->where('amount','>',0)->sum('amount');
-        $client_currency_amount_deposit = ClientCurrency::where('currency_id', $branch_base)->where('amount','<',0)->sum('amount');
-        $vendor_currency_amount = VendorCurrency::where('currency_id', $branch_base)->where('amount','>',0)->sum('amount');
-        $vendor_currency_amount_deposit = VendorCurrency::where('currency_id', $branch_base)->where('amount','<',0)->sum('amount');
+        $client_currency_amount = ClientCurrency::where('currency_id', $branch_base)->where('amount', '>', 0)->sum('amount');
+        $client_currency_amount_deposit = ClientCurrency::where('currency_id', $branch_base)->where('amount', '<', 0)->sum('amount');
+        $vendor_currency_amount = VendorCurrency::where('currency_id', $branch_base)->where('amount', '>', 0)->sum('amount');
+        $vendor_currency_amount_deposit = VendorCurrency::where('currency_id', $branch_base)->where('amount', '<', 0)->sum('amount');
 
         // $main_stocks_amount = Product::where('currency_id', $branch_base)
         //     ->select(DB::raw('SUM(quantity * cost) as total_amount'))
@@ -542,37 +625,39 @@ class ReportController extends Controller
             ->value('total_amount');
 
 
-            // foreach ($stock_products as $obj) {
-            //     $product =  Product::where('id', $obj->product_id)->first();
-            //     $all_stock_total += ($obj->quantity * $product->cost);
-            // }
+        // foreach ($stock_products as $obj) {
+        //     $product =  Product::where('id', $obj->product_id)->first();
+        //     $all_stock_total += ($obj->quantity * $product->cost);
+        // }
 
-            $account_available = $account_amount + $amount;
-            $client_receivable = $client_currency_amount + $client_amount;
-            $client_depositable = $client_currency_amount_deposit + $client_amount_deposit;
-            $main_stock_receivable = $main_stock_amount + $main_stocks_amount;
-            $all_stock_receivable = $all_stock_total + $all_stock_amount;
-            $vendor_receivable = $vendor_currency_amount + $vendor_amount;
-            $vendor_depositable = $vendor_currency_amount_deposit + $vendor_amount_deposit;
-            $total_asset = $assets_value + $assets_amount;
+        $account_available = $account_amount + $amount;
+        $client_receivable = $client_currency_amount + $client_amount;
+        $client_depositable = $client_currency_amount_deposit + $client_amount_deposit;
+        $main_stock_receivable = $main_stock_amount + $main_stocks_amount;
+        $all_stock_receivable = $all_stock_total + $all_stock_amount;
+        $vendor_receivable = $vendor_currency_amount + $vendor_amount;
+        $vendor_depositable = $vendor_currency_amount_deposit + $vendor_amount_deposit;
+        $total_asset = $assets_value + $assets_amount;
 
         // $unreceived = PurchaseDetail::branch()->whereColumn('received', '<', 'quantity')->get();
         // dd($unreceived);
         $unreceived = PurchaseDetail::branch()->whereColumn('received', '<', 'quantity')->get()
-        ->sum(function ($unreceived_list){
-            return ($unreceived_list->quantity - $unreceived_list->received) * $unreceived_list->cost;
-        });
+            ->sum(function ($unreceived_list) {
+                return ($unreceived_list->quantity - $unreceived_list->received) * $unreceived_list->cost;
+            });
 
-        return view('report.profit_lost_report', compact('account_available', 'client_receivable','client_depositable','main_stock_receivable','all_stock_receivable','vendor_receivable','vendor_depositable', 'investment','total_asset', 'unreceived'));
+        return view('report.profit_lost_report', compact('account_available', 'client_receivable', 'client_depositable', 'main_stock_receivable', 'all_stock_receivable', 'vendor_receivable', 'vendor_depositable', 'investment', 'total_asset', 'unreceived'));
     }
 
 
-    public function itemWiseSellReport(){
+    public function itemWiseSellReport()
+    {
         $products = Product::branch()->get();
         return view('report.itemwise-sell-report', compact('products'));
     }
 
-    public function getItemWiseSellReport(Request $request){
+    public function getItemWiseSellReport(Request $request)
+    {
         $products = Product::branch()->get();
 
         $sell = SellDetail::branch()->with('sell', 'sell_sub_detail')->where('product_id', $request->product_id)->get();
@@ -580,12 +665,14 @@ class ReportController extends Controller
     }
 
 
-    public function itemWisePurchaseReport(){
+    public function itemWisePurchaseReport()
+    {
         $products = Product::branch()->get();
         return view('report.itemwise-purchase-report', compact('products'));
     }
 
-    public function getItemWisePurchaseReport(Request $request){
+    public function getItemWisePurchaseReport(Request $request)
+    {
         $products = Product::branch()->get();
 
         $purchase = PurchaseDetail::branch()->with('purchase', 'purchase.vendor')->where('product_id', $request->product_id)->get();

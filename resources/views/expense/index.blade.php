@@ -42,6 +42,7 @@
                                         <thead class="border-top">
                                             <tr>
                                                 <th>{{ __('home.sn') }}</th>
+                                                <th>{{ __('home.branch') }}</th>
                                                 <th>{{ __('home.description') }}</th>
                                                 <th>{{ __('home.type') }}</th>
                                                 <th>{{ __('home.category') }}</th>
@@ -58,6 +59,7 @@
                                             <tr>
 
                                                 <td>{{$expense->id}}</td>
+                                                <td>{{$expense->branchs->name}}</td>
                                                 <td>{{$expense->description}}</td>
                                                 <td>@if($expense->type == 'income')
                                                     <span class="tag tag-radius tag-round tag-primary">{{__('home.income') }}</span>

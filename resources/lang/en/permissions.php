@@ -49,7 +49,7 @@ return [
     'client.edit'                      =>      'Edit Client',
     'client.delete'                      =>      'Delete Client',
     'client.restore'                      =>      'Restore Client',
-
+    'client.receivable'            =>      'Client Receivable',
     'sell'                      =>      'Sell',
     'sell.view'                      =>      'View Sells',
     'sell.create'                      =>      'Create Sell',

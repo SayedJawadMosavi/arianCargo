@@ -52,10 +52,10 @@ function x_date($date){
     if(strlen($date[0])==1){
         $x='0';
     }        //year     month         day
-    
+
     // if(strlen($date[1])==1){
     //     $x2='0';
-    // } 
+    // }
 
     return $date[2].'-'.$date[1].'-'.$x.$date[0];
 }
@@ -483,7 +483,7 @@ function mgetdate($timestamp="")
 	);
 }
 
-function div($a,$b) 
+function div($a,$b)
 {
     return (int) ($a / $b);
 }

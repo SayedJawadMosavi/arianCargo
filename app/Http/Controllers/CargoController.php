@@ -99,7 +99,7 @@ class CargoController extends Controller
      */
     public function store(StoreCargoRequest $request)
     {
-        // dd($request->all());
+
         DB::beginTransaction();
         try {
             $balance = $request->total - $request->paid;
@@ -603,5 +603,24 @@ class CargoController extends Controller
             // Handle the exception
             return redirect()->back()->with('error', 'Error creating cargo: ' . $e->getMessage());
         }
+    }
+
+        public function reloadClient()
+    {
+        $html = '';
+        $clients = Client::branch()->get();
+
+        $last = Client::latest()->limit(1)->first();
+        $html .= '<option>Please Select</option>';
+        $html .= '<option value="new">مشتری جدید</option>';
+
+        foreach ($clients as $client) {
+            if ($last->id == $client->id) {
+                $html .= '<option value="' . $client->id . '" selected data-mobile="' . $client->mobile . '" data-country_id="' . $client->country_id . '" data-address="' . $client->address . '" data-zipcode="' . $client->zipcode . '">' . $client->name . ' - ' . $client->mobile . '</option>';
+            } else {
+                $html .= '<option value="' . $client->id . '"  data-mobile="' . $client->mobile . '" data-country_id="' . $client->country_id . '" data-address="' . $client->address . '"  data-zipcode="' . $client->zipcode . '" >' . $client->name . ' - ' . $client->mobile . '</option>';
+            }
+        }
+        return response()->json(['html' => $html, 'mobile' => $client->mobile]);
     }
 }

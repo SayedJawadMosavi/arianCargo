@@ -19,7 +19,17 @@
                 @csrf
                 @method('POST')
                 <div class="form-row align-items-center my-5 offset-md-1">
-
+                    @if(auth()->user()->hasRole('admin'))
+                    <div class="col-md-3">
+                        <label>{{ __('home.branch') }}</label>
+                        <select class="form-select" name="branch_id">
+                            <option value="all">{{ __('home.all') }}</option>
+                            @foreach($branches as $branch)
+                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
                     @if ($settings->date_type=='shamsi')
                     <div class="col-xl-3">
                         <label for="validationServer01">{{ __('home.from_date') }}</label>
@@ -76,6 +86,7 @@
                 <thead>
                     <tr>
                         <th>{{ __('home.sn') }}</th>
+                        <th>{{ __('home.branch') }}</th>
                         <th>{{ __('home.date') }}</th>
                         <th>{{ __('home.bill') }}</th>
                         <th>{{ __('home.sn') }}</th>
@@ -92,6 +103,8 @@
                     @forelse($logs as $cargo)
                     <tr>
                         <td>{{ $c++ }}</td>
+                                <td>{{ $cargo->branchs->name ?? '-' }}</td>
+
                         <td>{{ $settings->date_type == 'shamsi' ? $cargo->shamsi_date : $cargo->miladi_date }}</td>
                         <td>{{ $cargo->bill }}</td>
                         <td>{{ $cargo->number }}</td>
@@ -119,6 +132,7 @@
                 <tfoot class="bg-light text-end fw-bold">
                     <tr>
                         <td colspan="5" class="text-start">{{ __('home.total') }}</td>
+                        <td></td>
                         <td class="text-dark">{{ number_format($gtotal) }}</td>
                         <td class="text-success">{{ number_format($gpaid) }}</td>
                         <td></td>

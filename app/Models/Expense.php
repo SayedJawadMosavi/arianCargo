@@ -17,6 +17,10 @@ class Expense extends Model
     public function scopeBranch($query){
         return $query->where('branch_id', auth()->user()->branch_id);
     }
+    public function branchs()
+{
+    return $this->belongsTo(Branch::class,'branch_id');
+}
     public function account(){
         return $this->belongsTo(Account::class);
     }

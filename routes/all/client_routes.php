@@ -18,4 +18,3 @@ Route::get('client/{id}/detail', [ClientController::class, 'getsCargoDetail'])->
 Route::post('client/statment', [ClientController::class, 'filterStatment'])->name('clientstatement.filter');
 Route::post('client-client_clearance', [ClientController::class, 'clientClearanceSstore'])->name('client_clearance.store');
 Route::get('/clients/select2', [ClientController::class, 'select2'])->name('clients.select2'); //used in exchange/create for ajax client load in select2
-Route::get('/client/reload', [ClientController::class, 'reload'])->name('client.reload');

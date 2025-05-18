@@ -9,7 +9,7 @@
     @endif
     <div class="card-header d-flex justify-content-between">
         <h3 class="card-title">{{ __('home.incomes') }}</h3>
-        @can('expense.create')
+        @can('income.create')
         <a href="{{ route('expense.create') }}" class="btn btn-primary mx-5">{{ __('home.new_expense') }}</a>
         @endcan
     </div>
@@ -80,10 +80,10 @@
 
                                                 <td class="d-flex">
                                                     <div class="">
-                                                        @can('expense.edit')
+                                                        @can('income.edit')
                                                         <a class="btn text-primary btn-sm" href="{{route('expense.edit', $expense)}}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}"><span class="fe fe-edit fs-16"></span></a>
                                                         @endcan
-                                                        @can('expense.delete')
+                                                        @can('income.delete')
                                                         <form action="{{route('expense.destroy', $expense)}}" method="POST" class="d-inline">
                                                             @method('delete')
                                                             @csrf

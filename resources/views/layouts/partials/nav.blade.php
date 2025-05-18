@@ -19,17 +19,21 @@
         </li>
 
 
-        @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete','sell_return.create'])
+        @canany(['cargo.create', 'cargo.view', 'cargo.edit', 'cargo.delete','client.receivable','client.payable'])
         <li class="slide">
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-shopping-cart"></i><span class="side-menu__label">{{__('home.cargo')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
 
-                @canany(['sell.create', 'sell.view', 'sell.edit', 'sell.delete' ])
+                @canany(['cargo.create', 'cargo.view', 'cargo.edit', 'cargo.delete' ])
                 <li><a href="{{route('cargo.index')}}" class="slide-item"> {{__('home.cargo')}}</a></li>
                 @endcanany
 
+                @canany(['client.receivable' ])
                 <li><a href="{{route('client.receivable')}}" class="slide-item"> {{ __('home.client_receivable') }}</a></li>
+                @endcanany
+                @canany(['client.payable' ])
                 <li><a href="{{route('client.payable')}}" class="slide-item"> {{ __('home.client_payable') }} </a></li>
+                @endcanany
             </ul>
         </li>
         @endcanany
@@ -63,13 +67,15 @@
             </ul>
         </li>
         @endcanany
-        @canany(['expense.create', 'expense.view', 'expense.edit', 'expense_category.create', 'expense_category.view', 'expense_category.edit' ])
+        @canany(['expense.create', 'expense.view', 'expense.edit','income.create', 'income.view', 'income.edit', 'income.delete', 'expense_category.create', 'expense_category.view', 'expense_category.edit' ])
 
         <li class="slide">
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-package"></i><span class="side-menu__label">{{__('home.expenses')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
                 @canany(['expense.create', 'expense.view', 'expense.edit', 'expense.delete'])
                 <li><a href="{{route('expense.index')}}" class="slide-item"> {{__('home.expense')}}</a></li>
+                @endcanany
+                @canany(['income.create', 'income.view', 'income.edit', 'income.delete'])
                 <li><a href="{{route('income.index')}}" class="slide-item"> {{__('home.income')}}</a></li>
                 @endcanany
                 @canany(['expense_category.create', 'expense_category.view', 'expense_category.edit', 'expense_category.delete'])
@@ -141,7 +147,6 @@
                 <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
                 @endcan
 
-                <li><a href="{{route('report.due_clients')}}" class="slide-item"> {{__('home.due_clients_report')}}</a></li>
 
 
 
@@ -171,7 +176,7 @@
                 @canany(['currency.create', 'currency.view', 'currency.edit' ])
                 <li><a href="{{route('currency.index')}}" class="slide-item"> {{__('home.currencies')}}</a></li>
                 @endcanany
-                @canany(['unit.view', 'unit.create', 'unit.edit'])
+                @canany(['country.view', 'country.create', 'country.edit'])
                 <li><a href="{{route('country.index')}}" class="slide-item"> {{__('home.country')}}</a></li>
                 @endcanany
                 <li><a href="{{url('backups')}}" class="slide-item"> {{__('home.backup')}}</a></li>

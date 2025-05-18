@@ -4,6 +4,7 @@ use App\Http\Controllers\RateController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\CargoPaymentController;
 use Illuminate\Support\Facades\Route;
+Route::get('/cargo/reload', [CargoController::class, 'reloadClient'])->name('cargo.index_reload');
 
 Route::get('cargo/{id}/bill', [CargoController::class, 'bill'])->name('cargo.bill');
 Route::post('cargo/index', [CargoController::class, 'filterCargo'])->name('cargo.filter');

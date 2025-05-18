@@ -14,15 +14,30 @@
     </div>
     <div class="card-body pt-4">
         <div class="col-sm-12 my-3">
-            <form class="d-none" action="{{ route('report.due_clients.post') }}" method="POST">
+            <form class="" action="{{ route('report.due_clients.post') }}" method="POST">
                 {{-- <x-date-component :data="$categories"/> --}}
                 @csrf
                 @method('POST')
                 <div class="form-row align-items-center my-5 offset-md-1">
+                    @if(auth()->user()->hasRole('admin')==true)
+                    <div class="col-6 col-sm-3">
+                        <label class="" for="inlineFormInputGroup"> {{__('home.branch')}}</label>
+                        <select class="form-control select2" name="branch" id="branch">
+                            <option value="all">{{__('home.all')}}</option>
+                            @foreach($branches as $branch)
+                            <option value="{{$branch->id}}" @if (isset($user)) @if($user->branch_id == $branch->id)
+                                selected="selected" @endif @endif>{{$branch->name}}</option>
+                            @endforeach
 
+                        </select>
+                        @error('from')
+                        <span class="alert text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
+                    @endif
                     <div class="col-xl-3">
                         <label for="validationServer04">{{ __('home.clients') }}</label>
-                        <select class="form-selects form-control" id="validationServer04" aria-describedby="validationServer04Feedback" required name="client_id">
+                        <select class="form-selects form-control select2" id="validationServer04" aria-describedby="validationServer04Feedback" required name="client_id">
                             <option value="all">{{ __('home.all') }}</option>
                             @foreach($clients as $obj)
                             <option value="{{$obj->id}}"> {{ $obj->name }}</option>
@@ -40,14 +55,14 @@
             </form>
             <table class="table table-bordered">
 
-            @isset($sums)
+                @isset($sums)
                 <tr>
                     @foreach ($sums as $k=>$v)
                     @if($v < 0)
-                    <th>{{$k}}</th>
-                    <th>{{$v}}</th>
-                    @endif
-                    @endforeach
+                        <th>{{$k}}</th>
+                        <th>{{$v}}</th>
+                        @endif
+                        @endforeach
                 </tr>
                 @endisset
             </table>
@@ -96,4 +111,14 @@
     </div>
     {{-- card-body --}}
 </div>
+@endsection
+@section('pagescript')
+
+<script>
+    $(document).ready(function() {
+        $('.select2').select2();
+
+
+    });
+</script>
 @endsection

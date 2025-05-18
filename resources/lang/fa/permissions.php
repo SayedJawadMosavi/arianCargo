@@ -49,6 +49,7 @@ return [
     'client.edit'                      =>      'ویرایش مشتری',
     'client.delete'                      =>      'حذف مشتری',
     'client.restore'                      =>      'بازگرداندن مشتری',
+    'client.receivable'            =>      'قابل دریافت از مشتریان',
 
     'sell'                      =>      'فروشات',
     'sell.view'                      =>      'لست فروشات',

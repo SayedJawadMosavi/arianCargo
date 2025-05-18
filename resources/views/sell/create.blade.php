@@ -49,7 +49,7 @@
                     <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                     @endforeach
                     </select>--}}
-                    <select id="client" name="client" class="form-control" style="width: 100%">
+                    <select id="client" name="client_id" class="form-control" style="width: 100%">
                         @if(isset($cargo))
                         <option value="{{$client->id}}" selected @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                         @endif
@@ -60,13 +60,19 @@
                 </div>
                 <div class="col-xl-4 mb-3">
                     <label for="validationServer04">{{ __('home.receiver') }}</label>
-                    <select class="form-select form-control select2 @error('receiver_id') {{'is-invalid'}} @enderror" id="receiver_id" aria-describedby="validationServer04Feedback" required name="receiver_id">
+                    {{--<select class="form-select form-control select2 @error('receiver_id') {{'is-invalid'}} @enderror" id="receiver_id" aria-describedby="validationServer04Feedback" required name="receiver_id">
                         <option> {{__('home.please_select')}}</option>
                         <option value="new"> {{__('home.new_customer')}}</option>
                         @foreach($clients as $client)
 
                         <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->receiver_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                         @endforeach
+                    </select>--}}
+                    <select id="receiver" name="receiver_id" class="form-control" style="width: 100%">
+                        @if(isset($cargo))
+                        <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->receiver_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+
+                        @endif
                     </select>
                     @error('receiver_id')
                     <div id="" class="invalid-feedback">{{$message}}</div>
@@ -266,6 +272,8 @@
                         </div>
                     </div>
                 </div>
+                        <input type="dfds" class="form-control " name="client_type" id="client_type">
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('home.cancel') }}</button>
                     <button type="button"id="ajaxSubmit" class="btn btn-primary">{{ __('home.save') }}</button>
@@ -349,6 +357,8 @@
                 $('#client').on('select2:select', function (e) {
                     const data = e.params.data;
                     if (data.id === 'new') {
+                    $('#client_type').val('sender');
+
                         $('#clientForm').modal('show');
                         $('#client').val(null).trigger('change');
                     }
@@ -379,9 +389,49 @@
         //     select.append(option).trigger('change');
         // @endif
 
+$(document).ready(function () {
+    setTimeout(function () {
+        $('#receiver').select2({
+            placeholder: '{{ __("home.select") }}',
+            minimumInputLength: 1,
+            ajax: {
+                url: '/clients/select2',
+                dataType: 'json',
+                delay: 800,
+                data: function (params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function (data) {
+                    let results = data.map(client => ({
+                        id: client.id,
+                        text: client.text
+                    }));
+                    results.unshift({
+                        id: 'new',
+                        text: '{{ __("home.new_customer") }}',
+                        isNew: true
+                    });
+                    return { results };
+                }
+            }
+        });
 
+        $('#receiver').on('select2:select', function (e) {
+            const data = e.params.data;
+            if (data.id === 'new') {
+                $('#client_type').val('receiver');
+
+                $('#clientForm').modal('show');
+                $('#receiver').val(null).trigger('change');
+            }
+        });
+    }, 100); // 100ms delay
+});
 
     </script>
+
 <script>
     $(document).ready(function() {
 
@@ -472,12 +522,16 @@
 
     $('#client_id').change(function() {
         if ($('#client_id').find(":selected").val() == 'new') {
+        $('#client_type').val('sender');
+
             $('#clientForm').modal('show');
             // RELOAD DROPDOWN WITH NEW CLIENT NAME
         }
     });
     $('#receiver_id').change(function() {
         if ($('#receiver_id').find(":selected").val() == 'new') {
+        $('#client_type').val('receiver');
+
             $('#clientForm').modal('show');
             // RELOAD DROPDOWN WITH NEW CLIENT NAME
         }
@@ -612,10 +666,17 @@
                $('#clientForm').modal('hide');
             // RELOAD DROPDOWN WITH NEW CLIENT NAME
                $.ajax({
-                    url: "/client/reload",
+
+                    url: "{{ route('cargo.index_reload') }}",
+                    //  url: "/client/reload",
                     method: 'GET',
                     success: function(data) {
+                        if ($('#client_type').val() == 'sender') {
                         $('#client').html(data.html);
+
+                        } else if ($('#client_type').val() == 'receiver') {
+                            $('#receiver').html(data.html);
+                        }
 
                         // $("#father").val(data.father);
                     }
