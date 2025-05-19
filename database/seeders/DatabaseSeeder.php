@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('accounts')->insert(
             array(
-                'name' => 'Vault afn',
+                'name' => 'Vault AFN',
                 'amount' => 0,
                 'currency_id' => 1,
                 'branch_id' => 1,
@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
         );
         DB::table('accounts')->insert(
             array(
-                'name' => 'Vault usd',
+                'name' => 'Vault USD',
                 'amount' => 0,
                 'currency_id' => 2,
                 'branch_id' => 1,

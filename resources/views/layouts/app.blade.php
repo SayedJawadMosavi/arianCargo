@@ -62,7 +62,7 @@
                             <img src="/{{isset($settings) ? $settings->logo : ''}}" class="header-brand-img toggle-logo"
                                 alt="logo">
                             <img src="/{{isset($settings) ? $settings->logo : ''}}" class="header-brand-img light-logo" alt="logo">
-                            <img src="/{{isset($settings) ? $settings->logo : ''}}" class="header-brand-img light-logo1"
+                            <img src="/{{isset($settings) ? $settings->logo : ''}}" style="width: 100px;" class="header-brand-img light-logo1"
                                 alt="logo">
                         </a>
                         <!-- LOGO -->

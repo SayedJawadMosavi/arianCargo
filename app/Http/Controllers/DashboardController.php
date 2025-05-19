@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccountLog;
+use App\Models\Cargo;
+use App\Models\CargoPayment;
+use App\Models\Client;
 use App\Models\Currency;
 use App\Models\Expense;
 use App\Models\Partner;
@@ -13,6 +16,8 @@ use App\Models\Product;
 // use App\Models\Purchase;
 use App\Models\Setting;
 use App\Models\Slider;
+use App\Models\Staff;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +30,6 @@ class DashboardController extends Controller
     {
         $this->settings = $request->get('settings');
     }
-
     public function index()
     {
         if ($this->settings->date_type == 'shamsi') {
@@ -37,35 +41,34 @@ class DashboardController extends Controller
 
             $column = 'miladi_date';
         }
-        $products=0;
-        $costs=0;
-        // $products = Product::branch()->count('quantity');
-        // $costs = Product::branch()->sum('cost');
-        // $daily_total_sell = Sell::branch()->where($column, $today)->sum('total');
-        // $daily_total_purchase = Purchase::branch()->where($column, $today)->sum('total');
-        // $daily_total_expense = Expense::branch()->where('type', 'expense')->where($column, $today)->sum('amount');
-        // $daily_total_cash_received = Expense::branch()->where('type', 'income')->where($column, $today)->sum('amount');
+        if (auth()->user()->type == "admin") {
+            $cargos = Cargo::count('id');
+            $clients = Client::count('id');
+            $staffs = Staff::count('id');
+            $users = User::with('center')->count('id');
+        } else {
+            $cargos = Cargo::branch()->count('id');
+            $clients = Client::branch()->count('id');
+            $staffs = Staff::branch()->count('id');
+            $users = User::with('center')->count('id');
 
-        // $dailySales = Sell::select(
-        //     DB::raw('DATE(created_at) as date'),
-        //     DB::raw('SUM(total) as total_sales')
-        // )
-        //     ->groupBy(DB::raw('DATE(created_at)'))
-        //     ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
-        //     ->get();
 
-        // Fetch total purchase amount for each day
-        // $dailyPurchases = Purchase::select(
-        //     DB::raw('DATE(created_at) as date'),
-        //     DB::raw('SUM(total) as total_purchases')
-        // )
-        //     ->groupBy(DB::raw('DATE(created_at)'))
-        //     ->orderBy(DB::raw('DATE(created_at)'), 'ASC')
-        //     ->get();
+            $payments = CargoPayment::branch()->get();
+            $expenses = Expense::branch()->where('type', 'expense')->get();
 
-        $settings = Setting::where('branch_id', auth()->user()->branch_id)->first();
+            $incomes = Expense::branch()->where('type', 'income')->get();
+          $daily_payments = CargoPayment::branch()->whereDate('created_at', today())
+    ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+    ->groupByRaw('DATE(created_at)')
+    ->get();
+                // dd($daily_payments);
+            // $distribution = DistributeDetail::branch()->with('kit', 'center', 'distribution')->get();
+        }
 
-        return view('dashboard', compact('products', 'costs', 'settings'));
+
+
+
+        return view('dashboard', compact('cargos', 'clients', 'staffs', 'users', 'payments', 'expenses', 'incomes', 'daily_payments'));
     }
 
     public function journal()

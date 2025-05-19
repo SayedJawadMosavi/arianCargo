@@ -9,7 +9,7 @@
     @endif
     <div class="card-header d-flex justify-content-between">
         <h3 class="card-title">{{ __('home.sells') }}</h3>
-        @can('sell.create')
+        @can('cargo.create')
         <a href="{{ route('cargo.create') }}" class="btn btn-primary mx-5">{{ __('home.new_sell') }}</a>
         @endcan
     </div>
@@ -94,7 +94,7 @@
                                                             </span>
                                                         </a>
 
-                                                        @can('sell.edit')
+                                                        @can('cargo.edit')
                                                         <a class="btn text-primary btn-sm" href="{{ route('cargo.edit', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}">
                                                             <span class="fe fe-edit fs-16"></span>
                                                         </a>
@@ -104,7 +104,7 @@
                                                             <span class="fe fe-eye fs-16"></span>
                                                         </a>
 
-                                                        @can('sell.delete')
+                                                        @can('cargo.delete')
                                                         <button type="button" class="btn text-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ $cargo->id }}">
                                                             <span class="fe fe-trash-2 fs-16"></span>
                                                         </button>

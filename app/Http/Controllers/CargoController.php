@@ -36,10 +36,10 @@ class CargoController extends Controller
     public function __construct(Request $request)
     {
         $this->settings = $request->get('settings');
-        $this->middleware('permission:sell.create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:sell.edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:sell.view', ['only' => ['index']]);
-        $this->middleware('permission:sell.delete', ['only' => ['destroy']]);
+        $this->middleware('permission:cargo.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:cargo.edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:cargo.view', ['only' => ['index']]);
+        $this->middleware('permission:cargo.delete', ['only' => ['destroy']]);
         // $this->middleware('permission:sell.restore', ['only' => ['restore']]);
     }
     public function index()
@@ -66,6 +66,7 @@ class CargoController extends Controller
         $column = isset($request->from_shamsi) ? $column = 'shamsi_date' : $column = 'miladi_date';
 
         $cargos = Cargo::branch()->with('currency', 'receiver')->whereBetween($column, [$from, $to])->latest()->get();
+
         $trashed = Cargo::branch()->with('currency', 'receiver')->onlyTrashed()->whereBetween($column, [$from, $to])->get();
         return view('sell.index', compact('cargos', 'trashed'));
     }
@@ -186,7 +187,7 @@ class CargoController extends Controller
             $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
             $client_currency = ClientCurrency::where('client_id', $request->client_id)->first();
 
-            if($request->amount >0){
+            if($request->paid >0){
 
                 $payments = CargoPayment::create([
                     'account_id' => $cargo->account_id,
