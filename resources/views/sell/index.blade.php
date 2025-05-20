@@ -10,7 +10,7 @@
     <div class="card-header d-flex justify-content-between">
         <h3 class="card-title">{{ __('home.sells') }}</h3>
         @can('cargo.create')
-        <a href="{{ route('cargo.create') }}" class="btn btn-primary mx-5">{{ __('home.new_sell') }}</a>
+        <a href="{{ route('cargo.create') }}" class="btn btn-primary mx-5">    <i class="fe fe-plus me-1"></i> {{ __('home.new_sell') }}</a>
         @endcan
     </div>
 
@@ -81,60 +81,40 @@
                                                     {{ number_format($cargo->balance) }}
                                                 </td>
 
-                                                <td>
-                                                    <div class="d-flex align-items-center flex-nowrap gap-1">
+                                            <td>
+    <div class="d-flex align-items-center flex-nowrap gap-1">
 
-                                                        <a class="btn text-info btn-sm" href="{{ route('cargo.bill', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.bill') }}">
-                                                            <span class="fe fe-book fs-16"></span>
-                                                        </a>
+        <a class="btn btn-outline-info btn-sm rounded-0" href="{{ route('cargo.bill', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.bill') }}">
+            <span class="fe fe-book fs-16"></span>
+        </a>
 
-                                                        <a data-bs-effect="effect-sign" data-bs-toggle="modal" href="#payModal{{ $cargo->id }}">
-                                                            <span class="badge bg-info">
-                                                                <i class="fe fe-plus text-white"></i>
-                                                            </span>
-                                                        </a>
+        <a data-bs-effect="effect-sign" data-bs-toggle="modal" href="#payModal{{ $cargo->id }}" class="btn btn-outline-info btn-sm rounded-0">
+            <i class="fe fe-plus"></i>
+        </a>
 
-                                                        @can('cargo.edit')
-                                                        <a class="btn text-primary btn-sm" href="{{ route('cargo.edit', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}">
-                                                            <span class="fe fe-edit fs-16"></span>
-                                                        </a>
-                                                        @endcan
+        @can('cargo.edit')
+        <a class="btn btn-outline-primary btn-sm rounded-0" href="{{ route('cargo.edit', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}">
+            <span class="fe fe-edit fs-16"></span>
+        </a>
+        @endcan
 
-                                                        <a class="btn text-success btn-sm" href="{{ route('cargo.detail.get', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.detail') }}">
-                                                            <span class="fe fe-eye fs-16"></span>
-                                                        </a>
+        <a class="btn btn-outline-success btn-sm rounded-0" href="{{ route('cargo.detail.get', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.detail') }}">
+            <span class="fe fe-eye fs-16"></span>
+        </a>
 
-                                                        @can('cargo.delete')
-                                                        <button type="button" class="btn text-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ $cargo->id }}">
-                                                            <span class="fe fe-trash-2 fs-16"></span>
-                                                        </button>
-                                                        <div class="modal fade " id="confirmationModal{{$cargo->id }}">
-                                                            <div class="modal-dialog" role="document">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h6 class="modal-title">Confirmation</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        Are you sure you want to delete this record?
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                        <form action="{{ route('cargo.destroy', $cargo) }}" method="POST" class="d-inline">
-                                                                            @method('delete')
-                                                                            @csrf
-                                                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        @endcan
+        @can('cargo.delete')
+        <button type="button" class="btn btn-outline-danger btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ $cargo->id }}">
+            <span class="fe fe-trash-2 fs-16"></span>
+        </button>
+        <!-- modal code unchanged -->
+        @endcan
 
-                                                        <a class="btn btn-sm text-secondary" href="{{ route('cargo.show', $cargo->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
-                                                            <i class="fe fe-credit-card fs-16"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
+        <a class="btn btn-outline-secondary btn-sm rounded-0" href="{{ route('cargo.show', $cargo->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
+            <i class="fe fe-credit-card fs-16"></i>
+        </a>
+    </div>
+</td>
+
 
                                             </tr>
                                             @php

@@ -44,25 +44,25 @@
                     <th >Shipper Name</th>
                     <td>{{ $sell->client->name }}</td>
                     <th >Receiver Name</th>
-                    <td>{{ $sell->receiver_name ?? '' }}</td>
+                    <td>{{ $sell->receiver->name ?? '' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __('home.address') }}</th>
                     <td>{{ $sell->client->address }}</td>
                     <th>{{ __('home.address') }}</th>
-                    <td>{{ $sell->receiver_address ?? '' }}</td>
+                    <td>{{ $sell->receiver->address ?? '' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __('home.mobile') }}</th>
                     <td>{{ $sell->client->mobile }}</td>
                     <th>{{ __('home.mobile') }}</th>
-                    <td>{{ $sell->receiver_mobile ?? '' }}</td>
+                    <td>{{ $sell->receiver->mobile ?? '' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __('home.date') }}</th>
-                    <td>{{ $sell->date ?? '' }}</td>
-                    <th>{{ __('home.city') }}</th>
-                    <td>{{ $sell->receiver_city ?? '' }}</td>
+                    <td>{{ $sell->miladi_date ?? '' }}</td>
+                    <th>{{ __('home.country') }}</th>
+                    <td>{{ $sell->receiver->country->name ?? '' }}</td>
                 </tr>
             </table>
 

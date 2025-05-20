@@ -62,7 +62,7 @@
                                                     <td>
                                                         <div class="g-2 ">
                                                             @can('client.view')
-                                                            <a class="btn text-success btn-sm" href="{{route('client.detail.get', $obj)}}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.sell') }}"><span class="fe fe-eye fs-16"></span></a>
+                                                            <a class="btn text-success btn-sm" href="{{route('client.detail.get', $obj)}}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.detail') }}"><span class="fe fe-eye fs-16"></span></a>
                                                             @endcan
                                                             @can('client.edit')
                                                             <a class="btn text-primary btn-sm" href="{{route('client.edit', $obj)}}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}"><span class="fe fe-edit fs-14"></span></a>
@@ -86,6 +86,7 @@
                                             <tfoot>
                                                 <tr>
                                                     <th>{{ __('home.total') }}</th>
+                                                    <th></th>
                                                     <th colspan="7">
                                                         @foreach($sums as $key=>$value)
                                                         {{ $key }}: {{ $value }}

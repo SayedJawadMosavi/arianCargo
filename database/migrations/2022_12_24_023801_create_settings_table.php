@@ -43,7 +43,7 @@ class CreateSettingsTable extends Migration
             $table->integer('en')->default(0)->nullable();
             $table->integer('fa')->default(0)->nullable();
             $table->integer('pa')->default(0)->nullable();
-            $table->enum('date_type',['shamsi', 'miladi']);
+            $table->enum('date_type',['miladi', 'shamsi']);
 
             $table->timestamps();
         });

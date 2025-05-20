@@ -72,7 +72,7 @@ class CargoController extends Controller
     }
     public function bill($id)
     {
-        $sell = Cargo::branch()->with('currency', 'receiver','payments','detail','client','branchs')->find($id);
+        $sell = Cargo::branch()->with('currency', 'receiver','payments','detail','client','branchs','receiver.country')->find($id);
 
         return view('sell.bill', compact('sell'));
     }

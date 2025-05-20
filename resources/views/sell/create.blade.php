@@ -125,37 +125,25 @@
             </div>
 
             @if(!isset($cargo))
-            <div class="form-row mb-3">
 
-                <div class="col-sm-12 mt-3">
-                    <h4>{{__('home.products')}}</h4>
-                    <hr>
-                </div>
-                <div class="col-sm-12">
-                    <div class="table-responsive">
-                        <span id="result"></span>
-                        <table class="table table-bordered table-striped" id="user_table">
-                            <thead>
-                                <tr>
-                                    <th width="15%">{{__('home.items')}}</th>
-
-                                    <th width="10%">{{__('home.quantity')}}</th>
-                                    <th width="15%">{{__('home.cbm')}}</th>
-
-                                    <th width="11%">{{__('home.type')}}</th>
-                                    <th width="11%">{{__('home.value')}}</th>
-                                    <th width="5%">{{__('home.action')}}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody">
-
-                            </tbody>
-
-                        </table>
-                    </div>
-                </div>
-
+        <div class="bg-white p-3  shadow-sm mb-4 border-start border-1">
+            <h5 class="text-danger mb-3"><i class="fas fa-boxes me-1"></i> {{ __('home.products') }}</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>{{ __('home.items') }}</th>
+                            <th>{{ __('home.quantity') }}</th>
+                            <th>{{ __('home.cbm') }}</th>
+                            <th>{{ __('home.type') }}</th>
+                            <th>{{ __('home.value') }}</th>
+                            <th>{{ __('home.action') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
             </div>
+        </div>
             @endif
             <div class="row mb-4" dir="{{ App::getLocale() == 'en' ? 'ltr' : 'rtl' }}">
                 <div class="col-md-2">
@@ -210,78 +198,96 @@
 
     </div>
 </div>
-<div class="modal fade " id="clientForm">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title">{{ __('home.new_client') }}</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<div class="modal fade" id="clientForm" tabindex="-1" aria-labelledby="clientFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+
+            {{-- Header --}}
+            <div class="modal-header bg-primary text-white rounded-top">
+                <h5 class="modal-title" id="clientFormLabel">
+                    <i class="fas fa-user-plus me-2"></i> {{ __('home.new_client') }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-                <div class="modal-body">
-                    <div class="form-row mb-3">
+            {{-- Body --}}
+            <div class="modal-body bg-light">
+                <div class="row g-3">
 
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.name') }}</label>
-                            <input type="text" class="form-control @error('name') {{'is-invalid'}} @enderror" id="name" name="name" value="">
-                            <input type="hidden" class="form-control" name="from_sell" value="1">
-                            <input type="hidden" class="form-control" name="amount" value="0">
-                            @error('name')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.mobile') }}</label>
-                            <input type="text" class="form-control @error('mobile') {{'is-invalid'}} @enderror" id="mobile" name="mobile" value="">
-                            @error('mobile')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-4 col-sm-4 mb-3">
-                            <label for="validationServer01">{{ __('home.tazkira_no') }}</label>
-                            <input type="text" class="form-control @error('nid') {{'is-invalid'}} @enderror" id="nid" name="nid" value="">
-                            @error('nid')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="validationServer01"> {{ __('home.zipcode') }} </label>
-                            <input type="text" class="form-control @error('zipcode') {{'is-invalid'}} @enderror" id="zipcode" name="zipcode" value="{{isset($cargo) ? $cargo->zipcode : old('zipcode')}}">
-                            @error('zipcode')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-4 mb-3">
-                            <label for="validationServer04">{{ __('home.country') }}</label>
-                            <select class="form-select form-control  @error('country') {{'is-invalid'}} @enderror" id="country" aria-describedby="validationServer04Feedback" required name="country_id" style="width: 100%;">
-                                <option selected disabled value="">Choose...</option>
-                                @foreach($countries as $country)
-                                <option value="{{$country->id}}"> {{ $country->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('country_id')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
-                        <div class="col-xl-12 col-sm-12 mb-3">
-                            <label for="validationServer01">{{ __('home.address') }}</label>
-                            <input type="text" class="form-control @error('address') {{'is-invalid'}} @enderror" id="address" name="address" value="">
-                            @error('address')
-                            <div id="" class="invalid-feedback">{{$message}}</div>
-                            @enderror
-                        </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-user me-1 text-primary"></i> {{ __('home.name') }}
+                        </label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="">
+                        <input type="hidden" name="from_sell" value="1">
+                        <input type="hidden" name="amount" value="0">
+                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                </div>
-                        <input type="dfds" class="form-control " name="client_type" id="client_type">
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('home.cancel') }}</button>
-                    <button type="button"id="ajaxSubmit" class="btn btn-primary">{{ __('home.save') }}</button>
-                </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-phone me-1 text-success"></i> {{ __('home.mobile') }}
+                        </label>
+                        <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="mobile" name="mobile" value="">
+                        @error('mobile') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-id-card me-1 text-info"></i> {{ __('home.tazkira_no') }}
+                        </label>
+                        <input type="text" class="form-control @error('nid') is-invalid @enderror" id="nid" name="nid" value="">
+                        @error('nid') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-mail me-1 text-warning"></i> {{ __('home.zipcode') }}
+                        </label>
+                        <input type="text" class="form-control @error('zipcode') is-invalid @enderror" id="zipcode" name="zipcode"
+                            value="{{ isset($cargo) ? $cargo->zipcode : old('zipcode') }}">
+                        @error('zipcode') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-flag me-1 text-danger"></i> {{ __('home.country') }}
+                        </label>
+                        <select class="form-select @error('country_id') is-invalid @enderror" name="country" id="country_id" required>
+                            <option selected disabled value="">{{ __('home.please_select') }}</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('country_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa fa-map me-1 text-secondary"></i> {{ __('home.address') }}
+                        </label>
+                        <input type="text" class="form-control @error('address') is-invalid @enderror" id="address" name="address" value="">
+                        @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <input type="hidden" name="client_type" id="client_type">
+
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="modal-footer bg-white">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fa fa-times me-1"></i> {{ __('home.cancel') }}
+                </button>
+                <button type="button" id="ajaxSubmit" class="btn btn-primary">
+                    <i class="fa fa-save me-1"></i> {{ __('home.save') }}
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
 @endsection
 
 
@@ -304,7 +310,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        var element = document.getElementById('country');
+        var element = document.getElementById('country_id');
         var choices = new Choices(element, {
             searchEnabled: true,
             removeItemButton: true,
@@ -647,6 +653,7 @@ $(document).ready(function () {
           nid: $('#nid').val(),
           zipcode: $('#zipcode').val(),
           country_id: $('#country_id').val(),
+          mobile: $('#mobile').val(),
 
           address: $('#address').val(),
        },

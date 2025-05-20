@@ -94,10 +94,11 @@
                                         <td>
 
                                         <button class="btn-save btn btn-sm btn-outline-success" style="display:none;">{{ __('home.update') }}</button>
-
+                                            @can('payment.edit')
                                             <button class="btn-edit btn btn-sm btn-outline-primary">{{ __('home.edit') }}</button>
+                                            @endcan
 
-
+                                            @can('payment.delete')
                                             <form action="{{ route('cargo_payment.destroy', $payment) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -105,6 +106,7 @@
                                                     <i class="fe fe-trash-2 text-danger fs-16"></i>
                                                 </button>
                                             </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                     @endforeach

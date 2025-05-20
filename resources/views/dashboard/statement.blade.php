@@ -2,85 +2,99 @@
 @section('title', 'Journal')
 
 @section('content')
-
-<div class="card mt-4">
-    {{-- @dd(session()->has('success')) --}}
-    @if (session()->has('success') || session()->has('error') )
-    @include('layouts.partials.components.alert')
+<div class="card shadow-sm border-0 mt-4">
+    {{-- Success/Error Message --}}
+    @if (session()->has('success') || session()->has('error'))
+        @include('layouts.partials.components.alert')
     @endif
 
-    <div class="card-header ">
-        <h3 class="card-title">{{ __('home.journal') }} </h3>
+    {{-- Header --}}
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-book me-2"></i> {{ __('home.journal') }}
+        </h5>
     </div>
 
-    <div class="card-body pt-4 table-responsive">
+    {{-- Body --}}
+    <div class="card-body pt-4">
 
-        <div class="col-sm-12 my-3">
+        {{-- Date Filter --}}
+        <div class="mb-4">
             @php $data = 'hey'; @endphp
-            <form class="" action="{{ route('journal.post') }}" method="POST">
-                <x-date-component :data="$data" />
+            <form action="{{ route('journal.post') }}" method="POST" class="row g-3">
+                @csrf
+                <div class="col-12">
+                    <x-date-component :data="$data" />
+                </div>
             </form>
-
         </div>
-        <table class="table table-bordered">
-            <tbody>
-                <tr class="table-success">
-                    @foreach($deposit as $k=>$v)
-                    <td> {{__('home.in')}} {{$k}}: {{number_format($v)}}</td>
-                    @endforeach
-                </tr>
-                <tr class="table-warning">
-                    @foreach($withdraw as $k=>$v)
-                    <td> {{ __('home.out')}} {{$k}}: {{number_format($v)}}</td>
-                    @endforeach
-                </tr>
-                {{-- <tr>
-                    <td colspan="2"><strong>Balance:</strong></td>
-                </tr> --}}
-                <tr class="table-primary">
-                @foreach($deposit as $currency => $amount)
-                <?php
-                $withdrawal = $withdraw[$currency] ?? 0;
-                $balance = $amount - $withdrawal;
-                ?>
 
-                    <td class="fw-bold">{{ __('home.balance')}} {{$currency}}:  {{ number_format($balance) }}</td>
-
-                    @endforeach
+        {{-- Summary Table --}}
+      <div class="table-responsive mb-4">
+    <table class="table table-bordered text-center align-middle mb-0">
+        <thead class="table-warning">
+            <tr>
+                <th>{{ __('home.currency') }}</th>
+                <th class="text-success"><i class="fa fa-arrow-down"></i> {{ __('home.in') }}</th>
+                <th class="text-danger"><i class="fa fa-arrow-up"></i> {{ __('home.out') }}</th>
+                <th class="text-primary"><i class="fa fa-wallet"></i> {{ __('home.balance') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($deposit as $currency => $amount)
+                @php
+                    $out = $withdraw[$currency] ?? 0;
+                    $balance = $amount - $out;
+                @endphp
+                <tr>
+                    <td class="fw-bold">{{ $currency }}</td>
+                    <td class="text-success">{{ number_format($amount) }}</td>
+                    <td class="text-danger">{{ number_format($out) }}</td>
+                    <td class="text-primary fw-bold">{{ number_format($balance) }}</td>
                 </tr>
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+        {{-- Journal Log Table --}}
         <div class="table-responsive">
-            <table id="file-datatable" class="table table-bordered table-striped text-nowrap mb-0 table-hover">
-                <thead>
+            <table id="file-datatable" class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead class="table-light">
                     <tr>
                         <th>{{ __('home.date') }}</th>
                         <th>{{ __('home.description') }}</th>
                         <th>{{ __('home.currency') }}</th>
-                        <th>{{ __('home.deposit') }}</th>
-                        <th>{{ __('home.withdraw') }}</th>
+                        <th class="text-success">{{ __('home.deposit') }}</th>
+                        <th class="text-danger">{{ __('home.withdraw') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($logs as $obj)
-                    <tr>
-                        @if ($settings->date_type=='shamsi')
-                        <td>{{$obj->shamsi_date}}</td>
-                        @else
-                        <td>{{$obj->miladi_date}}</td>
-                        @endif
-                        <td>{{$obj->description}}</td>
-                        <td>{{$obj->account->currency->name}}</td>
-                        <td>@if($obj->type == 'deposit' ){{number_format($obj->amount, 2)}} @endif</td>
-                        <td>@if($obj->type == 'withdraw' ){{number_format($obj->amount, 2)}} @endif</td>
-                    </tr>
+                        <tr>
+                            <td>
+                                {{ $settings->date_type == 'shamsi' ? $obj->shamsi_date : $obj->miladi_date }}
+                            </td>
+                            <td>{{ $obj->description }}</td>
+                            <td>{{ $obj->account->currency->name }}</td>
+                            <td class="text-success">
+                                @if($obj->type == 'deposit')
+                                    {{ number_format($obj->amount, 2) }}
+                                @endif
+                            </td>
+                            <td class="text-danger">
+                                @if($obj->type == 'withdraw')
+                                    {{ number_format($obj->amount, 2) }}
+                                @endif
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
-    </div>
-    {{-- card-body --}}
+    </div> {{-- card-body --}}
 </div>
+
 @endsection
 
 <script>

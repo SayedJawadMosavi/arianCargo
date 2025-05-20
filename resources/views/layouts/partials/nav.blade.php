@@ -134,7 +134,7 @@
             <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-book-open"></i><span class="side-menu__label">{{__('home.reports')}}</span><i class="angle fe fe-chevron-right"></i></a>
             <ul class="slide-menu">
 
-                @can('report.sell')
+                @can('report.cargo')
                 <li><a href="{{route('report.cargo')}}" class="slide-item"> {{__('home.cargo_report')}}</a></li>
                 @endcan
                 @can('report.expense')
@@ -196,3 +196,129 @@
             <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z" />
         </svg></div>
 </div>
+<script>
+    document.querySelectorAll('.slide > a').forEach(item => {
+    item.addEventListener('click', function () {
+        this.parentElement.classList.toggle('open');
+    });
+});
+
+</script>
+<style>
+    /* Style for icons */
+.side-menu__icon {
+    color: #d35400 !important;
+}
+
+/* Style for dropdown arrow (chevron) */
+.angle {
+    color: #d35400 !important;
+    transition: transform 0.3s ease;
+}
+
+/* Rotate the arrow when menu is open */
+.slide.open .angle {
+    transform: rotate(90deg);
+}
+
+/* Hover effect for menu items */
+.side-menu__item:hover,
+.slide-menu li a:hover {
+    background-color: #ffe5cc;
+    color: #d35400;
+}
+
+/* Active link highlight */
+.side-menu__item.active,
+.slide-menu li a.active {
+    background-color: #fdd8b0;
+    color: #d35400;
+    font-weight: bold;
+}
+
+/* Smooth transitions */
+.side-menu__item,
+.slide-menu li a {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Improve padding and spacing */
+.side-menu__item {
+    padding: 10px 20px;
+}
+
+.slide-menu li a {
+    padding: 8px 30px;
+}
+
+/* Make sub-menu dropdowns stand out slightly */
+.slide-menu {
+    background-color: #fff8f0;
+    border-left: 2px solid orange;
+}
+
+/* Optional: scrollbar style inside side-menu */
+.main-sidemenu {
+    scrollbar-color: orange #f5f5f5;
+    scrollbar-width: thin;
+}
+
+    /* Side menu enhancements */
+.side-menu__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.side-menu__item:hover {
+    background-color: #fff4e6;
+    color: #f97316; /* Tailwind's orange-500 */
+}
+
+.side-menu__icon {
+    color: #f97316;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.side-menu__label {
+    flex-grow: 1;
+    font-weight: 500;
+    color: inherit;
+}
+
+.angle {
+    color: #f97316;
+    transition: transform 0.2s;
+}
+
+.slide.open .angle {
+    transform: rotate(90deg);
+}
+
+.slide-menu {
+    background-color: #fffaf3;
+    border-left: 3px solid #f97316;
+    margin-left: 10px;
+    border-radius: 0 0 8px 8px;
+}
+
+.slide-menu .slide-item {
+    padding: 8px 30px;
+    color: #555;
+    transition: all 0.3s;
+    display: block;
+    border-radius: 4px;
+}
+
+.slide-menu .slide-item:hover {
+    background-color: #ffe8cc;
+    color: #f97316;
+}
+
+</style>
