@@ -242,9 +242,10 @@ class CargoController extends Controller
         $cargo_client = Client::find($cargo->client_id);
         $clients = Client::branch()->get();
         $accounts = Account::branch()->where('currency_id', $cargo_client->currency->currency_id)->orderBy('default', 'DESC')->get();
+        $countries = Country::active()->get();
 
         $currencies = Currency::active()->get();
-        return view('sell.create', compact('clients', 'accounts', 'cargo', 'currencies'));
+        return view('sell.create', compact('clients', 'accounts', 'cargo', 'currencies','countries'));
     }
 
     /**

@@ -11,7 +11,7 @@ class Client extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable= ['name', 'mobile', 'address','country_id','zipcode', 'nid', 'photo', 'user_id', 'branch_id', 'client_id', 'updated_by', 'active', 'deleted_by'];
+    protected $fillable= ['name', 'mobile','permanent', 'address','country_id','zipcode', 'nid', 'photo', 'user_id', 'branch_id', 'client_id', 'updated_by', 'active', 'deleted_by'];
 
     public function scopeBranch($query){
         return $query->where('branch_id', auth()->user()->branch_id);

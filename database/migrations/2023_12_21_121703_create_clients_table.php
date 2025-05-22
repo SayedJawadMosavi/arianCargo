@@ -19,6 +19,8 @@ class CreateClientsTable extends Migration
             $table->string('mobile')->nullable();
             $table->string('address')->nullable();
             $table->string('zipcode')->nullable();
+            $table->enum('permanent', ['yes', 'no'])->default('no');
+
             $table->unsignedBigInteger('country_id')->nullable();
             $table->string('nid')->nullable();
             $table->string('photo')->nullable();

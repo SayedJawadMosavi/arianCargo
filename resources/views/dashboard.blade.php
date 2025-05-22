@@ -14,7 +14,7 @@
 
     <div class="col-lg-6 col-md-6 col-sm-12 col-xl-6">
         <div class="chart-container">
-            <canvas id="dailyPaymentsChart"></canvas>
+            <canvas id="dailyChart"></canvas>
         </div>
     </div>
 
@@ -276,36 +276,63 @@
         }
     }
     });
-      const dailyPaymentsCtx = document.getElementById('dailyPaymentsChart').getContext('2d');
+       const ctx = document.getElementById('dailyChart').getContext('2d');
+
     const dailyPayments = {!! json_encode($daily_payments) !!};
+    const dailyExpenses = {!! json_encode($daily_expenses) !!};
 
-    const labels = dailyPayments.map(item => item.date);
-    const data = dailyPayments.map(item => item.total);
+    // Extract unique dates from both datasets
+    const allDates = [...new Set([...dailyPayments.map(p => p.date), ...dailyExpenses.map(e => e.date)])];
 
-    const chartData = {
-        labels: labels,
-        datasets: [{
-            label: 'Daily Payments',
-            data: data,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-            fill: true,
-        }]
+    // Helper to get total by date
+    const getTotalByDate = (data, date) => {
+        const entry = data.find(d => d.date === date);
+        return entry ? entry.total : 0;
     };
 
-    const dailyPaymentsChart = new Chart(dailyPaymentsCtx, {
-        type: 'doughnut', // use 'line' if you prefer line chart
+    const paymentData = allDates.map(date => getTotalByDate(dailyPayments, date));
+    const expenseData = allDates.map(date => getTotalByDate(dailyExpenses, date));
+
+    const chartData = {
+        labels: allDates,
+        datasets: [
+            {
+                label: 'Payments',
+                data: paymentData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                fill: true,
+            },
+            {
+                label: 'Expenses',
+                data: expenseData,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                fill: true,
+            }
+        ]
+    };
+
+    new Chart(ctx, {
+        type: 'bar', // change to 'line' if you want line chart
         data: chartData,
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Daily Payments & Expenses'
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Payment Amount'
+                        text: 'Amount'
                     }
                 },
                 x: {

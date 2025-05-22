@@ -57,18 +57,23 @@ class DashboardController extends Controller
             $expenses = Expense::branch()->where('type', 'expense')->get();
 
             $incomes = Expense::branch()->where('type', 'income')->get();
-          $daily_payments = CargoPayment::branch()->whereDate('created_at', today())
+            $daily_payments = CargoPayment::branch()->whereDate('created_at', today())
+                ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+                ->groupByRaw('DATE(created_at)')
+                ->get();
+         $daily_expenses = Expense::branch()
+    ->whereDate('created_at', today())
     ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
     ->groupByRaw('DATE(created_at)')
     ->get();
-                // dd($daily_payments);
+            // dd($daily_payments);
             // $distribution = DistributeDetail::branch()->with('kit', 'center', 'distribution')->get();
         }
 
 
 
 
-        return view('dashboard', compact('cargos', 'clients', 'staffs', 'users', 'payments', 'expenses', 'incomes', 'daily_payments'));
+        return view('dashboard', compact('cargos', 'clients','daily_expenses', 'staffs', 'users', 'payments', 'expenses', 'incomes', 'daily_payments'));
     }
 
     public function journal()

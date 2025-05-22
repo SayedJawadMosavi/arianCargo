@@ -91,7 +91,16 @@
                     <input type="text" class="form-control @error('nid') is-invalid @enderror" id="nid" name="nid" value="{{ $client->nid ?? old('nid') }}" autocomplete="off">
                     @error('nid') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-
+<div class="col-6 col-sm-2">
+                        <label class="" for="inlineFormInputGroup">{{__('home.permanent')}}</label>
+                        <select class="form-control " name="permanent" id="permanent">
+                            <option value="no">{{__('home.no')}}</option>
+                            <option value="yes">{{__('home.yes')}}</option>
+                        </select>
+                        @error('permanent')
+                        <span class="alert text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
                 <div class="col-md-4">
                     <label for="address" class="form-label fw-bold">
                         <i class="fa fa-map text-secondary me-1"></i> {{ __('home.address') }}

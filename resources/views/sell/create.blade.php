@@ -48,10 +48,12 @@
 
                     <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
                     @endforeach
-                    </select>--}}
-                    <select id="client" name="client_id" class="form-control" style="width: 100%">
+                </select>--}}
+                <select id="client" name="client_id" class="form-control" style="width: 100%">
                         @if(isset($cargo))
+                        @foreach($clients as $client)
                         <option value="{{$client->id}}" selected @if(isset($cargo)) @if($cargo->client_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+                        @endforeach
                         @endif
                     </select>
                     @error('client_id')
@@ -70,7 +72,9 @@
                     </select>--}}
                     <select id="receiver" name="receiver_id" class="form-control" style="width: 100%">
                         @if(isset($cargo))
+                        @foreach($clients as $client)
                         <option value="{{$client->id}}" @if(isset($cargo)) @if($cargo->receiver_id == $client->id) selected = 'selected' @endif @endif >{{$client->name}}</option>
+                        @endforeach
 
                         @endif
                     </select>
@@ -261,7 +265,16 @@
                         </select>
                         @error('country_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-
+                    <div class="col-6 col-sm-4">
+                        <label class="" for="inlineFormInputGroup">Permanent</label>
+                        <select class="form-control " name="permanent" id="permanent">
+                            <option value="no">{{__('home.no')}}</option>
+                            <option value="yes">{{__('home.yes')}}</option>
+                        </select>
+                        @error('permanent')
+                        <span class="alert text-danger">{{$message}}</span>
+                        @enderror
+                    </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold text-dark">
                             <i class="fa fa-map me-1 text-secondary"></i> {{ __('home.address') }}
@@ -654,6 +667,7 @@ $(document).ready(function () {
           zipcode: $('#zipcode').val(),
           country_id: $('#country_id').val(),
           mobile: $('#mobile').val(),
+          permanent: $('#permanent').val(),
 
           address: $('#address').val(),
        },
@@ -692,6 +706,7 @@ $(document).ready(function () {
                 $('#country_id').val('');
                 $('#mobile').val('');
                 $('#zipcode').val('');
+                $('#permanent').val('');
                 // $('#is_sanctioned').val('');
                 // $('#is_pep').val('');
                 // $('#risk_level').val('');

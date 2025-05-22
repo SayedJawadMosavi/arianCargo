@@ -133,13 +133,13 @@
                                         class="me-3 language"></span>{{ __('home.dari') }}
                                 </a>
                             </li>
-                            <li class="col-lg-6 mb-2">
+                            <!-- <li class="col-lg-6 mb-2">
                                 <a href="{{url('locale/pa')}}" onclick="RTLStyle()" class="btn btn-country btn-lg btn-block {{App::getLocale()=='pa' ? 'active' : '' }}">
                                     <span class="country-selector"><img alt=""
                                         src="/images/flags/af.svg"
                                         class="me-3 language"></span>{{ __('home.pashto') }}
                                 </a>
-                            </li>
+                            </li> -->
                             <input type="hidden" name="lang" id="lang" value="{{App::getLocale()}}">
 
                         </ul>

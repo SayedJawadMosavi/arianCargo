@@ -158,7 +158,9 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         $currencies = Currency::active()->get();
-        return view('client.create', compact('client', 'currencies'));
+        $countries = Country::active()->get();
+
+        return view('client.create', compact('client', 'currencies','countries'));
     }
 
     /**
@@ -180,7 +182,7 @@ class ClientController extends Controller
 
         $clients = Client::branch()->get();
         $trashed = Client::branch()->onlyTrashed()->get();
-        return view('client.index', compact('clients', 'trashed'))->with('success', 'Client updated sucessfully');
+        return redirect()->route('client.index', compact('clients', 'trashed'))->with('success', 'Client updated sucessfully');
     }
 
     /**
@@ -279,6 +281,7 @@ class ClientController extends Controller
             ->where('active', 1)
 
             ->where('branch_id', auth()->user()->branch_id)
+            ->where('permanent','yes')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%$search%")
