@@ -53,6 +53,13 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
+                <div class="col-xl-4 mb-3">
+                    <label for="validationServer01">{{ __('home.rate') }}</label>
+                    <input type="number" step="0.0004" class="form-control @error('rate') {{'is-invalid'}} @enderror" id="rate"  name="rate" value="{{isset($country) ? $country->rate : old('rate')}}">
+                    @error('rate')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
 
                 <div class="col-xl-2 mb-3">
                     <label for="validationServer01"> &nbsp;</label>
@@ -72,6 +79,7 @@
                         <th>{{ __('home.sn') }}</th>
                         <th>{{ __('home.name') }}</th>
                         <th>{{ __('home.description') }}</th>
+                        <th>{{ __('home.rate') }}</th>
                         <th>{{ __('home.active') }}</th>
                         <th>{{ __('home.action') }}</th>
                     </tr>
@@ -82,6 +90,7 @@
                         <td>{{$obj->id}}</td>
                         <td>{{$obj->name}}</td>
                         <td>{{$obj->description}}</td>
+                        <td>{{$obj->rate}}</td>
 
                         <td>
                             <div class="form-group">

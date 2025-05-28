@@ -10,7 +10,7 @@
     <div class="card-header d-flex justify-content-between">
         <h3 class="card-title">{{ __('home.sells') }}</h3>
         @can('cargo.create')
-        <a href="{{ route('cargo.create') }}" class="btn btn-primary mx-5">    <i class="fe fe-plus me-1"></i> {{ __('home.new_sell') }}</a>
+        <a href="{{ route('cargo.create') }}" class="btn btn-primary mx-5"> <i class="fe fe-plus me-1"></i> {{ __('home.new_sell') }}</a>
         @endcan
     </div>
 
@@ -48,7 +48,10 @@
                                                 <th>{{ __('home.sn') }}</th>
                                                 <th>{{ __('home.sender') }}</th>
                                                 <!-- <th>{{ __('home.sender_tazkira') }}</th> -->
-                                                <!-- <th>{{ __('home.receiver') }}</th> -->
+                                                <th>{{ __('home.receiver') }}</th>
+                                                @if ($branch->is_main_branch==0)
+                                                <th>{{ __('home.branch_payable') }}</th>
+                                                @endif
                                                 <th>{{ __('home.total') }}</th>
                                                 <th>{{ __('home.paid') }}</th>
                                                 <th>{{ __('home.currency') }}</th>
@@ -61,6 +64,7 @@
                                             @php
                                             $c =1;
                                             $gtotal=0;
+                                            $total=0;
                                             $gpaid=0;
                                             $gbalance=0;
 
@@ -73,55 +77,82 @@
                                                 <td>{{ $cargo->bill }}</td>
                                                 <td>{{ $cargo->number }}</td>
                                                 <td>{{ $cargo->client->type != 'walkin' ? $cargo->client->name : $cargo->client_name }}</td>
+                                                <td>{{ $cargo->receiver->type != 'walkin' ? $cargo->receiver->name : $cargo->client_name }}</td>
+                                                @if ($branch->is_main_branch == 0)
+                                                <td class="text-end">
+                                                    <span class="badge bg-warning fs-6">
+                                                        {{ number_format($cargo->total) }}
+                                                    </span>
+                                                </td>
+                                                @endif
 
-                                                <td class="text-end text-dark fw-bold">{{ number_format($cargo->total) }}</td>
-                                                <td class="text-end text-success fw-bold">{{ number_format($cargo->paid) }}</td>
-                                                <td>{{ $cargo->currency->name }}</td>
-                                                <td class="text-end fw-bold {{ $cargo->balance > 0 ? 'text-danger' : 'text-success' }}">
-                                                    {{ number_format($cargo->balance) }}
+                                                <td class="text-end">
+                                                    <span class="badge bg-primary fs-6">
+                                                        {{ number_format($cargo->new_total) }}
+                                                    </span>
                                                 </td>
 
-                                            <td>
-    <div class="d-flex align-items-center flex-nowrap gap-1">
+                                                <td class="text-end">
+                                                    <span class="badge bg-success fs-6">
+                                                        {{ number_format($cargo->paid) }}
+                                                    </span>
+                                                </td>
 
-        <a class="btn btn-outline-info btn-sm rounded-0" href="{{ route('cargo.bill', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.bill') }}">
-            <span class="fe fe-book fs-16"></span>
-        </a>
+                                                <td>
 
-        <a data-bs-effect="effect-sign" data-bs-toggle="modal" href="#payModal{{ $cargo->id }}" class="btn btn-outline-info btn-sm rounded-0">
-            <i class="fe fe-plus"></i>
-        </a>
+                                                        {{ $cargo->currency->name }}
 
-        @can('cargo.edit')
-        <a class="btn btn-outline-primary btn-sm rounded-0" href="{{ route('cargo.edit', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}">
-            <span class="fe fe-edit fs-16"></span>
-        </a>
-        @endcan
+                                                </td>
 
-        <a class="btn btn-outline-success btn-sm rounded-0" href="{{ route('cargo.detail.get', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.detail') }}">
-            <span class="fe fe-eye fs-16"></span>
-        </a>
+                                                <td class="text-end">
+                                                    <span class="badge {{ $cargo->balance > 0 ? 'bg-danger' : 'bg-success' }} fs-6">
+                                                        {{ number_format($cargo->new_balance) }}
+                                                    </span>
+                                                </td>
 
-        @can('cargo.delete')
-        <button type="button" class="btn btn-outline-danger btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ $cargo->id }}">
-            <span class="fe fe-trash-2 fs-16"></span>
-        </button>
-        <!-- modal code unchanged -->
-        @endcan
 
-        <a class="btn btn-outline-secondary btn-sm rounded-0" href="{{ route('cargo.show', $cargo->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
-            <i class="fe fe-credit-card fs-16"></i>
-        </a>
-    </div>
-</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center flex-nowrap gap-1">
+
+                                                        <a class="btn btn-outline-info btn-sm rounded-0" href="{{ route('cargo.bill', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.bill') }}">
+                                                            <span class="fe fe-book fs-16"></span>
+                                                        </a>
+
+                                                        <a data-bs-effect="effect-sign" data-bs-toggle="modal" href="#payModal{{ $cargo->id }}" class="btn btn-outline-info btn-sm rounded-0">
+                                                            <i class="fe fe-plus"></i>
+                                                        </a>
+
+                                                        @can('cargo.edit')
+                                                        <a class="btn btn-outline-primary btn-sm rounded-0" href="{{ route('cargo.edit', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.edit') }}">
+                                                            <span class="fe fe-edit fs-16"></span>
+                                                        </a>
+                                                        @endcan
+
+                                                        <a class="btn btn-outline-success btn-sm rounded-0" href="{{ route('cargo.detail.get', $cargo) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.detail') }}">
+                                                            <span class="fe fe-eye fs-16"></span>
+                                                        </a>
+
+                                                        @can('cargo.delete')
+                                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ $cargo->id }}">
+                                                            <span class="fe fe-trash-2 fs-16"></span>
+                                                        </button>
+                                                        <!-- modal code unchanged -->
+                                                        @endcan
+
+                                                        <a class="btn btn-outline-secondary btn-sm rounded-0" href="{{ route('cargo.show', $cargo->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
+                                                            <i class="fe fe-credit-card fs-16"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
 
 
                                             </tr>
                                             @php
 
-                                            $gtotal += $cargo->total;
+                                            $gtotal += $cargo->new_total;
+                                            $total += $cargo->total;
                                             $gpaid += $cargo->paid;
-                                            $gbalance += $cargo->balance;
+                                            $gbalance += $cargo->new_balance;
 
                                             @endphp
                                             <div class="modal fade" id="payModal{{$cargo->id}}" tabindex="-1" aria-labelledby="payModalLabel{{$cargo->id}}" aria-hidden="true">
@@ -142,7 +173,7 @@
                                                                     <div class="col-md-4">
                                                                         <div class="bg-light rounded p-3 border">
                                                                             <div class="text-muted small">{{ __('home.total') }}</div>
-                                                                            <div class="fs-4 fw-bold text-dark">{{ number_format($cargo->total) }}</div>
+                                                                            <div class="fs-4 fw-bold text-dark">{{ number_format($cargo->new_total) }}</div>
                                                                         </div>
                                                                     </div>
 
@@ -156,7 +187,7 @@
                                                                     <div class="col-md-4">
                                                                         <div class="bg-light rounded p-3 border">
                                                                             <div class="text-muted small">{{ __('home.balance') }}</div>
-                                                                            <div class="fs-4 fw-bold text-danger">{{ number_format($cargo->balance) }}</div>
+                                                                            <div class="fs-4 fw-bold text-danger">{{ number_format($cargo->new_balance) }}</div>
                                                                         </div>
                                                                     </div>
 
@@ -187,7 +218,7 @@
                                                                         <label for="pay_amount_{{ $cargo->id }}" class="form-label fw-semibold">{{ __('home.pay_now') }}</label>
                                                                         <input type="number"
                                                                             min="1"
-                                                                            max="{{ $cargo->balance }}"
+                                                                            max="{{ $cargo->new_balance }}"
                                                                             class="form-control form-control-lg text-center"
                                                                             id="pay_amount_{{ $cargo->id }}"
                                                                             name="pay_amount"
@@ -215,6 +246,8 @@
                                         <tfoot class="bg-light text-end fw-bold">
                                             <tr>
                                                 <td colspan="5" class="text-start">{{ __('home.total') }}</td>
+                                                <td></td>
+                                                <td class="text-dark">{{ number_format($total) }}</td>
                                                 <td class="text-dark">{{ number_format($gtotal) }}</td>
                                                 <td class="text-success">{{ number_format($gpaid) }}</td>
                                                 <td></td>

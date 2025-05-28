@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateAccountRequest;
 use App\Http\Traits\AccountLogTrait;
 use App\Models\Account;
 use App\Models\AccountLog;
+use App\Models\AccountPayment;
+use App\Models\Branch;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,11 +22,11 @@ class AccountController extends Controller
     public function __construct(Request $request)
     {
         $this->settings = $request->get('settings');
-        $this->middleware('permission:account.create',['only' => ['create', 'store']]);
-        $this->middleware('permission:account.edit',['only' => ['edit', 'update', 'changeStatus']]);
-        $this->middleware('permission:account.view',['only' => ['index', 'statement']]);
-        $this->middleware('permission:account.delete',['only' => ['destroy']]);
-        $this->middleware('permission:account.restore',['only' => ['restore']]);
+        $this->middleware('permission:account.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:account.edit', ['only' => ['edit', 'update', 'changeStatus']]);
+        $this->middleware('permission:account.view', ['only' => ['index', 'statement']]);
+        $this->middleware('permission:account.delete', ['only' => ['destroy']]);
+        $this->middleware('permission:account.restore', ['only' => ['restore']]);
     }
 
     /**
@@ -42,8 +44,10 @@ class AccountController extends Controller
         $sumsByCurrency = $groupedAccounts->map(function ($group) {
             return $group->sum('amount');
         });
+        $user_id  = auth()->user()->id;
+        $branch =  Branch::where('user_id', $user_id)->first();
 
-        return view('account.index', compact('accounts', 'sumsByCurrency'));
+        return view('account.index', compact('accounts', 'sumsByCurrency', 'branch'));
 
 
         // $accounts = Account::branch()->get();
@@ -76,7 +80,7 @@ class AccountController extends Controller
             if ($request->amount < 0) {
                 throw new \Exception('Account balance less than zero not allowed');
             }
-            isset($request->default) ? $default = 1: $default = 0;
+            isset($request->default) ? $default = 1 : $default = 0;
 
             $account = new Account();
             $attributes = $request->only($account->getFillable());
@@ -92,7 +96,7 @@ class AccountController extends Controller
             } else {
                 $currentDate = date('Y-m-d');
             }
-            if($request->amount > 0){
+            if ($request->amount > 0) {
                 $flag = $this->InsertAccountLog($account->id, 'deposit', $request->amount, $request->description, $request->amount, 'direct', null, $currentDate);
             }
 
@@ -108,7 +112,6 @@ class AccountController extends Controller
             // Handle the exception
             return redirect()->back()->with('error', 'Error creating account: ' . $e->getMessage());
         }
-
     }
 
     /**
@@ -117,9 +120,11 @@ class AccountController extends Controller
      * @param  \App\Models\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function show(Account $account)
+    public function show($id)
     {
-        //
+        $accounts = Account::with(['currency', 'payments'])->findOrFail($id);
+
+        return view('account.payment', compact('accounts'));
     }
 
     /**
@@ -168,9 +173,29 @@ class AccountController extends Controller
      * @param  \App\Models\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Account $account)
+    public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+           $account_payment= AccountPayment::find($id);
+            Account::find($account_payment->account_id)->decrement('amount', $account_payment->amount);
+            Account::find($account_payment->account_id)->decrement('paid_amount', $account_payment->amount);
+
+            AccountLog::where([
+                'action'    => 'branch_payment',
+                'action_id'   => $account_payment->id,
+            ])->forceDelete();
+
+
+            $account_payment->forceDelete();
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Branch Payment Deleted');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to delete payment: ' . $e->getMessage());
+        }
     }
 
     public function changeStatus($id)
@@ -178,12 +203,11 @@ class AccountController extends Controller
         $active = '';
         $account = Account::find($id);
         try {
-            if ($account->active==1) {
-                $account->update(['active'  =>0]);
+            if ($account->active == 1) {
+                $account->update(['active'  => 0]);
                 $active = 'Account Deactivated';
-
-            }else if ($account->active==0) {
-                $account->update(['active'  =>1]);
+            } else if ($account->active == 0) {
+                $account->update(['active'  => 1]);
                 $active = 'Account Activated';
             }
             return redirect()->route('account.index')->with('success', $active);
@@ -192,7 +216,8 @@ class AccountController extends Controller
         }
     }
 
-    public function statement(Account $account, Request $request){
+    public function statement(Account $account, Request $request)
+    {
 
         if ($this->settings->date_type == 'shamsi') {
             $from =  datenow();
@@ -207,10 +232,10 @@ class AccountController extends Controller
         $logs = AccountLog::where('account_id', $account->id)->with('account')->whereBetween($column, [$from, $to])->get();
 
         return view('account.statement', compact('logs', 'account'));
-
     }
 
-    public function getStatement(Account $account, Request $request){
+    public function getStatement(Account $account, Request $request)
+    {
 
         if ($this->settings->date_type == 'shamsi') {
             $to = $request->to_shamsi;
@@ -224,6 +249,92 @@ class AccountController extends Controller
 
         $logs = AccountLog::where('account_id', $account->id)->with('account')->whereBetween($column, [$from, $to])->get();
         return view('account.statement', compact('logs', 'account'));
+    }
 
+    public function pay(Request $request)
+    {
+        $request->validate([
+            'account_id'   => 'required|exists:accounts,id',
+            'amount'       => 'required|numeric|min:1',
+            'date'         => 'nullable|date',
+            'description'  => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $account = Account::findOrFail($request->account_id);
+            $amountToPay = $request->amount;
+            $currentDate = $request->shamsi_date ?? $request->miladi_date;
+            $description = 'Branch Payment: - ' . ($request->description ?? '');
+            if ($amountToPay > $account->cargo_amount) {
+                return back()->with('error', 'Payment amount exceeds the remaining balance.');
+            }
+            // 1. ثبت پرداخت
+            $payment = AccountPayment::create([
+                'account_id'   => $account->id,
+                'amount'       => $amountToPay,
+                'description'  => $request->description,
+                'shamsi_date'  => $currentDate,
+                'miladi_date'  => $currentDate,
+                'branch_id'    => auth()->user()->branch_id,
+                'user_id'      => auth()->user()->id,
+            ]);
+
+            // 2. ثبت لاگ
+            $this->InsertAccountLog(
+                $account->id,
+                'deposit',
+                $amountToPay,
+                $description,
+                $account->amount,
+                'branch_payment',
+                $payment->id,
+                $currentDate
+            );
+
+            // 3. آپدیت paid_amount
+            $account->paid_amount += $amountToPay;
+            $account->amount += $amountToPay;
+            $account->save();
+
+            DB::commit();
+
+            return back()->with('success', 'Payment done SuccessFully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'خطا هنگام پرداخت: ' . $e->getMessage());
+        }
+    }
+
+    public function updatePayment(Request $request, AccountPayment $cargoPayment)
+    {
+        DB::beginTransaction();
+        try {
+
+            $payment = AccountPayment::find($request->id);
+            $account = Account::findOrFail($payment->account_id);
+
+            Account::find($payment->account_id)->decrement('paid_amount', $payment->amount);
+            Account::find($payment->account_id)->decrement('amount', $payment->amount);
+
+
+            Account::find($payment->account_id)->increment('paid_amount', $request->amount);
+            Account::find($payment->account_id)->increment('amount', $request->amount);
+
+
+            $log = AccountLog::where(['action_id' => $payment->id, 'action' => 'branch_payment'])->update(['amount'  => $request->amount, 'type'  => 'deposit', 'balance'  => $account->amount]);
+
+
+            $payment->update(['amount' => $request->amount, 'description' => $request->description]);
+
+
+            DB::commit();
+            return  response()->json(['success', ' updating Account Payment']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the exception
+            return redirect()->back()->with('error', 'Error updating Account Payment: ' . $e->getMessage());
+        }
     }
 }

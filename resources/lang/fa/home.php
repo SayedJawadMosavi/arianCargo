@@ -409,5 +409,13 @@ return [
     'cargo_report'                     =>     ' راپور کارگو ',
     'new_country'            =>      'افزودن کشور ',
 
+ 'start_bill' => ' شروع بل نمبر ',
+    'end_bill' => ' ختم بل نمبر ',
+    'per_pay_cost'            =>      ' پرداخت فی وزن ',
+    'new_total'            =>      '  مجموع پرداخت جدید ',
+    'new_balance'            =>      '   بلانس جدید  ',
+    'is_main_branch' => ' آیا نمایندگی مرکزی میباشد ؟ ',
+    'branch_receivable' => ' قرضداری نماینده گی ',
+    'branch_payable' => ' پرداختی به نماینده گی ',
 
 ];

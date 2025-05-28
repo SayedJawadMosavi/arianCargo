@@ -76,6 +76,7 @@ return [
     'cargo.edit' => 'Edit Cargo',
     'cargo.delete' => 'Delete Cargo',
     'cargo.details' => 'Cargo Details',
+    'branch.receivable' => 'Branch Payable',
 
     'payment' => 'Payment',
     'payment.view' => 'View Payment',

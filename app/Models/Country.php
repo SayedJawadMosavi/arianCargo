@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Country extends Model
 {
-   use HasFactory, SoftDeletes;
-    protected $fillable = ['name', 'description', 'active', 'user_id', 'branch_id'];
+    use HasFactory, SoftDeletes;
+    protected $fillable = ['name', 'description', 'rate', 'active', 'user_id', 'branch_id'];
 
-    public function scopeActive($query){
+    public function scopeActive($query)
+    {
         return $query->where('active', 1);
+    }
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id'); // 'country' is the foreign key in clients table
     }
 }

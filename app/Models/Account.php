@@ -11,17 +11,23 @@ class Account extends Model
     use HasFactory;
     protected $fillable = ['name', 'branch_id', 'currency_id', 'amount', 'description', 'active', 'default', 'user_id'];
 
-    public function scopeBranch($query){
+    public function scopeBranch($query)
+    {
         return $query->where('branch_id', auth()->user()->branch_id);
     }
 
-    public function currency(){
+    public function currency()
+    {
         return $this->belongsTo(Currency::class);
     }
 
 
-    public static function rich(){
+    public static function rich()
+    {
         return Account::where(['active' => 1, 'branch_id' => auth()->user()->branch_id, 'amount', '>', 0])->get();
     }
-
+    public function payments()
+    {
+        return $this->hasMany(AccountPayment::class);
+    }
 }

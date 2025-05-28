@@ -76,6 +76,7 @@ return [
     'cargo.edit' => 'ویرایش کارگو',
     'cargo.delete' => 'حذف کارگو',
     'cargo.details' => 'جزئیات کارگو',
+    'branch.receivable' => 'قرضداری نماینده گی ',
 
     'payment' => 'پرداختی ها',
     'payment.view' => 'مشاهده پرداختی ها',

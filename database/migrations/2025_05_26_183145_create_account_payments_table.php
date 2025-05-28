@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateAccountPaymentsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('account_payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('account_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount', 20, 2);
+            $table->string('shamsi_date')->nullable();
+            $table->date('miladi_date')->nullable();
+            $table->text('description')->nullable(); // توضیح اختیاری
+            $table->integer('user_id');
+            $table->integer('branch_id');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('account_payments');
+    }
+}

@@ -37,7 +37,6 @@ class BranchController extends Controller
 
 
         return view('branch.create');
-
     }
 
 
@@ -49,29 +48,53 @@ class BranchController extends Controller
      */
     public function store(StoreBranchRequest $request)
     {
-        $image_path_el="";
+        // 1. Validate bill range overlap
+        $overlap = Branch::where(function ($query) use ($request) {
+            $query->whereBetween('start_bill', [$request->start_bill, $request->end_bill])
+                ->orWhereBetween('end_bill', [$request->start_bill, $request->end_bill])
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('start_bill', '<=', $request->start_bill)
+                        ->where('end_bill', '>=', $request->end_bill);
+                });
+        })->exists();
 
-        if($request->hasFile('photo')){
-            $file = $request->file('photo');
-            $filename = time().'_'.$file->getClientOriginalName();
-            // File upload location
-            $location = 'images/branch/';
-            // Upload file
-            $image_path=   $file->move($location,$filename);
-            $image_path_el = $image_path;
-
+        if ($overlap) {
+            return redirect()->back()->with('error', 'This bill number range overlaps with another branch.');
         }
 
-      $user=  Branch::create([
+        // 2. Upload image (if provided)
+        $image_path_el = "";
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $location = 'images/branch/';
+            $image_path = $file->move($location, $filename);
+            $image_path_el = $image_path;
+        }
+
+        // 3. Create branch
+        if (($request->is_main_branch ?? 0) == 1) {
+            $existingMainBranch = Branch::where('is_main_branch', 1)->first();
+
+            if ($existingMainBranch) {
+                return back()->with(['error' => 'You already have one main branch.']);
+            }
+        }
+        $user = Branch::create([
             'name' => $request->name,
             'contact_person' => $request->contact_person,
+            'is_main_branch' => $request->is_main_branch ?? 0,
+
             'mobile1' => $request->mobile1,
             'mobile2' => $request->mobile2,
             'address' => $request->address,
+            'start_bill' => $request->start_bill,
+            'end_bill' => $request->end_bill,
             'user_id' => auth()->user()->id,
             'logo' => $image_path_el,
-
         ]);
+
+        // 4. Create branch setting (clone from main)
         $setting = Setting::with('currency')->first();
         $new_setting = $setting->replicate();
         $new_setting->branch_id = $user->id;
@@ -79,9 +102,10 @@ class BranchController extends Controller
         $new_setting->currency_id = null;
         $new_setting->save();
 
-
+        // 5. Return with success
         return redirect()->route('branch.index')->with('success', 'New Branch added successfully');
     }
+
 
     /**
      * Display the specified resource.
@@ -115,34 +139,50 @@ class BranchController extends Controller
      */
     public function update(UpdateBranchRequest $request, Branch $branch)
     {
+        // 1. Check for bill range overlap excluding current branch
+        $overlap = Branch::where('id', '!=', $branch->id)
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_bill', [$request->start_bill, $request->end_bill])
+                    ->orWhereBetween('end_bill', [$request->start_bill, $request->end_bill])
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('start_bill', '<=', $request->start_bill)
+                            ->where('end_bill', '>=', $request->end_bill);
+                    });
+            })->exists();
 
-        $image_path_el="";
-        if($request->hasFile('photo')){
-            $file = $request->file('photo');
-            $filename = time().'_'.$file->getClientOriginalName();
-            // File upload location
-            $location = 'images/branch/';
-            // Upload file
-            $image_path=   $file->move($location,$filename);
-            $image_path_el = $image_path;
-
+        if ($overlap) {
+            return redirect()->back()->with('error', 'This bill number range overlaps with another branch.');
         }
 
 
-     $branch->update([
+        // 2. Handle image upload
+        $image_path_el = $branch->logo; // Keep existing if no new image
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $location = 'images/branch/';
+            $image_path = $file->move($location, $filename);
+            $image_path_el = $image_path;
+        }
 
-        'name' => $request->name,
-        'contact_person' => $request->contact_person,
-        'mobile1' => $request->mobile1,
-        'mobile2' => $request->mobile2,
-        'address' => $request->address,
-        'user_id' => auth()->user()->id,
-        'logo' => $image_path_el,
+        // 3. Update branch
+        $branch->update([
+            'name' => $request->name,
+            'contact_person' => $request->contact_person,
+            'mobile1' => $request->mobile1,
+            'mobile2' => $request->mobile2,
+            'address' => $request->address,
+            'start_bill' => $request->start_bill,
+            'is_main_branch' => $request->is_main_branch,
 
+            'end_bill' => $request->end_bill,
+            'user_id' => auth()->user()->id,
+            'logo' => $image_path_el,
         ]);
 
-        return redirect()->route('branch.index')->with('success', ' Branch updated successfully');
+        return redirect()->route('branch.index')->with('success', 'Branch updated successfully');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -154,6 +194,5 @@ class BranchController extends Controller
     {
         $branch->delete();
         return redirect()->route('branch.index')->with('success', ' Branch Deleted successfully');
-
     }
 }

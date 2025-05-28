@@ -25,6 +25,9 @@
                         <th> {{ __('home.contact_person') }}</th>
                         <th> {{ __('home.mobile') }}</th>
                         <th> {{ __('home.address') }}</th>
+                        <th> {{ __('home.is_main_branch') }}</th>
+                        <th> {{ __('home.start_bill') }}</th>
+                        <th> {{ __('home.end_bill') }}</th>
 
 
                         <th> {{ __('home.photo') }}</th>
@@ -39,6 +42,16 @@
                         <td>{{$branch->contact_person}}</td>
                         <td>{{$branch->mobile1}}</td>
                         <td>{{$branch->address}}</td>
+                        <td>
+                            @if ($branch->is_main_branch == 1)
+                            <span class="badge bg-success">Yes</span>
+                            @else
+                            <span class="badge bg-secondary">No</span>
+                            @endif
+                        </td>
+
+                        <td>{{$branch->start_bill}}</td>
+                        <td>{{$branch->end_bill}}</td>
 
 
                         <td>

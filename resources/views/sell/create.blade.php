@@ -84,6 +84,21 @@
                 </div>
 
 
+                <div class="col-xl-4 mb-3">
+                    <label for="validationServer01">{{ __('home.country') }}</label>
+                   <select class="form-select select2" name="country_id" id="country" onchange="setRateToPerWeight(this)" required>
+                        <option selected disabled value="">{{ __('home.please_select') }}</option>
+                        @foreach($countries as $country)
+                            <option value="{{ $country->id }}" data-rate="{{ $country->rate }}" @if(isset($cargo)) @if($cargo->country_id == $country->id) selected = 'selected' @endif @endif >
+                                {{ $country->name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('country_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
 
 
                 @if ($settings->date_type=='shamsi')
@@ -106,7 +121,7 @@
                 @endif
                 <div class="col-xl-2 mb-3">
                     <label for="validationServer01">{{ __('home.bill') }}</label>
-                    <input type="text" class="form-control form-control @error('bill') {{'is-invalid'}} @enderror" name="bill" autocomplete="off" id="bill" value="{{isset($cargo) ? $cargo->bill : old('bill')}}">
+                    <input type="text" class="form-control form-control @error('bill') {{'is-invalid'}} @enderror" name="bill" readonly autocomplete="off" id="bill" value="{{$nextBillNumber}}">
                     @error('bill')
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
@@ -118,7 +133,7 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-xl-7 mb-3">
+                <div class="col-xl-5 mb-3">
                     <label for="validationServer01">{{ __('home.description') }}</label>
                     <input type="text" class="form-control @error('description') {{'is-invalid'}} @enderror" id="description" name="description" value="{{isset($cargo) ? $cargo->description : old('description')}}" autocomplete="off">
                     @error('description')
@@ -150,21 +165,26 @@
         </div>
             @endif
             <div class="row mb-4" dir="{{ App::getLocale() == 'en' ? 'ltr' : 'rtl' }}">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.total_weight') }}</label>
                     <input type="number" step="0.01" id="total_weight" name="total_weight" class="form-control" value="{{ isset($cargo) ? $cargo->total_weight : old('total_weight') }}">
                 </div>
 
-                <div class="col-md-2">
-                    <label for="per_weight" class="form-label fw-bold text-right d-block">{{ __('home.per_weight') }}</label>
-                    <input type="number" step="0.01" id="per_weight" name="per_weight" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight : old('per_weight') }}">
-                </div>
+                <input type="hidden"readonly step="0.01" id="per_weight" name="per_weight" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight : old('per_weight') }}">
 
-                <div class="col-md-2">
-                    <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.grand_total') }}</label>
-                    <input type="number" step="0.01" id="total" readonly name="total" class="form-control" value="{{ isset($cargo) ? $cargo->total : old('total') }}">
+                <div class="col-md-4">
+                    <label for="per_weight"  class="form-label fw-bold text-right d-block">{{ __('home.per_weight') }}</label>
+                    <input type="number" step="0.01" id="per_pay_cost" name="per_pay_cost" class="form-control" value="{{ isset($cargo) ? $cargo->new_per_weight : old('new_per_weight') }}">
+
                 </div>
-                <div class="col-xl-2 mb-3">
+                <input type="hidden" step="0.01" id="total" readonly name="total" class="form-control" value="{{ isset($cargo) ? $cargo->total : old('total') }}">
+
+
+                <div class="col-md-3">
+                    <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.new_total') }}</label>
+                    <input type="number" step="0.01" id="new_total" readonly name="new_total" class="form-control" value="{{ isset($cargo) ? $cargo->new_total : old('new_total') }}">
+                </div>
+                <div class="col-xl-4 mb-3">
                     <label for="validationServer04">{{ __('home.account') }}</label>
                     <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
                         <option value="0"> {{__('home.please_select')}}</option>
@@ -176,13 +196,14 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="paid" class="form-label fw-bold text-right d-block">{{ __('home.paid') }}</label>
                     <input type="number" step="0.01" id="paid" name="paid" class="form-control" value="{{ isset($cargo) ? $cargo->paid : old('paid', 0) }}">
                 </div>
-                <div class="col-md-2">
+                <input type="hidden" step="0.01" id="balance" name="balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->balance : old('balance') }}">
+                <div class="col-md-3">
                     <label for="balance" class="form-label fw-bold text-right d-block">{{ __('home.balance') }}</label>
-                    <input type="number" step="0.01" id="balance" name="balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->balance : old('balance') }}">
+                    <input type="number" step="0.01" id="new_balance" name="new_balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->new_balance : old('new_balance') }}">
                 </div>
 
             </div>
@@ -321,6 +342,36 @@
     });
 </script>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectedAccount = "{{ request('accounts') }}";
+    const selectedBankAccount = "{{ request('bank_accounts') }}";
+
+    // پر کردن فیلد های اکانت و بانک اکانت (اگر لازم داری با AJAX بیاری از سرور)
+
+    if (selectedAccount) {
+        setTimeout(() => {
+            document.getElementById("accounts").value = selectedAccount;
+        }, 300);
+    }
+
+    if (selectedBankAccount) {
+        setTimeout(() => {
+            document.getElementById("bank_accounts").value = selectedBankAccount;
+        }, 300);
+    }
+
+    // نمایش بخش مربوط به نوع حساب انتخابی
+    const accountType = "{{ request('account_type') }}";
+    if (accountType === "client_account") {
+        document.getElementById("account-wrapper").style.display = "block";
+    }
+    if (accountType === "bank_account") {
+        document.getElementById("bank_account-wrapper").style.display = "block";
+    }
+});
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
 
         var element = document.getElementById('country_id');
@@ -451,6 +502,7 @@ $(document).ready(function () {
 
     </script>
 
+
 <script>
     $(document).ready(function() {
 
@@ -522,21 +574,26 @@ $(document).ready(function () {
             return true;
         }
     }
-    $('#total_weight, #per_weight').on('keyup change', function() {
+    $('#total_weight, #per_weight,#per_pay_cost,#new_total').on('keyup change', function() {
         var weight = parseFloat($('#total_weight').val()) || 0;
         var perWeight = parseFloat($('#per_weight').val()) || 0;
+        var perPayWeight = parseFloat($('#per_pay_cost').val()) || 0;
         var total = weight * perWeight;
+        var new_total = weight * perPayWeight;
 
         $('#total').val(total.toFixed(2));
+        $('#new_total').val(new_total.toFixed(2));
     });
 
 
     $('#paid').keyup(function() {
 
         var total = parseFloat($('#total').val());
+        var new_total = parseFloat($('#new_total').val());
         var paid = parseFloat($('#paid').val());
 
         $('#balance').val(total - paid);
+        $('#new_balance').val(new_total - paid);
     });
 
     $('#client_id').change(function() {
@@ -560,7 +617,12 @@ $(document).ready(function () {
     // 	var stock = $(this).find(':selected').data('cost');
 
     // });
-
+    function setRateToPerWeight(select) {
+        var selectedOption = select.options[select.selectedIndex];
+        var rate = selectedOption.getAttribute('data-rate');
+        document.getElementById('per_weight').value = rate || '';
+        document.getElementById('per_pay_cost').value = rate || '';
+    }
     function calculateSell(select) {
         // Get the selected option
         var selectedOption = $(select).find('option:selected');

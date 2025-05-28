@@ -27,8 +27,8 @@ class StoreCargoRequest extends FormRequest
             'client_id' => 'required',
 
             'total' => 'required',
-            'total_Weight' => 'required',
-            'per_Weight' => 'required',
+            // 'total_Weight' => 'required',
+            // 'per_Weight' => 'required',
         ];
     }
 }

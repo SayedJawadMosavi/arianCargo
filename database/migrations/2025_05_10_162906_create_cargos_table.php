@@ -21,12 +21,16 @@ class CreateCargosTable extends Migration
             $table->unsignedBigInteger('client_id');
             $table->unsignedBigInteger('receiver_id');
             $table->foreignId('account_id')->constrained();
+            $table->unsignedBigInteger('country_id')->nullable();
 
             $table->double('total');
+            $table->double('new_total');
             $table->double('total_weight')->default(0);
             $table->double('per_weight')->default(0);
+            $table->double('new_per_weight')->default(0);
             $table->double('paid')->nullable();
             $table->double('balance')->nullable();
+            $table->double('new_balance')->nullable();
             $table->double('rate')->nullable();
             // $table->string('operation')->enum(['multiply', 'divide'])->default('multiply');
             $table->string('operation')->nullable();

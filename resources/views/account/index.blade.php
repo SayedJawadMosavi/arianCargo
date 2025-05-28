@@ -51,6 +51,12 @@
                         <th>{{ __('home.sn') }}</th>
                         <th>{{ __('home.name') }}</th>
                         <th>{{ __('home.amount') }}</th>
+                        @if ($branch->is_main_branch==0)
+
+                        <th>{{ __('home.branch_payable') }}</th>
+                        <th>{{ __('home.paid') }}</th>
+                        <th>{{ __('home.balance') }}</th>
+                        @endif
                         <th>{{ __('home.currency') }}</th>
                         <th>{{ __('home.default') }}</th>
                         <th>{{ __('home.active') }}</th>
@@ -63,6 +69,12 @@
                         <td class="text-muted">{{$obj->id}}</td>
                         <td class="fw-semibold">{{$obj->name}}</td>
                         <td>{{ number_format($obj->amount, 2) }}</td>
+                        @if ($branch->is_main_branch==0)
+
+                        <td><span class="badge bg-info">{{ number_format($obj->cargo_amount, 2) }} </span></td>
+                        <td><span class="badge bg-success">{{ number_format($obj->paid_amount, 2) }} </span></td>
+                        <td><span class="badge bg-danger"> {{ number_format($obj->cargo_amount - $obj->paid_amount) }} </span></td>
+                        @endif
                         <td><span class="badge bg-secondary">{{ $obj->currency->name }}</span></td>
                         <td>
                             @if($obj->default == 1)
@@ -92,6 +104,9 @@
                                 <a class="btn btn-sm btn-outline-success" href="{{ route('account.statement', $obj) }}" data-bs-toggle="tooltip" title="Statement">
                                     <i class="fe fe-menu"></i>
                                 </a>
+                                 <a class="btn btn-outline-secondary btn-sm rounded-0" href="{{ route('account.show', $obj->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
+                                                        <i class="fe fe-credit-card fs-16"></i>
+                                                    </a>
                             </div>
                         </td>
                     </tr>

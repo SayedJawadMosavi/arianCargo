@@ -92,6 +92,7 @@ trait PermissionTrait
             ['name' => 'cargo.edit', 'display_name' => 'Edit Cargo'],
             ['name' => 'cargo.delete', 'display_name' => 'Delete Cargo'],
             ['name' => 'cargo.details', 'display_name' => 'Cargo Details'],
+            ['name' => 'branch.receivable', 'display_name' => 'Branch Receivable'],
         ],
         'payment' => [
             ['name' => 'payment.view', 'display_name' => 'View Payment'],

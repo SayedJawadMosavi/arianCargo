@@ -29,3 +29,5 @@ Route::get('get_latest_exchange_rate/{account_id}', [RateController::class, 'get
 
 Route::get('/cargo-payment/{id}/edit', [CargoPaymentController::class, 'edit'])->name('cargo.payment.edit');
 Route::delete('/cargo-payment/{id}', [CargoPaymentController::class, 'destroy'])->name('cargo.payment.destroy');
+Route::get('branch/receivable', [CargoController::class, 'branchReceivable'])->name('branch.receivable');
+Route::post('/branch/receivable', [CargoController::class, 'getBranchReceivableReport'])->name('report.branch_receivable.post');

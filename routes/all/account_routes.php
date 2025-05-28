@@ -10,3 +10,5 @@ Route::resource('account', AccountController::class);
 Route::post('restore-account/{id}', [AccountController::class, 'restore'])->name('account.restore');
 Route::delete('force-delete-account/{id}', [AccountController::class, 'forceDelete'])->name('account.forceDelete');
 Route::post('account-status/{id}', [AccountController::class, 'changeStatus'])->name('account.status');
+Route::post('/account/pay', [AccountController::class, 'pay'])->name('account.pay');
+Route::post('account-payment/update', [AccountController::class, 'updatePayment'])->name('account.payment.update');

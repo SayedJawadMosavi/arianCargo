@@ -20,6 +20,9 @@ class CreateBranchesTable extends Migration
             $table->string('address')->nullable();
             $table->string('mobile1')->nullable();
             $table->string('mobile2')->nullable();
+            $table->integer('start_bill')->default(0);
+            $table->boolean('is_main_branch')->default(0);
+            $table->integer('end_bill')->default(0);
             $table->string('logo')->nullable();
             $table->string('active')->default(1);
             $table->foreignId('user_id')->constrained();

@@ -27,7 +27,9 @@ trait AccountLogTrait
             'account_id' => $account,
             'type' => $type,
             'amount' => $amount,
+
             'balance' => $available,
+
             'description' => $desc,
             'action' => $action,
             'action_id' => $action_id,

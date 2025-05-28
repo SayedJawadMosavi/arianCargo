@@ -34,6 +34,9 @@
                 @canany(['client.payable' ])
                 <li><a href="{{route('client.payable')}}" class="slide-item"> {{ __('home.client_payable') }} </a></li>
                 @endcanany
+           @canany(['branch.receivable' ])
+                <li><a href="{{route('branch.receivable')}}" class="slide-item"> {{ __('home.branch_receivable') }} </a></li>
+                @endcanany
             </ul>
         </li>
         @endcanany

@@ -40,32 +40,30 @@
                                                 </span>
                                             </div>
                                             <div>
-                                                <div class="text-muted fe fe-user">{{ __('home.client') }}</div>
-                                                <div class="fs-5">{{ $cargo->client->name ?? $cargo->client_name }}</div>
+                                                <div class="text-muted fe fe-user">{{ __('home.account') }}</div>
+                                                <div class="fs-5">{{ $accounts->name ?? '' }}</div>
                                             </div>
                                         </div>
 
                                         <div class="text-center mx-3">
                                             <div class="text-muted small">{{ __('home.total') }}</div>
-                                            <div class="fs-5 text-dark">
-                                                <i class="fe fe-dollar-sign text-primary"></i>
-                                                {{ number_format($cargo->new_total) }}
+                                            <div class="fs-5 fw-bold text-primary">
+                                                {{ number_format($accounts->cargo_amount) }}
                                             </div>
                                         </div>
 
                                         <div class="text-center mx-3">
                                             <div class="text-muted small">{{ __('home.paid') }}</div>
-                                            <div class="fs-5 text-success">
-                                                <i class="fe fe-check-circle"></i>
-                                                {{ number_format($cargo->paid) }}
+                                            <div class="fs-5 fw-bold text-success">
+                                                {{ number_format($accounts->paid_amount) }}
                                             </div>
                                         </div>
 
                                         <div class="text-center mx-3">
                                             <div class="text-muted small">{{ __('home.balance') }}</div>
-                                            <div class="fs-5 text-danger">
-                                                <i class="fe fe-alert-circle"></i>
-                                                {{ number_format($cargo->new_balance) }}
+                                            <div class="fs-5 fw-bold text-danger">
+                                                {{ number_format($accounts->cargo_amount - $accounts->paid_amount) }}
+
                                             </div>
                                         </div>
                                     </div>
@@ -84,7 +82,7 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach($cargo->payments as $index => $payment)
+                                    @foreach($accounts->payments as $index => $payment)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $settings->date_type == 'shamsi' ? $payment->shamsi_date : $payment->miladi_date }}</td>
@@ -93,13 +91,13 @@
 
                                         <td>
 
-                                        <button class="btn-save btn btn-sm btn-outline-success" style="display:none;">{{ __('home.update') }}</button>
+                                            <button class="btn-save btn btn-sm btn-outline-success" style="display:none;">{{ __('home.update') }}</button>
                                             @can('payment.edit')
                                             <button class="btn-edit btn btn-sm btn-outline-primary">{{ __('home.edit') }}</button>
                                             @endcan
 
                                             @can('payment.delete')
-                                            <form action="{{ route('cargo_payment.destroy', $payment) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure?')">
+                                            <form action="{{ route('account.destroy', $payment->id) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Are you sure?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm p-1" style="background: transparent;">
@@ -129,83 +127,82 @@
 
 @section('pagescript')
 <script>
-     $(document).ready(function() {
+    $(document).ready(function() {
 
-var table = $('#file-datatable').DataTable();
+        var table = $('#file-datatable').DataTable();
 
-// Handle Edit button click
-$('#file-datatable tbody').on('click', '.btn-edit', function() {
-    // Remove contenteditable attribute from all cells
-    $('td[contenteditable="true"]').removeAttr('contenteditable');
+        // Handle Edit button click
+        $('#file-datatable tbody').on('click', '.btn-edit', function() {
+            // Remove contenteditable attribute from all cells
+            $('td[contenteditable="true"]').removeAttr('contenteditable');
 
-    // Add contenteditable attribute to the cells in the clicked row
-    var row = $(this).closest('tr');
-    row.find('td:eq(2), td:eq(3)').attr('contenteditable', 'true');
+            // Add contenteditable attribute to the cells in the clicked row
+            var row = $(this).closest('tr');
+            row.find('td:eq(2), td:eq(3)').attr('contenteditable', 'true');
 
-    // Show the Save button for the clicked row
-    row.find('.btn-save').show();
+            // Show the Save button for the clicked row
+            row.find('.btn-save').show();
 
-    // Hide the Edit button for the clicked row
-    row.find('.btn-edit').hide();
-});
+            // Hide the Edit button for the clicked row
+            row.find('.btn-edit').hide();
+        });
 
-// Handle Save button click
-$('#file-datatable tbody').on('click', '.btn-save', function() {
-    var row = $(this).closest('tr');
-    var amount = row.find('td:eq(2)').text().trim();
-    var description = row.find('td:eq(3)').text().trim();
-    var id = row.find('td:eq(0)').text().trim();
+        // Handle Save button click
+        $('#file-datatable tbody').on('click', '.btn-save', function() {
+            var row = $(this).closest('tr');
+            var amount = row.find('td:eq(2)').text().trim();
+            var description = row.find('td:eq(3)').text().trim();
+            var id = row.find('td:eq(0)').text().trim();
 
-    // Ensure that both amount and description have values before sending the request
-    if (amount !== '' && description !== '') {
-        sendDataToServer(row, amount, description, id);
-    } else {
-        alert('Please enter both amount and description before saving.');
-    }
+            // Ensure that both amount and description have values before sending the request
+            if (amount !== '' && description !== '') {
+                sendDataToServer(row, amount, description, id);
+            } else {
+                alert('Please enter both amount and description before saving.');
+            }
 
-    // Remove contenteditable attribute from all cells
-    $('td[contenteditable="true"]').removeAttr('contenteditable');
+            // Remove contenteditable attribute from all cells
+            $('td[contenteditable="true"]').removeAttr('contenteditable');
 
-    // Hide the Save button for all rows
-    $('.btn-save').hide();
+            // Hide the Save button for all rows
+            $('.btn-save').hide();
 
-    // Show the Edit button for all rows
-    $('.btn-edit').show();
-});
-function sendDataToServer(row, amount, description, id) {
-    // AJAX request to submit data to the Laravel controller
-    var url = "{{ url('/cargo-payment/update') }}";
-    var _token = "{{ csrf_token() }}";
+            // Show the Edit button for all rows
+            $('.btn-edit').show();
+        });
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        function sendDataToServer(row, amount, description, id) {
+            // AJAX request to submit data to the Laravel controller
+            var url = "{{ url('/account-payment/update') }}";
+            var _token = "{{ csrf_token() }}";
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                _token: _token,
+                url: url,
+                type: 'POST',
+                data: {
+                    amount: amount,
+                    description: description,
+                    id: id,
+                    // Add more fields as needed
+                },
+                success: function(response) {
+                    // console.log(response);
+                    $('.success-message').html(response[1]).fadeIn().delay(3000).fadeOut();
+                },
+                error: function(error) {
+                    // console.error(error);
+                    $('.error-message').html('An error occurred. Please try again.').fadeIn().delay(3000).fadeOut();
+                }
+            });
         }
-    });
 
-    $.ajax({
-        _token: _token,
-        url: url,
-        type: 'POST',
-        data: {
-            amount: amount,
-            description: description,
-            id: id,
-            // Add more fields as needed
-        },
-        success: function(response) {
-            // console.log(response);
-            $('.success-message').html(response[1]).fadeIn().delay(3000).fadeOut();
-        },
-        error: function(error) {
-            // console.error(error);
-            $('.error-message').html('An error occurred. Please try again.').fadeIn().delay(3000).fadeOut();
-        }
     });
-}
-
-});
 </script>
 @endsection
-
-

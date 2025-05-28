@@ -401,12 +401,20 @@ return [
     'select'            =>      'Select One',
     'items'            =>      'Items Name',
     'per_weight'            =>      'per Weight Cost',
+    'per_pay_cost'            =>      'per Pay weight Cost',
     'total_weight' => ' Total Weight ',
     'value' => ' Item Value ',
     'sender_tazkira' => ' Sender Tazkira ',
     'pay_now' => ' Pay Now ',
     'payment' => ' Payment List ',
     'dimensions' => ' Dimensions  ',
+    'start_bill' => ' Start Of Bill Number  ',
+    'end_bill' => ' End Of Bill Number  ',
+    'new_total' => ' New Total  ',
+    'new_balance' => ' New Balance  ',
+    'is_main_branch' => ' is main branch ?  ',
+    'branch_receivable' => ' Branch Receivable ',
+    'branch_payable' => ' Branch Payable ',
 
 
 

@@ -40,6 +40,15 @@
                     <th colspan="2" class="text-center text-white" style="background: #29a1e6 !important;">Sender Information</th>
                     <th colspan="2" class="text-center text-white" style="background: #29a1e6 !important;">Receiver Information</th>
                 </tr>
+                  <thead>
+                        <tr>
+                            <th class="text-center text-white" style="background: #29a1e6 !important;">{{ __('home.bill') }}   : {{$sell->bill}}</th>
+                            <th class="text-end text-white" style="background: #29a1e6 !important;">Invoice  :{{ $sell->number}}</th>
+                            <th class="text-end text-white" style="background: #29a1e6 !important;"></th>
+                            <th class="text-end text-white" style="background: #29a1e6 !important;"></th>
+
+                        </tr>
+                    </thead>
                 <tr>
                     <th >Shipper Name</th>
                     <td>{{ $sell->client->name }}</td>
@@ -68,6 +77,7 @@
 
             <div class="table-responsive push">
                 <table class="table table-bordered table-hover mb-0 text-nowrap">
+
                     <thead>
                         <tr>
                             <th class="text-center text-white" style="background: #29a1e6 !important;">{{ __('home.sn') }}</th>
@@ -94,10 +104,10 @@
             <table class="table table-hover mt-3">
                 <thead>
                     <tr>
-                        <th>Total Weight: {{ $sell->total }}</th>
-                        <th>Total Cost: {{ $sell->total }}</th>
+                        <th>Total Weight: {{ $sell->total_weight }}</th>
+                        <th>Total Cost: {{ $sell->new_total }}</th>
                         <th>Total Paid: {{ $sell->paid }}</th>
-                        <th>Total Reminder: {{ $sell->balance }}</th>
+                        <th>Total Reminder: {{ $sell->new_balance }}</th>
                     </tr>
                 </thead>
             </table>

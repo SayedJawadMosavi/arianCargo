@@ -17,6 +17,8 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->string('name');
             $table->double('amount')->default(0)->unsigned();
+            $table->double('cargo_amount')->default(0)->unsigned();
+            $table->double('paid_amount')->default(0)->unsigned();
             $table->string('description')->nullable();
             $table->foreignId('currency_id')->constrained();
             $table->foreignId('branch_id')->constrained();

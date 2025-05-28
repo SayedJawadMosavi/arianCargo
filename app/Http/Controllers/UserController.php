@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use Illuminate\Http\Request;
@@ -25,13 +26,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->branch_id == 1){
+        if (auth()->user()->branch_id == 1) {
             $user = User::with('branch')->get();
-        }else{
+        } else {
             $user = User::with('branch')->branch()->get();
         }
 
-        return view('user.index')->with('users', $user );
+        return view('user.index')->with('users', $user);
     }
 
     /**
@@ -42,13 +43,12 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        if(auth()->user()->branch_id == 1){
+        if (auth()->user()->branch_id == 1) {
             $branches = Branch::all();
-        }else{
-            $branches = Branch::where('id',auth()->user()->branch_id)->get();
+        } else {
+            $branches = Branch::where('id', auth()->user()->branch_id)->get();
         }
-        return view('user.create',compact('roles','branches'));
-
+        return view('user.create', compact('roles', 'branches'));
     }
 
     /**
@@ -66,33 +66,42 @@ class UserController extends Controller
             'roles' => 'required',
             'branch_id' => 'required'
         ]);
-        $image_path_el="";
-        if($request->hasFile('photo')){
+        $image_path_el = "";
+        if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = time().'_'.$file->getClientOriginalName();
+            $filename = time() . '_' . $file->getClientOriginalName();
             // File upload location
             $location = 'images/users/';
             // Upload file
-            $image_path=   $file->move($location,$filename);
+            $image_path =   $file->move($location, $filename);
             $image_path_el = $image_path;
-
         }
 
 
 
-      $user=  User::create([
+        try {
+            DB::beginTransaction();
 
-            'name' => $request->name,
-            'email' => $request->email,
-            'branch_id' => $request->branch_id,
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'branch_id' => $request->branch_id,
+                'password' => Hash::make($request->password),
+                'image' => $image_path_el,
+            ]);
 
-            'password' => Hash::make($request->password),
+            $user->assignRole($request->input('roles'));
 
-            'image' => $image_path_el,
+            Branch::where('id', $request->branch_id)->update(['user_id' => $user->id]);
 
-        ]);
-        $user->assignRole($request->input('roles'));
-        return redirect()->route('users.index')->with('success', 'New user added successfully');
+            DB::commit();
+            // success message or redirect can go here
+            return redirect()->route('users.index')->with('success', 'New user added successfully');
+        } catch (\Exception $e) {
+            DB::rollback();
+            // handle the exception, e.g. return error message or log
+            return back()->withErrors(['error' => 'Something went wrong.']);
+        }
     }
 
     /**
@@ -114,7 +123,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user=User::find($id);
+        $user = User::find($id);
         $roles = Role::all();
         $branches = Branch::all();
 
@@ -140,25 +149,24 @@ class UserController extends Controller
             'roles' => 'required',
             'branch_id' => 'required'
         ]);
-        $image_path_el="";
-        if($request->hasFile('photo')){
+        $image_path_el = "";
+        if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = time().'_'.$file->getClientOriginalName();
+            $filename = time() . '_' . $file->getClientOriginalName();
             // File upload location
             $location = 'images/users/';
             // Upload file
-            $image_path=   $file->move($location,$filename);
+            $image_path =   $file->move($location, $filename);
             $image_path_el = $image_path;
-
         }
-         $user = User::find($id);
-         if (!empty($request->password)) {
-            $password= Hash::make($request->password);
-         }else{
-             $password=auth()->user()->password;
-         }
+        $user = User::find($id);
+        if (!empty($request->password)) {
+            $password = Hash::make($request->password);
+        } else {
+            $password = auth()->user()->password;
+        }
 
-     User::where('id',$id)->update([
+        User::where('id', $id)->update([
 
             'name' => $request->name,
             'email' => $request->email,
@@ -169,7 +177,9 @@ class UserController extends Controller
             'image' => $image_path_el,
 
         ]);
-         \DB::table('model_has_roles')->where('model_id', $id)->delete();
+        Branch::where('id', $request->branch_id)->update(['user_id'   => $user->id]);
+
+        \DB::table('model_has_roles')->where('model_id', $id)->delete();
         $user->assignRole($request->roles);
         return redirect()->route('users.index')->with('success', ' user updated successfully');
     }
@@ -207,6 +217,5 @@ class UserController extends Controller
             // Handle the exception
             return redirect()->back()->with('error', 'Error deleting User: ' . $e->getMessage());
         }
-
     }
 }

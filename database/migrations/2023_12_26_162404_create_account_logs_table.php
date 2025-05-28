@@ -18,7 +18,9 @@ class CreateAccountLogsTable extends Migration
             $table->foreignId('account_id')->constrained();
             $table->enum('type', ['withdraw', 'deposit']);
             $table->double('amount');
+
             $table->double('balance');
+
             $table->string('description')->nullable();
             $table->string('action');
             $table->integer('action_id')->nullable();

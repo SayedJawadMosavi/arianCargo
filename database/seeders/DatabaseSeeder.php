@@ -52,11 +52,11 @@ class DatabaseSeeder extends Seeder
         );
         DB::table('branches')->insert(
             array(
-                'name' => 'Nethub',
-                'contact_person' => 'Hamidy ',
+                'name' => 'Main Branch',
+                'contact_person' => 'Sharafat ',
                 'address' => 'Shahr-e-naw Kabul, Afghanistan',
-                'mobile1' => '0780100676',
-                'mobile2' => '0700664433',
+                'mobile1' => '04535435534',
+                'mobile2' => '043534543543',
                 'active' => 1,
                 'user_id' => 1
             )
