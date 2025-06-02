@@ -25,6 +25,7 @@
                         <th> {{ __('home.contact_person') }}</th>
                         <th> {{ __('home.mobile') }}</th>
                         <th> {{ __('home.address') }}</th>
+                        <th> {{ __('home.balance') }}</th>
                         <th> {{ __('home.is_main_branch') }}</th>
                         <th> {{ __('home.start_bill') }}</th>
                         <th> {{ __('home.end_bill') }}</th>
@@ -42,6 +43,20 @@
                         <td>{{$branch->contact_person}}</td>
                         <td>{{$branch->mobile1}}</td>
                         <td>{{$branch->address}}</td>
+                        <td>
+                            @if ($branch->is_main_branch==0)
+
+                            @if (isset($branchTotals[$branch->id]))
+                            @foreach ($branchTotals[$branch->id] as $obj)
+                            <span class="badge rounded-pill {{ $obj['total'] > 0 ? 'bg-danger' : 'bg-danger' }} badge-sm me-1 mb-1 mt-1 text-white">
+                                {{ $obj['currency'] }}: <i dir="ltr">{{ number_format($obj['total']) }}</i>
+                            </span>
+                            @endforeach
+                            @else
+                            <span class="text-muted">{{ __('No accounts') }}</span>
+                            @endif
+                            @endif
+                        </td>
                         <td>
                             @if ($branch->is_main_branch == 1)
                             <span class="badge bg-success">Yes</span>

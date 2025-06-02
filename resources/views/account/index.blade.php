@@ -58,6 +58,7 @@
                         <th>{{ __('home.balance') }}</th>
                         @endif
                         <th>{{ __('home.currency') }}</th>
+                        <th>{{ __('home.branch') }}</th>
                         <th>{{ __('home.default') }}</th>
                         <th>{{ __('home.active') }}</th>
                         <th>{{ __('home.action') }}</th>
@@ -76,6 +77,7 @@
                         <td><span class="badge bg-danger"> {{ number_format($obj->cargo_amount - $obj->paid_amount) }} </span></td>
                         @endif
                         <td><span class="badge bg-secondary">{{ $obj->currency->name }}</span></td>
+                        <td><span class="badge bg-secondary">{{ $obj->branchs->name  ??'' }}</span></td>
                         <td>
                             @if($obj->default == 1)
                             <span class="badge bg-success">{{ __('home.yes') }}</span>
@@ -104,6 +106,7 @@
                                 <a class="btn btn-sm btn-outline-success" href="{{ route('account.statement', $obj) }}" data-bs-toggle="tooltip" title="Statement">
                                     <i class="fe fe-menu"></i>
                                 </a>
+
                                  <a class="btn btn-outline-secondary btn-sm rounded-0" href="{{ route('account.show', $obj->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('home.payment') }}">
                                                         <i class="fe fe-credit-card fs-16"></i>
                                                     </a>

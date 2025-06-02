@@ -61,7 +61,7 @@ class CargoController extends Controller
         $user_id  = auth()->user()->id;
 
         $branch =  Branch::where('user_id', $user_id)->first();
-        return view('sell.index', compact('cargos', 'trashed','branch'));
+        return view('sell.index', compact('cargos', 'trashed', 'branch'));
     }
 
     public function filterCargo(Request $request)
@@ -76,7 +76,7 @@ class CargoController extends Controller
         $branch =  Branch::where('user_id', $user_id)->first();
 
         $trashed = Cargo::branch()->with('currency', 'receiver')->onlyTrashed()->whereBetween($column, [$from, $to])->get();
-        return view('sell.index', compact('cargos', 'trashed','branch'));
+        return view('sell.index', compact('cargos', 'trashed', 'branch'));
     }
     public function bill($id)
     {
@@ -105,7 +105,7 @@ class CargoController extends Controller
 
         // If no cargo exists yet, start from branch's start_bill
         $nextBillNumber = $latestCargo ? $latestCargo->bill + 1 : $branch->start_bill;
-        $currencies = Currency::active()->branch()->get();
+        $currencies = Currency::active()->get();
         return view('sell.create', compact('clients', 'accounts', 'currencies', 'countries', 'nextBillNumber'));
     }
 
@@ -195,13 +195,6 @@ class CargoController extends Controller
             if ($account->amount !== null) {
                 // If amount is not null, add $request->paid to the existing amount
                 $account->increment('amount', (float) $request->paid);
-                if ($branch->is_main_branch == 0) {
-                    if($main_branch->is_main_branch==1){
-
-                        $account->increment('cargo_amount', (float) $request->total);
-                    }
-                    $account->increment('cargo_amount', (float) $request->total);
-                }
             } else {
                 // If amount is null, set it to the value of $request->paid
                 $account->update(['amount' => (float) $request->paid]);
@@ -209,7 +202,10 @@ class CargoController extends Controller
                     $account->update(['cargo_amount' => (float) $request->total]);
                 }
             }
+            if ($branch->is_main_branch == 0) {
 
+                $account->increment('cargo_amount', (float) $request->total);
+            }
             $flag = $this->InsertAccountLog($request->account_id, $type, $request->paid, $description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
             // dd($flag);
 
@@ -710,6 +706,7 @@ class CargoController extends Controller
     }
     public function getBranchReceivableReport(Request $request)
     {
+
         if ($this->settings->date_type == 'shamsi') {
             $to = $request->to_shamsi;
             $from = $request->from_shamsi;
@@ -728,7 +725,7 @@ class CargoController extends Controller
                 $query->where('branch_id', $request->branch_id);
             }
         } else {
-            $query->where('branch_id', Auth::user()->branch_id);
+            $query->where('branch_id', $request->branch_id);
         }
 
         // Apply date range filter
@@ -737,6 +734,7 @@ class CargoController extends Controller
         }
 
         $logs = $query->get();
+
 
         $branches = Branch::where('is_main_branch', '!=', 1)->get();
 

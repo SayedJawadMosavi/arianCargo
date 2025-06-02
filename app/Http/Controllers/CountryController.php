@@ -43,7 +43,7 @@ class CountryController extends Controller
         $attributes = $request->only($country->getFillable());
         $attributes['user_id'] = auth()->user()->id;
         $attributes['active'] = 1;
-        $attributes['branch_id'] = auth()->user()->branch_id;
+
         $country =  $country->create($attributes);
         $countrys = Country::all();
         return redirect()->route('country.index')->with('success', 'country created successfully');

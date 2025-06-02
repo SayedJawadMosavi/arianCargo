@@ -53,7 +53,7 @@ class CurrencyController extends Controller
         $attributes['user_id'] = auth()->user()->id;
         $attributes['active'] = 1;
         $attributes['default'] = 1;
-        $attributes['branch_id'] = auth()->user()->branch_id;
+
         $currency =  $currency->create($attributes);
         $currencies = Currency::all();
         return redirect()->route('currency.index', compact('currencies'))->with('success', 'Currency created successfully');

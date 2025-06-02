@@ -19,7 +19,6 @@ class CreateCountriesTable extends Migration
             $table->string('description')->nullable();
             $table->double('rate')->default(0);
             $table->string('active')->default(1);
-            $table->integer('branch_id');
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
             $table->softDeletes();

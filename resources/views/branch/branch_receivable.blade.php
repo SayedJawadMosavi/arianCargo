@@ -19,7 +19,7 @@
                 @csrf
                 @method('POST')
                 <div class="form-row align-items-center my-5 offset-md-1">
-                    @if(auth()->user()->hasRole('admin'))
+
                     <div class="col-md-3">
                         <label>{{ __('home.branch') }}</label>
                         <select class="form-select" name="branch_id">
@@ -29,7 +29,7 @@
                             @endforeach
                         </select>
                     </div>
-                    @endif
+
                     @if ($settings->date_type=='shamsi')
                     <div class="col-xl-3">
                         <label for="validationServer01">{{ __('home.from_date') }}</label>

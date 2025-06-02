@@ -23,10 +23,32 @@ class BranchController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return view('branch.index')->with('branches',    Branch::get());
+public function index()
+{
+    // Eager load accounts with currency and branch
+    $branches = Branch::with(['accounts.currency'])->get();
+
+    $branchTotals = [];
+
+    foreach ($branches as $branch) {
+        $grouped = $branch->accounts->groupBy('currency_id');
+
+        $totals = [];
+
+        foreach ($grouped as $currencyId => $accounts) {
+            $currency = $accounts->first()->currency;
+            $totals[] = [
+                'currency' => $currency->name,
+                'total'    => $accounts->sum('cargo_amount'), // or 'amount'
+            ];
+        }
+
+        $branchTotals[$branch->id] = $totals;
     }
+
+    return view('branch.index', compact('branches', 'branchTotals'));
+}
+
     /**
      * Show the form for creating a new resource.
      *

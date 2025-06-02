@@ -9,13 +9,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Account extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'branch_id', 'currency_id', 'amount', 'description', 'active', 'default', 'user_id'];
+    protected $fillable = ['name', 'branch_id', 'cargo_amount', 'paid_amount', 'currency_id', 'amount', 'description', 'active', 'default', 'user_id'];
 
     public function scopeBranch($query)
     {
         return $query->where('branch_id', auth()->user()->branch_id);
     }
-
+    public function branchs()
+    {
+        return $this->belongsTo(Branch::class,'branch_id');
+    }
     public function currency()
     {
         return $this->belongsTo(Currency::class);

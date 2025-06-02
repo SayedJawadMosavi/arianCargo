@@ -37,15 +37,22 @@ class AccountController extends Controller
     public function index()
     {
 
+        $user_id  = auth()->user()->id;
 
-        $accounts = Account::branch()->with('currency')->get();
+        $branch =  Branch::where('user_id', $user_id)->first();
+        if ($branch->is_main_branch == 1) {
+
+            $accounts = Account::with('currency', 'branchs')->get();
+        } else {
+
+            $accounts = Account::branch()->with('currency')->get();
+        }
+
         $groupedAccounts = $accounts->groupBy('currency.name');
 
         $sumsByCurrency = $groupedAccounts->map(function ($group) {
             return $group->sum('amount');
         });
-        $user_id  = auth()->user()->id;
-        $branch =  Branch::where('user_id', $user_id)->first();
 
         return view('account.index', compact('accounts', 'sumsByCurrency', 'branch'));
 
@@ -61,7 +68,7 @@ class AccountController extends Controller
      */
     public function create()
     {
-        $currencies = Currency::branch()->get();
+        $currencies = Currency::active()->get();
         return view('account.create', compact('currencies'));
     }
 
@@ -178,9 +185,16 @@ class AccountController extends Controller
         try {
             DB::beginTransaction();
 
-           $account_payment= AccountPayment::find($id);
-            Account::find($account_payment->account_id)->decrement('amount', $account_payment->amount);
+            $account_payment = AccountPayment::find($id);
+
+            $account = Account::where('id', $account_payment->account_id)->first();
+
+            $branch = Branch::where('is_main_branch', 1)->first();
+            $main_branch_account = Account::where('branch_id', $branch->id)->where('currency_id', $account->currency_id)->first();
+
+            Account::find($account_payment->account_id)->increment('amount', $account_payment->amount);
             Account::find($account_payment->account_id)->decrement('paid_amount', $account_payment->amount);
+            $main_branch_account->decrement('amount', $account_payment->amount);
 
             AccountLog::where([
                 'action'    => 'branch_payment',
@@ -248,6 +262,7 @@ class AccountController extends Controller
         }
 
         $logs = AccountLog::where('account_id', $account->id)->with('account')->whereBetween($column, [$from, $to])->get();
+
         return view('account.statement', compact('logs', 'account'));
     }
 
@@ -261,15 +276,17 @@ class AccountController extends Controller
         ]);
 
         DB::beginTransaction();
-
+        // dd($request->all());
         try {
-            $account = Account::findOrFail($request->account_id);
+            $account = Account::where('id', $request->account_id)->first();
+
+            $branch = Branch::where('is_main_branch', 1)->first();
+            $main_branch_account = Account::where('branch_id', $branch->id)->where('currency_id', $account->currency_id)->first();
+
             $amountToPay = $request->amount;
             $currentDate = $request->shamsi_date ?? $request->miladi_date;
             $description = 'Branch Payment: - ' . ($request->description ?? '');
-            if ($amountToPay > $account->cargo_amount) {
-                return back()->with('error', 'Payment amount exceeds the remaining balance.');
-            }
+
             // 1. ثبت پرداخت
             $payment = AccountPayment::create([
                 'account_id'   => $account->id,
@@ -281,10 +298,31 @@ class AccountController extends Controller
                 'user_id'      => auth()->user()->id,
             ]);
 
-            // 2. ثبت لاگ
+
+
+            // 3. آپدیت paid_amount
+
+            if ($amountToPay > $account->cargo_amount || $amountToPay > $account->amount) {
+                return back()->with('error', 'Payment amount exceeds the remaining balance.');
+            }
+            $account->paid_amount += $amountToPay;
+            $account->decrement('amount', $amountToPay);
+
+            $account->save();
+            $main_branch_account->increment('amount', $amountToPay);
+            $this->InsertAccountLog(
+                $main_branch_account->id,
+                'deposit',
+                $amountToPay,
+                $description,
+                $main_branch_account->amount,
+                'branch_payment',
+                $payment->id,
+                $currentDate
+            );
             $this->InsertAccountLog(
                 $account->id,
-                'deposit',
+                'withdraw',
                 $amountToPay,
                 $description,
                 $account->amount,
@@ -292,12 +330,6 @@ class AccountController extends Controller
                 $payment->id,
                 $currentDate
             );
-
-            // 3. آپدیت paid_amount
-            $account->paid_amount += $amountToPay;
-            $account->amount += $amountToPay;
-            $account->save();
-
             DB::commit();
 
             return back()->with('success', 'Payment done SuccessFully');
@@ -313,20 +345,46 @@ class AccountController extends Controller
         try {
 
             $payment = AccountPayment::find($request->id);
+
             $account = Account::findOrFail($payment->account_id);
+            $branch = Branch::where('is_main_branch', 1)->first();
+            $main_branch_account = Account::where('branch_id', $branch->id)->where('currency_id', $account->currency_id)->first();
 
             Account::find($payment->account_id)->decrement('paid_amount', $payment->amount);
-            Account::find($payment->account_id)->decrement('amount', $payment->amount);
-
+            Account::find($payment->account_id)->increment('amount', $payment->amount);
+            $main_branch_account->decrement('amount', $payment->amount);
 
             Account::find($payment->account_id)->increment('paid_amount', $request->amount);
-            Account::find($payment->account_id)->increment('amount', $request->amount);
+            Account::find($payment->account_id)->decrement('amount', $request->amount);
+            $main_branch_account->increment('amount', $request->amount);
+            $description = 'Branch Payment: - ' . ($request->description ?? '');
+            $currentDate = $request->shamsi_date
+                ?? $request->miladi_date
+                ?? today()->format('Y-m-d');
 
-
-            $log = AccountLog::where(['action_id' => $payment->id, 'action' => 'branch_payment'])->update(['amount'  => $request->amount, 'type'  => 'deposit', 'balance'  => $account->amount]);
-
+            $log = AccountLog::where(['action_id' => $payment->id, 'action' => 'branch_payment'])->delete();
 
             $payment->update(['amount' => $request->amount, 'description' => $request->description]);
+            $this->InsertAccountLog(
+                $main_branch_account->id,
+                'deposit',
+                $request->amount,
+                $description,
+                $main_branch_account->amount,
+                'branch_payment',
+                $payment->id,
+                $currentDate
+            );
+            $this->InsertAccountLog(
+                $account->id,
+                'withdraw',
+                $request->amount,
+                $description,
+                $account->amount,
+                'branch_payment',
+                $payment->id,
+                $currentDate
+            );
 
 
             DB::commit();

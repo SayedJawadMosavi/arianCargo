@@ -58,6 +58,7 @@ class DatabaseSeeder extends Seeder
                 'mobile1' => '04535435534',
                 'mobile2' => '043534543543',
                 'active' => 1,
+                'is_main_branch' => 1,
                 'user_id' => 1
             )
         );
@@ -66,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'AFN',
                 'active' => 1,
                 'default' => 1,
-                'branch_id' => 1,
+
                 'user_id' => 1
             )
         );
@@ -75,7 +76,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'USD',
                 'active' => 1,
                 'default' => 0,
-                'branch_id' => 1,
+
                 'user_id' => 1
             )
         );

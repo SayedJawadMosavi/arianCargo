@@ -11,4 +11,8 @@ class Branch extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+    public function accounts()
+{
+    return $this->hasMany(Account::class);
+}
 }

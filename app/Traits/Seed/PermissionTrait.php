@@ -59,6 +59,12 @@ trait PermissionTrait
             ['name' => 'expense.edit', 'display_name' => 'Edit Expense'],
             ['name' => 'expense.delete', 'display_name' => 'Delete Expense'],
         ],
+        'commission' => [
+            ['name' => 'commission.view', 'display_name' => 'View commission'],
+            ['name' => 'commission.create', 'display_name' => 'Create commission'],
+            ['name' => 'commission.edit', 'display_name' => 'Edit commission'],
+            ['name' => 'commission.delete', 'display_name' => 'Delete commission'],
+        ],
         'income' => [
             ['name' => 'income.view', 'display_name' => 'View Income'],
             ['name' => 'income.create', 'display_name' => 'Create Income'],

@@ -18,7 +18,7 @@ class CreateCurrenciesTable extends Migration
             $table->string('name');
             $table->string('active')->default(1);
             $table->integer('default')->default(0);
-            $table->integer('branch_id');
+
             $table->foreignId('user_id')->constrained();
             $table->integer('deleted_by')->nullable();
             $table->integer('updated_by')->nullable();

@@ -84,7 +84,7 @@
                                 <tbody>
                                     @foreach($accounts->payments as $index => $payment)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $payment->id}}</td>
                                         <td>{{ $settings->date_type == 'shamsi' ? $payment->shamsi_date : $payment->miladi_date }}</td>
                                         <td>{{ number_format($payment->amount) }}</td>
                                         <td>{{ $payment->description }}</td>
