@@ -24,7 +24,7 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        $currencies = Currency::branch()->get();
+        $currencies = Currency::get();
         return view('currency.index', compact('currencies'));
     }
 

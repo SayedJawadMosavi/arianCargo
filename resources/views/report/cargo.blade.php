@@ -86,15 +86,21 @@
                 <thead>
                     <tr>
                         <th>{{ __('home.sn') }}</th>
-                        <th>{{ __('home.branch') }}</th>
                         <th>{{ __('home.date') }}</th>
+
                         <th>{{ __('home.bill') }}</th>
                         <th>{{ __('home.sn') }}</th>
                         <th>{{ __('home.sender') }}</th>
+                        <!-- <th>{{ __('home.sender_tazkira') }}</th> -->
+                        <th>{{ __('home.receiver') }}</th>
+                        @if ($branch->is_main_branch==0)
+                        <th>{{ __('home.branch_payable') }}</th>
+                        @endif
                         <th>{{ __('home.total') }}</th>
                         <th>{{ __('home.paid') }}</th>
                         <th>{{ __('home.currency') }}</th>
                         <th>{{ __('home.balance') }}</th>
+
                     </tr>
                 </thead>
 
@@ -103,24 +109,96 @@
                     @forelse($logs as $cargo)
                     <tr>
                         <td>{{ $c++ }}</td>
-                                <td>{{ $cargo->branchs->name ?? '-' }}</td>
-
                         <td>{{ $settings->date_type == 'shamsi' ? $cargo->shamsi_date : $cargo->miladi_date }}</td>
                         <td>{{ $cargo->bill }}</td>
                         <td>{{ $cargo->number }}</td>
                         <td>{{ $cargo->client->type != 'walkin' ? $cargo->client->name : $cargo->client_name }}</td>
-                        <td class="text-end text-dark fw-bold">{{ number_format($cargo->total) }}</td>
-                        <td class="text-end text-success fw-bold">{{ number_format($cargo->paid) }}</td>
-                        <td>{{ $cargo->currency->name }}</td>
-                        <td class="text-end fw-bold {{ $cargo->balance > 0 ? 'text-danger' : 'text-success' }}">
-                            {{ number_format($cargo->balance) }}
+                        <td>{{ $cargo->receiver->type != 'walkin' ? $cargo->receiver->name : $cargo->client_name }}</td>
+                        @if ($settings->currency_id == $cargo->currency_id)
+                        @if ($branch->is_main_branch == 0)
+                        <td class="text-end">
+                            <span class="badge bg-warning fs-6">
+                                {{ number_format($cargo->total) }} $
+                            </span>
                         </td>
+                        @endif
+
+                        <td class="text-end">
+                            <span class="badge bg-primary fs-6">
+                                {{ number_format($cargo->new_total) }}
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge bg-success fs-6">
+                                {{ number_format($cargo->paid) }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {{ $cargo->currency->name }}
+
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge {{ $cargo->balance > 0 ? 'bg-danger' : 'bg-success' }} fs-6">
+                                {{ number_format($cargo->new_balance) }}
+                            </span>
+                        </td>
+
+                        @else
+                        @if ($branch->is_main_branch == 0)
+                        <td class="text-end">
+                            <span class="badge bg-warning fs-6">
+                                {{ number_format($cargo->total) }} $
+                            </span>
+                        </td>
+                        @endif
+
+                        <td class="text-end">
+                            <span class="badge bg-primary fs-6">
+                                {{ number_format($cargo->equalent_total) }}
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge bg-success fs-6">
+                                {{ number_format($cargo->paid_equalent) }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {{ $cargo->currency->name }}
+
+                        </td>
+
+                        <td class="text-end">
+                            <span class="badge {{ $cargo->equalent_balance > 0 ? 'bg-danger' : 'bg-success' }} fs-6">
+                                {{ number_format($cargo->equalent_balance) }}
+                            </span>
+                        </td>
+
+                        @endif
+
+
+
+
                     </tr>
-                    @php
-                    $gtotal += $cargo->total;
-                    $gpaid += $cargo->paid;
-                    $gbalance += $cargo->balance;
-                    @endphp
+
+                 @php
+    if ($settings->currency_id == $cargo->currency_id) {
+        $gtotal += $cargo->new_total;
+        $gpaid += $cargo->paid;
+        $gbalance += $cargo->new_balance;
+    } else {
+        $gtotal += $cargo->equalent_total;
+        $gpaid += $cargo->paid_equalent;
+        $gbalance += $cargo->equalent_balance;
+    }
+@endphp
+
                     @empty
                     <tr>
                         <td colspan="9" class="text-center text-muted">{{ __('No data available') }}</td>
@@ -129,16 +207,19 @@
                     @endisset
                 </tbody>
 
-                <tfoot class="bg-light text-end fw-bold">
+                <tfoot>
                     <tr>
-                        <td colspan="5" class="text-start">{{ __('home.total') }}</td>
-                        <td></td>
-                        <td class="text-dark">{{ number_format($gtotal) }}</td>
-                        <td class="text-success">{{ number_format($gpaid) }}</td>
-                        <td></td>
-                        <td class="{{ $gbalance > 0 ? 'text-danger' : 'text-success' }}">{{ number_format($gbalance) }}</td>
+                        <th colspan="6" class="text-end">{{ __('Total') }}</th>
+                        @if ($branch->is_main_branch == 0)
+                        <th></th> {{-- total --}}
+                        @endif
+                        <th class="text-end text-primary">{{ number_format($gtotal) }}</th>
+                        <th class="text-end text-success">{{ number_format($gpaid) }}</th>
+                        <th></th> {{-- currency --}}
+                        <th class="text-end {{ $gbalance > 0 ? 'text-danger' : 'text-success' }}">{{ number_format($gbalance) }}</th>
                     </tr>
                 </tfoot>
+
             </table>
 
         </div>

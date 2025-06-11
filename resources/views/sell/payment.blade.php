@@ -49,7 +49,11 @@
                                             <div class="text-muted small">{{ __('home.total') }}</div>
                                             <div class="fs-5 text-dark">
                                                 <i class="fe fe-dollar-sign text-primary"></i>
-                                                {{ number_format($cargo->new_total) }}
+                                                  @if ($settings->currency_id== $cargo->currency_id)
+                                                  {{ number_format($cargo->new_total) }}
+                                                  @else
+                                                  {{ number_format($cargo->equalent_total) }}
+                                                  @endif
                                             </div>
                                         </div>
 
@@ -57,7 +61,11 @@
                                             <div class="text-muted small">{{ __('home.paid') }}</div>
                                             <div class="fs-5 text-success">
                                                 <i class="fe fe-check-circle"></i>
-                                                {{ number_format($cargo->paid) }}
+                                               @if ($settings->currency_id== $cargo->currency_id)
+                                                  {{ number_format($cargo->paid) }}
+                                                  @else
+                                                  {{ number_format($cargo->paid_equalent) }}
+                                                  @endif
                                             </div>
                                         </div>
 
@@ -65,7 +73,12 @@
                                             <div class="text-muted small">{{ __('home.balance') }}</div>
                                             <div class="fs-5 text-danger">
                                                 <i class="fe fe-alert-circle"></i>
-                                                {{ number_format($cargo->new_balance) }}
+                                               <i class="fe fe-check-circle"></i>
+                                               @if ($settings->currency_id== $cargo->currency_id)
+                                                  {{ number_format($cargo->new_balance) }}
+                                                  @else
+                                                  {{ number_format($cargo->equalent_balance) }}
+                                                  @endif
                                             </div>
                                         </div>
                                     </div>
@@ -86,7 +99,7 @@
                                 <tbody>
                                     @foreach($cargo->payments as $index => $payment)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $payment->id }}</td>
                                         <td>{{ $settings->date_type == 'shamsi' ? $payment->shamsi_date : $payment->miladi_date }}</td>
                                         <td>{{ number_format($payment->amount) }}</td>
                                         <td>{{ $payment->description }}</td>

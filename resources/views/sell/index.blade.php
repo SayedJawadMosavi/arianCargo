@@ -78,10 +78,11 @@
                                                 <td>{{ $cargo->number }}</td>
                                                 <td>{{ $cargo->client->type != 'walkin' ? $cargo->client->name : $cargo->client_name }}</td>
                                                 <td>{{ $cargo->receiver->type != 'walkin' ? $cargo->receiver->name : $cargo->client_name }}</td>
+                                                @if ($settings->currency_id == $cargo->currency_id)
                                                 @if ($branch->is_main_branch == 0)
                                                 <td class="text-end">
                                                     <span class="badge bg-warning fs-6">
-                                                        {{ number_format($cargo->total) }}
+                                                        {{ number_format($cargo->total) }} $
                                                     </span>
                                                 </td>
                                                 @endif
@@ -100,7 +101,7 @@
 
                                                 <td>
 
-                                                        {{ $cargo->currency->name }}
+                                                    {{ $cargo->currency->name }}
 
                                                 </td>
 
@@ -109,6 +110,41 @@
                                                         {{ number_format($cargo->new_balance) }}
                                                     </span>
                                                 </td>
+
+                                                @else
+                                                @if ($branch->is_main_branch == 0)
+                                                <td class="text-end">
+                                                    <span class="badge bg-warning fs-6">
+                                                        {{ number_format($cargo->total) }} $
+                                                    </span>
+                                                </td>
+                                                @endif
+
+                                                <td class="text-end">
+                                                    <span class="badge bg-primary fs-6">
+                                                        {{ number_format($cargo->equalent_total) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-end">
+                                                    <span class="badge bg-success fs-6">
+                                                        {{ number_format($cargo->paid_equalent) }}
+                                                    </span>
+                                                </td>
+
+                                                <td>
+
+                                                    {{ $cargo->currency->name }}
+
+                                                </td>
+
+                                                <td class="text-end">
+                                                    <span class="badge {{ $cargo->equalent_balance > 0 ? 'bg-danger' : 'bg-success' }} fs-6">
+                                                        {{ number_format($cargo->equalent_balance) }}
+                                                    </span>
+                                                </td>
+
+                                                @endif
 
 
                                                 <td>
@@ -148,13 +184,19 @@
 
                                             </tr>
                                             @php
-
+                                            if ($settings->currency_id == $cargo->currency_id) {
                                             $gtotal += $cargo->new_total;
                                             $total += $cargo->total;
                                             $gpaid += $cargo->paid;
                                             $gbalance += $cargo->new_balance;
-
+                                            } else {
+                                            $gtotal += $cargo->total_equalent;
+                                            $total += $cargo->total;
+                                            $gpaid += $cargo->paid_equalent;
+                                            $gbalance += $cargo->equalent_balance;
+                                            }
                                             @endphp
+
                                             <div class="modal fade" id="payModal{{$cargo->id}}" tabindex="-1" aria-labelledby="payModalLabel{{$cargo->id}}" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <form action="{{ route('cargo.pay', $cargo->id) }}" method="POST">
@@ -173,21 +215,37 @@
                                                                     <div class="col-md-4">
                                                                         <div class="bg-light rounded p-3 border">
                                                                             <div class="text-muted small">{{ __('home.total') }}</div>
+                                                                            @if ($settings->currency_id==$cargo->currency_id)
+
                                                                             <div class="fs-4 fw-bold text-dark">{{ number_format($cargo->new_total) }}</div>
+                                                                            @else
+
+                                                                            <div class="fs-4 fw-bold text-dark">{{ number_format($cargo->equalent_total) }}</div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="col-md-4">
                                                                         <div class="bg-light rounded p-3 border">
                                                                             <div class="text-muted small">{{ __('home.paid') }}</div>
+                                                                            @if ($settings->currency_id==$cargo->currency_id)
                                                                             <div class="fs-4 fw-bold text-success">{{ number_format($cargo->paid) }}</div>
+                                                                            @else
+                                                                            <div class="fs-4 fw-bold text-success">{{ number_format($cargo->paid_equalent) }}</div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="col-md-4">
                                                                         <div class="bg-light rounded p-3 border">
                                                                             <div class="text-muted small">{{ __('home.balance') }}</div>
+                                                                            @if ($settings->currency_id==$cargo->currency_id)
+
                                                                             <div class="fs-4 fw-bold text-danger">{{ number_format($cargo->new_balance) }}</div>
+                                                                            @else
+
+                                                                            <div class="fs-4 fw-bold text-danger">{{ number_format($cargo->equalent_balance) }}</div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
 
@@ -214,11 +272,19 @@
                                                                         @enderror
                                                                     </div>
 
+                                                                    @php
+                                                                    $maxAmount = ($settings->currency_id == $cargo->currency_id)
+                                                                    ? $cargo->new_total
+                                                                    : $cargo->equalent_total;
+                                                                    @endphp
+
                                                                     <div class="col-md-6">
-                                                                        <label for="pay_amount_{{ $cargo->id }}" class="form-label fw-semibold">{{ __('home.pay_now') }}</label>
+                                                                        <label for="pay_amount_{{ $cargo->id }}" class="form-label fw-semibold">
+                                                                            {{ __('home.pay_now') }}
+                                                                        </label>
                                                                         <input type="number"
                                                                             min="1"
-                                                                            max="{{ $cargo->new_balance }}"
+                                                                            max="{{ $maxAmount }}"
                                                                             class="form-control form-control-lg text-center"
                                                                             id="pay_amount_{{ $cargo->id }}"
                                                                             name="pay_amount"
@@ -243,7 +309,7 @@
 
                                             @endforeach
                                         </tbody>
-                                        <tfoot class="bg-light text-end fw-bold">
+                                        <!-- <tfoot class="bg-light text-end fw-bold">
                                             <tr>
                                                 <td colspan="5" class="text-start">{{ __('home.total') }}</td>
                                                 <td></td>
@@ -254,7 +320,7 @@
                                                 <td class="{{ $gbalance > 0 ? 'text-danger' : 'text-success' }}">{{ number_format($gbalance) }}</td>
                                                 <td></td>
                                             </tr>
-                                        </tfoot>
+                                        </tfoot> -->
 
                                     </table>
                                 </div>
@@ -306,11 +372,11 @@
                                                 <td>
                                                     <div class="g-2 ">
 
-                                                        <form action="{{route('cargo.restore', $cargo)}}" method="POST" class="d-inline">
+                                                       {{-- <form action="{{route('cargo.restore', $cargo)}}" method="POST" class="d-inline">
                                                             @method('POST')
                                                             @csrf
                                                             <button type="submit" data-bs-toggle="tooltip" data-bs-original-title="Restore" class="btn text-primary btn-sm"><span class="fe fe-repeat fs-14"></span></button>
-                                                        </form>
+                                                        </form>--}}
                                                         <form action="{{route('cargo.forceDelete', $cargo)}}" method="POST" class="d-inline">
                                                             @method('delete')
                                                             @csrf

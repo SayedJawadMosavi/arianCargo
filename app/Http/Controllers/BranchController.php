@@ -40,6 +40,7 @@ public function index()
             $totals[] = [
                 'currency' => $currency->name,
                 'total'    => $accounts->sum('cargo_amount'), // or 'amount'
+                'paid_amount'    => $accounts->sum('paid_amount'), // or 'amount'
             ];
         }
 

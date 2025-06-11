@@ -170,13 +170,13 @@ class SettingController extends Controller
     public function getSetting()
     {
 
-        $currencies = Currency::branch()->get();
+        $currencies = Currency::get();
         return view('setting.create')->with('currencies',$currencies)->with('setting', Setting::where('branch_id', auth()->user()->branch_id)->first());
     }
     public function LanguageSetting()
     {
 
-        return view('setting.language')->with('setting', Setting::branch()->get());
+        return view('setting.language')->with('setting', Setting::get());
     }
 
 
@@ -252,7 +252,7 @@ class SettingController extends Controller
             return view('setting.language')->with('success', 'تنظیمات موفقانه ویرایش گردید.')->with('setting', Setting::branch()->get());
             # code...
         }else{
-            $currencies = Currency::branch()->get();
+            $currencies = Currency::get();
             return redirect()->route('setting.get')->with('success', 'تنظیمات موفقانه ویرایش گردید.');
         }
     }

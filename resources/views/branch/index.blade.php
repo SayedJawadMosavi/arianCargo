@@ -49,7 +49,7 @@
                             @if (isset($branchTotals[$branch->id]))
                             @foreach ($branchTotals[$branch->id] as $obj)
                             <span class="badge rounded-pill {{ $obj['total'] > 0 ? 'bg-danger' : 'bg-danger' }} badge-sm me-1 mb-1 mt-1 text-white">
-                                {{ $obj['currency'] }}: <i dir="ltr">{{ number_format($obj['total']) }}</i>
+                                 <i dir="ltr">{{ number_format($obj['total'] -$obj['paid_amount']) }}</i>
                             </span>
                             @endforeach
                             @else

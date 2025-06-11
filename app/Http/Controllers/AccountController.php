@@ -310,7 +310,7 @@ class AccountController extends Controller
 
             $account->save();
             $main_branch_account->increment('amount', $amountToPay);
-            $this->InsertAccountLog(
+            $this->InsertAccountLog2(
                 $main_branch_account->id,
                 'deposit',
                 $amountToPay,
@@ -318,9 +318,11 @@ class AccountController extends Controller
                 $main_branch_account->amount,
                 'branch_payment',
                 $payment->id,
+                $branch->id,
                 $currentDate
             );
-            $this->InsertAccountLog(
+
+            $this->InsertAccountLog2(
                 $account->id,
                 'withdraw',
                 $amountToPay,
@@ -328,8 +330,10 @@ class AccountController extends Controller
                 $account->amount,
                 'branch_payment',
                 $payment->id,
+                auth()->user()->branch_id,
                 $currentDate
             );
+
             DB::commit();
 
             return back()->with('success', 'Payment done SuccessFully');
@@ -343,29 +347,47 @@ class AccountController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Fetch the existing payment
+            $payment = AccountPayment::findOrFail($request->id);
 
-            $payment = AccountPayment::find($request->id);
-
+            // Get the original account and related main branch account
             $account = Account::findOrFail($payment->account_id);
             $branch = Branch::where('is_main_branch', 1)->first();
-            $main_branch_account = Account::where('branch_id', $branch->id)->where('currency_id', $account->currency_id)->first();
+            $main_branch_account = Account::where('branch_id', $branch->id)
+                ->where('currency_id', $account->currency_id)
+                ->first();
 
-            Account::find($payment->account_id)->decrement('paid_amount', $payment->amount);
-            Account::find($payment->account_id)->increment('amount', $payment->amount);
+            // 1. Rollback old payment
+            $account->decrement('paid_amount', $payment->amount);
+            $account->increment('amount', $payment->amount);
             $main_branch_account->decrement('amount', $payment->amount);
 
-            Account::find($payment->account_id)->increment('paid_amount', $request->amount);
-            Account::find($payment->account_id)->decrement('amount', $request->amount);
+            // 2. Apply new payment
+            $account->increment('paid_amount', $request->amount);
+            $account->decrement('amount', $request->amount);
             $main_branch_account->increment('amount', $request->amount);
+
+            // Refresh account balances after updates
+            $account->refresh();
+            $main_branch_account->refresh();
+
+            // Prepare description and date
             $description = 'Branch Payment: - ' . ($request->description ?? '');
             $currentDate = $request->shamsi_date
                 ?? $request->miladi_date
                 ?? today()->format('Y-m-d');
 
-            $log = AccountLog::where(['action_id' => $payment->id, 'action' => 'branch_payment'])->delete();
+            // Remove old logs
+            AccountLog::where(['action_id' => $payment->id, 'action' => 'branch_payment'])->delete();
 
-            $payment->update(['amount' => $request->amount, 'description' => $request->description]);
-            $this->InsertAccountLog(
+            // Update payment info
+            $payment->update([
+                'amount' => $request->amount,
+                'description' => $request->description,
+            ]);
+
+            // Insert new logs
+           $this->InsertAccountLog2(
                 $main_branch_account->id,
                 'deposit',
                 $request->amount,
@@ -373,9 +395,11 @@ class AccountController extends Controller
                 $main_branch_account->amount,
                 'branch_payment',
                 $payment->id,
+                $branch->id,
                 $currentDate
             );
-            $this->InsertAccountLog(
+
+            $this->InsertAccountLog2(
                 $account->id,
                 'withdraw',
                 $request->amount,
@@ -383,15 +407,14 @@ class AccountController extends Controller
                 $account->amount,
                 'branch_payment',
                 $payment->id,
+                auth()->user()->branch_id,
                 $currentDate
             );
 
-
             DB::commit();
-            return  response()->json(['success', ' updating Account Payment']);
+            return response()->json(['success', 'Updating Account Payment']);
         } catch (\Exception $e) {
             DB::rollBack();
-            // Handle the exception
             return redirect()->back()->with('error', 'Error updating Account Payment: ' . $e->getMessage());
         }
     }

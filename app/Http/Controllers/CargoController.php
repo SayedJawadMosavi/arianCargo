@@ -102,11 +102,12 @@ class CargoController extends Controller
 
         // Get latest bill for this branch
         $latestCargo = Cargo::where('branch_id', $branch->id)->latest('bill')->first();
+        $settings = Setting::with('currency')->branch()->first();
 
         // If no cargo exists yet, start from branch's start_bill
         $nextBillNumber = $latestCargo ? $latestCargo->bill + 1 : $branch->start_bill;
         $currencies = Currency::active()->get();
-        return view('sell.create', compact('clients', 'accounts', 'currencies', 'countries', 'nextBillNumber'));
+        return view('sell.create', compact('clients', 'accounts', 'currencies', 'countries', 'nextBillNumber', 'settings'));
     }
 
     /**
@@ -141,15 +142,20 @@ class CargoController extends Controller
                 'currency_id' => $account->currency_id,
                 'total_weight' => $request->total_weight,
                 'per_weight' => $request->per_weight,
-                'total' => $request->total,
                 'new_per_weight' => $request->per_pay_cost,
+                'total' => $request->total,
                 'new_total' => $request->new_total,
                 'paid' => $request->paid,
                 'balance' => $balance,
                 'new_balance' => $new_balance,
+
+                'equalent_per_weight' => $request->per_weight_equalent,
+                'equalent_total' => $request->total_equalent,
+                'paid_equalent' => $request->paid_equalent,
+                'equalent_balance' => $request->equalent_balance,
                 'rate' => $request->rate,
                 'operation' => $request->operation ??  null,
-                'bill' => $request->bill + 1,
+                'bill' => $request->bill,
                 'number' => $request->number,
                 'description' => $request->description,
                 'miladi_date' => $request->miladi_date,
@@ -190,33 +196,46 @@ class CargoController extends Controller
             $type = 'deposit';
             // $currentDate = isset($request->date) ? $request->date :date('Y-m-d');
             $currentDate = isset($request->shamsi_date) ? $request->shamsi_date : $request->miladi_date;
-
             // Account::find($request->account_id)->increment('amount', $request->paid);
+            $paidAmount = ($branch_base == $account->currency_id) ? (float) $request->paid : (float) $request->paid_equalent;
+
+            $maxAllowed = ($branch_base == $account->currency_id) ? (float) $request->new_total : (float) $request->total_equalent;
+
+            if ($paidAmount > $maxAllowed) {
+                return back()->with('error', 'Payment amount exceeds the total amount.');
+            }
+
             if ($account->amount !== null) {
-                // If amount is not null, add $request->paid to the existing amount
-                $account->increment('amount', (float) $request->paid);
+                $account->increment('amount', $paidAmount);
             } else {
-                // If amount is null, set it to the value of $request->paid
-                $account->update(['amount' => (float) $request->paid]);
+                $account->update(['amount' => $paidAmount]);
+
                 if ($branch->is_main_branch == 0) {
                     $account->update(['cargo_amount' => (float) $request->total]);
                 }
             }
+
             if ($branch->is_main_branch == 0) {
 
                 $account->increment('cargo_amount', (float) $request->total);
             }
-            $flag = $this->InsertAccountLog($request->account_id, $type, $request->paid, $description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
-            // dd($flag);
+
+            $flag = $this->InsertAccountLog($request->account_id, $type, $paidAmount, $description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
+
 
             $curr = $this->GetClientCurrency($request->client_id, $account->currency_id, 0);
-            $curr->decrement('amount', $request->new_total);
+            $curr->decrement('amount', $maxAllowed);
 
             $type = 'withdraw';
-            $this->InsertClientLog($request->client_id, $curr->id, $type, $request->new_total, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            $this->InsertClientLog($request->client_id, $curr->id, $type, $maxAllowed, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            if ($branch_base == $account->currency_id) {
 
-            $curr->increment('amount', $request->paid);
-            $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+                $curr->increment('amount', $request->paid);
+                $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            } else {
+                $curr->increment('amount', $request->paid_equalent);
+                $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid_equalent, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            }
             $client_currency = ClientCurrency::where('client_id', $request->client_id)->first();
 
             if ($request->paid > 0) {
@@ -273,7 +292,8 @@ class CargoController extends Controller
     {
         $cargo_client = Client::find($cargo->client_id);
         $clients = Client::branch()->get();
-        $accounts = Account::branch()->where('currency_id', $cargo_client->currency->currency_id)->orderBy('default', 'DESC')->get();
+        $accounts = Account::branch()->orderBy('default', 'DESC')->get();
+
         $countries = Country::active()->get();
         $branch = auth()->user()->branch;
 
@@ -298,12 +318,21 @@ class CargoController extends Controller
         try {
             // dd($request->all());
             $user_id  = auth()->user()->id;
-
+            $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+            $branch_base = $base_currency->currency_id; //
             $branch =  Branch::where('user_id', $user_id)->first();
+
             if ($branch->is_main_branch == 0) {
+
                 Account::find($cargo->account_id)->decrement('cargo_amount', $cargo->total);
             }
-            Account::find($cargo->account_id)->decrement('amount', $cargo->paid);
+
+
+            if ($branch_base == $cargo->currency_id) {
+                Account::find($cargo->account_id)->decrement('amount', $cargo->paid);
+            } else {
+                Account::find($cargo->account_id)->decrement('amount', $cargo->paid_equalent);
+            }
             AccountLog::where(['action_id' => $cargo->id, 'action' => 'cargo_payment', 'type' => 'deposit'])->delete();
 
             $currentDate = isset($request->shamsi_date) ? $request->shamsi_date : $request->miladi_date;
@@ -313,7 +342,11 @@ class CargoController extends Controller
 
                 Account::find($request->account_id)->increment('cargo_amount', $request->total);
             }
-            Account::find($request->account_id)->increment('amount', $request->paid);
+            if ($branch_base == $cargo->currency_id) {
+                Account::find($request->account_id)->increment('amount', $request->paid);
+            } else {
+                Account::find($request->account_id)->increment('amount', $request->paid_equalent);
+            }
             // if ($branch->is_main_branch == 0) {
             //     Account::find($request->account_id)->increment('amount', $request->paid);
             // }
@@ -323,9 +356,12 @@ class CargoController extends Controller
             $log = ClientLog::where(['action_id' => $cargo->id, 'action' => 'cargo_payment'])->first();
 
             // dd($log);
-            ClientCurrency::find($log->client_currency_id)->increment('amount', $cargo->new_total - $cargo->paid);
+            if ($branch_base == $cargo->currency_id) {
+                ClientCurrency::find($log->client_currency_id)->increment('amount', $cargo->new_total - $cargo->paid);
+            } else {
+                ClientCurrency::find($log->client_currency_id)->increment('amount', $cargo->equalent_total - $cargo->paid_equalent);
+            }
             ClientLog::where(['action_id' => $cargo->id, 'action' => 'cargo_payment'])->delete();
-
 
             $balance = $request->total - $request->paid;
             $flag = $cargo->update([
@@ -334,7 +370,12 @@ class CargoController extends Controller
                 'account_id' => $request->account_id,
                 'total_weight' => $request->total_weight,
                 'country_id' => $request->country,
-
+                'equalent_per_weight' => $request->per_weight_equalent,
+                'equalent_total' => $request->total_equalent,
+                'paid_equalent' => $request->paid_equalent,
+                'equalent_balance' => $request->equalent_balance,
+                'rate' => $request->rate,
+                'operation' => $request->operation ??  null,
                 'per_weight' => $request->per_weight,
                 'new_per_weight' => $request->per_pay_cost,
                 'new_total' => $request->new_total,
@@ -353,14 +394,26 @@ class CargoController extends Controller
 
             // NEW CLIENT CURRENCY AND LOG
             $curr = $this->GetClientCurrency($request->client_id, $account->currency_id, 0);
-            $curr->decrement('amount', $request->new_total);
+            if ($branch_base == $cargo->currency_id) {
+                $curr->decrement('amount', $request->new_total);
+            } else {
+                $curr->decrement('amount', $request->total_equalent);
+            }
 
             $type = 'withdraw';
-            $this->InsertClientLog($request->client_id, $curr->id, $type, $request->new_total, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
-            $flag = $this->InsertAccountLog($request->account_id, 'deposit', $request->paid, $cargo->description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
+            if ($branch_base == $cargo->currency_id) {
+                $this->InsertClientLog($request->client_id, $curr->id, $type, $request->new_total, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+                $flag = $this->InsertAccountLog($request->account_id, 'deposit', $request->paid, $cargo->description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
 
-            $curr->increment('amount', $request->paid);
-            $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+                $curr->increment('amount', $request->paid);
+                $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            } else {
+                $this->InsertClientLog($request->client_id, $curr->id, $type, $request->total_equalent, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+                $flag = $this->InsertAccountLog($request->account_id, 'deposit', $request->paid_equalent, $cargo->description, $account->amount, 'cargo_payment', $cargo->id, $currentDate);
+
+                $curr->increment('amount', $request->paid_equalent);
+                $this->InsertClientLog($request->client_id, $curr->id, 'deposit', $request->paid_equalent, $description, $curr->amount, 'cargo_payment', $cargo->id, $currentDate);
+            }
 
             if ($flag) {
                 DB::commit();
@@ -412,7 +465,8 @@ class CargoController extends Controller
                 // Delete payment
                 $payment->delete();
             }
-
+            $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+            $branch_base = $base_currency->currency_id; //
             // Reverse product value from client currency
             $account = Account::find($cargo->account_id);
             if ($branch->is_main_branch == 0) {
@@ -422,7 +476,13 @@ class CargoController extends Controller
                 $currencyId = $account->currency_id;
                 $clientCurrency = $this->GetClientCurrency($cargo->client_id, $currencyId, 0);
                 if ($clientCurrency) {
-                    $clientCurrency->increment('amount', $cargo->total);
+                    if ($branch_base==$cargo->currency_id) {
+
+                        $clientCurrency->increment('amount', $cargo->new_balance);
+                    }else{
+
+                        $clientCurrency->increment('amount', $cargo->equalent_balance);
+                    }
                 }
 
                 ClientLog::where('action', 'cargo_payment')->where('action_id', $cargo->id)->delete();
@@ -512,9 +572,16 @@ class CargoController extends Controller
         if ($amount <= 0) {
             return back()->with('error', 'Payment amount must be greater than zero.');
         }
-
-        if ($amount > $cargo->new_balance) {
-            return back()->with('error', 'Payment amount exceeds the remaining balance.');
+        $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+        $branch_base = $base_currency->currency_id; //
+        if ($branch_base == $cargo->currency_id) {
+            if ($amount > $cargo->new_balance) {
+                return back()->with('error', 'Payment amount exceeds the remaining balance.');
+            }
+        } else {
+            if ($amount > $cargo->equalent_balance) {
+                return back()->with('error', 'Payment amount exceeds the remaining balance.');
+            }
         }
 
         DB::beginTransaction();
@@ -552,8 +619,14 @@ class CargoController extends Controller
             $this->InsertClientLog($cargo->client_id, $client_currency->id, $type, $amount, $description, $client_currency->amount, 'cargo_payment', $payment->id, $currentDate);
 
             // Update cargo
-            $cargo->paid += $amount;
-            $cargo->new_balance = $cargo->new_total - $cargo->paid;
+            if ($branch_base == $cargo->currency_id) {
+                $cargo->paid += $amount;
+                $cargo->new_balance = $cargo->new_total - $cargo->paid;
+            }else{
+                $cargo->paid_equalent += $amount;
+                $cargo->equalent_balance = $cargo->equalent_total - $cargo->paid_equalent;
+
+            }
             $cargo->save();
 
             DB::commit();

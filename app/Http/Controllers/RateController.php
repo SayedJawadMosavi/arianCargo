@@ -34,10 +34,10 @@ class RateController extends Controller
     //    $data= Rate::with('treasury')->get();
 
        $data  =[];
-       foreach (Currency::branch()->get() as $key ) {
-            foreach (Currency::branch()->get() as $obj) {
+       foreach (Currency::get() as $key ) {
+            foreach (Currency::get() as $obj) {
                 if ($key->id != $obj->id) {
-                    $result = Rate::with('treasury')->where('from_treasury', $key->id)->where('to_treasury', $obj->id)->branch()->latest()->limit(1)->first();
+                    $result = Rate::with('treasury')->where('from_treasury', $key->id)->where('to_treasury', $obj->id)->latest()->limit(1)->first();
                     $data[$key->name][$obj->name]  =$result;
                     is_null($result) ? 1 : $result;
 
@@ -52,7 +52,7 @@ class RateController extends Controller
             return redirect()->back()->with('error', 'Please set your Base currency from the settings');
         }
 
-        $currencies=   Currency::branch()->get();
+        $currencies=   Currency::get();
         $to_currencies=   Currency::where('id',$setting->currency_id)->get();
 
         // dd($to_currencies);
@@ -67,7 +67,7 @@ class RateController extends Controller
      */
     public function create()
     {
-        return view('rate.create')->with('currencies',  Currency::branch()->get());
+        return view('rate.create')->with('currencies',  Currency::get());
         //
     }
 
@@ -159,11 +159,11 @@ class RateController extends Controller
     function get_latest_rate($account_id){
 
         $account = Account::find($account_id);
-
         $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+
         $branch_base = $base_currency->currency_id; //
 
-        $result = Rate::where('from_treasury', $account->currency_id)->where('to_treasury', $branch_base)->branch()->latest()->limit(1)->first();
+        $result = Rate::where('from_treasury', $branch_base)->where('to_treasury', $account->currency_id)->latest()->limit(1)->first();
         if($result==null){
             $result =0;
         }
@@ -172,6 +172,7 @@ class RateController extends Controller
             $rate = collect([
                 'rate' => 1,
                 'operation' => 'multiply',
+                'currency' => $account->currency_id,
             ]);
             return response()->json([
                 'rate' => $rate

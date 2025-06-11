@@ -104,10 +104,22 @@
             <table class="table table-hover mt-3">
                 <thead>
                     <tr>
+                        @if ($settings->currency_id== $sell->currency_id)
+
+                        <th>Currency: {{ $sell->currency->name }}</th>
                         <th>Total Weight: {{ $sell->total_weight }}</th>
                         <th>Total Cost: {{ $sell->new_total }}</th>
                         <th>Total Paid: {{ $sell->paid }}</th>
                         <th>Total Reminder: {{ $sell->new_balance }}</th>
+                        @else
+                        <th>Currency: {{ $sell->currency->name }}</th>
+
+                        <th>Total Weight: {{ $sell->total_weight }}</th>
+                        <th>Total Cost: {{ $sell->equalent_total }}</th>
+                        <th>Total Paid: {{ $sell->paid_equalent }}</th>
+                        <th>Total Reminder: {{ $sell->equalent_balance }}</th>
+
+                        @endif
                     </tr>
                 </thead>
             </table>

@@ -8,6 +8,7 @@ use App\Models\Cargo;
 use App\Models\CargoPayment;
 use App\Models\ClientCurrency;
 use App\Models\ClientLog;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -82,18 +83,29 @@ class CargoPaymentController extends Controller
             $cargo = Cargo::findOrFail($payment->cargo_id);
             $client_currency = ClientCurrency::find($payment->client_currency_id);
 
+            $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+            $branch_base = $base_currency->currency_id; //
+            Account::find($payment->account_id)->decrement('amount', $payment->amount);
+            ClientCurrency::find($client_currency->id)->decrement('amount', $payment->amount);
 
-                Account::find($payment->account_id)->decrement('amount', $payment->amount);
-                ClientCurrency::find($client_currency->id)->decrement('amount', $payment->amount);
+            if ($branch_base == $cargo->currency_id) {
 
-            $cargo->decrement('paid', $payment->amount);
-            $cargo->increment('balance', $payment->amount);
+                $cargo->decrement('paid', $payment->amount);
+                $cargo->increment('new_balance', $payment->amount);
+            } else {
+                $cargo->decrement('paid_equalent', $payment->amount);
+                $cargo->increment('equalent_balance', $payment->amount);
+            }
 
             Account::find($payment->account_id)->increment('amount', $request->amount);
             ClientCurrency::find($client_currency->id)->increment('amount', $request->amount);
-
-            $cargo->increment('paid', $request->amount);
-            $cargo->decrement('balance', $request->amount);
+            if ($branch_base == $cargo->currency_id) {
+                $cargo->increment('paid', $request->amount);
+                $cargo->decrement('new_balance', $request->amount);
+            } else {
+                $cargo->increment('paid_equalent', $request->amount);
+                $cargo->decrement('equalent_balance', $request->amount);
+            }
             $account =  Account::find($payment->account_id);
 
             $log = AccountLog::where(['action_id' => $payment->id, 'action' => 'cargo_payment'])->update(['amount'  => $request->amount, 'type'  => $payment->type, 'balance'  => $account->amount]);
@@ -119,14 +131,25 @@ class CargoPaymentController extends Controller
      */
     public function destroy(CargoPayment $cargoPayment)
     {
+
         try {
             DB::beginTransaction();
-
+            $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+            $branch_base = $base_currency->currency_id; //
+            $account = Account::find($cargoPayment->account_id);
+            $cargo = Cargo::find($cargoPayment->cargo_id);
             if ($cargoPayment->type == "deposit") {
                 Account::find($cargoPayment->account_id)->decrement('amount', $cargoPayment->amount);
                 ClientCurrency::find($cargoPayment->client_currency_id)->decrement('amount', $cargoPayment->amount);
             }
+            if ($branch_base == $account->currency_id) {
+                $cargo->decrement('paid', $cargoPayment->amount);
+                $cargo->increment('new_balance', $cargoPayment->amount);
+            }else{
 
+                $cargo->decrement('paid_equalent', $cargoPayment->amount);
+                $cargo->increment('equalent_balance', $cargoPayment->amount);
+            }
             AccountLog::where([
                 'action'    => 'cargo_payment',
                 'action_id'   => $cargoPayment->id,

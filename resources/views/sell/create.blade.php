@@ -170,23 +170,42 @@
                     <input type="number" step="0.01" id="total_weight" name="total_weight" class="form-control" value="{{ isset($cargo) ? $cargo->total_weight : old('total_weight') }}">
                 </div>
 
+
                 <input type="hidden"readonly step="0.01" id="per_weight" name="per_weight" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight : old('per_weight') }}">
+                <input type="hidden"readonly step="0.01" id="operations" name="operation" class="form-control" value="{{ isset($cargo) ? $cargo->operation : old('operation') }}">
 
                 <div class="col-md-4">
                     <label for="per_weight"  class="form-label fw-bold text-right d-block">{{ __('home.per_weight') }}</label>
                     <input type="number" step="0.01" id="per_pay_cost" name="per_pay_cost" class="form-control" value="{{ isset($cargo) ? $cargo->new_per_weight : old('new_per_weight') }}">
 
                 </div>
+
                 <input type="hidden" step="0.01" id="total" readonly name="total" class="form-control" value="{{ isset($cargo) ? $cargo->total : old('total') }}">
 
 
-                <div class="col-md-3">
+                <div class="col-md-3" id="new_total_dev">
                     <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.new_total') }}</label>
                     <input type="number" step="0.01" id="new_total" readonly name="new_total" class="form-control" value="{{ isset($cargo) ? $cargo->new_total : old('new_total') }}">
                 </div>
+                <div class="col-md-4" style="display: none;" id="per_weight_div">
+                    <label for="per_weight_equalent"  class="form-label fw-bold text-right d-block">Equalent Per Weight</label>
+                    <input type="number" step="0.01" id="per_weight_equalent" name="per_weight_equalent" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight_equalent : old('per_weight_equalent') }}">
+
+                </div>
+                 <div class="col-xl-4 mb-3" id="exchange_rate_div" style="display: none;">
+                    <label for="validationServer01">{{ __('home.rate') }}</label>
+                    <input type="number" step="0.01" class="form-control " id="rates" name="rate" value="{{isset($cargo) ? $cargo->rate : old('rate')}}" >
+                    @error('rate')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
+                <div class="col-md-3" style="display: none;" id="total_div">
+                    <label for="total_equalent" class="form-label fw-bold text-right d-block">Equalent Total</label>
+                    <input type="number" step="0.01" id="total_equalent" readonly name="total_equalent" class="form-control" value="{{ isset($cargo) ? $cargo->total_equalent : old('total_equalent') }}">
+                </div>
                 <div class="col-xl-4 mb-3">
                     <label for="validationServer04">{{ __('home.account') }}</label>
-                    <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror" onchange="showData(this.value)" id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
+                    <select class="form-select form-control select2 @error('account_id') {{'is-invalid'}} @enderror"  id="account_id" aria-describedby="validationServer04Feedback" required name="account_id">
                         <option value="0"> {{__('home.please_select')}}</option>
                         @foreach($accounts as $account)
                         <option value="{{$account->id}}" @if(isset($cargo)) @if($cargo->account_id == $account->id) selected = 'selected' @endif @endif >{{$account->name}}</option>
@@ -196,16 +215,27 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" id="paid_div">
                     <label for="paid" class="form-label fw-bold text-right d-block">{{ __('home.paid') }}</label>
                     <input type="number" step="0.01" id="paid" name="paid" class="form-control" value="{{ isset($cargo) ? $cargo->paid : old('paid', 0) }}">
                 </div>
+                <div class="col-md-3" id="paid_div_equalent" style="display: none;">
+                    <label for="paid" class="form-label fw-bold text-right d-block">{{ __('home.paid') }}</label>
+                    <input type="number" step="0.01" id="paid_equalent" name="paid_equalent" class="form-control" value="{{ isset($cargo) ? $cargo->paid_equalent : old('paid_equalent', 0) }}">
+                </div>
                 <input type="hidden" step="0.01" id="balance" name="balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->balance : old('balance') }}">
-                <div class="col-md-3">
+                <div class="col-md-3" id="balance_div">
                     <label for="balance" class="form-label fw-bold text-right d-block">{{ __('home.balance') }}</label>
                     <input type="number" step="0.01" id="new_balance" name="new_balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->new_balance : old('new_balance') }}">
                 </div>
+                <div class="col-md-3" id="equalent_balance_dev" style="display: none;">
+                    <label for="balance" class="form-label fw-bold text-right d-block">Equalent Balance</label>
+                    <input type="number" step="0.01" id="equalent_balance" name="equalent_balance" class="form-control" readonly value="{{ isset($cargo) ? $cargo->equalent_balance : old('equalent_balance') }}">
+                </div>
 
+                <!-- Optional debug fields -->
+
+                <input type="hidden" name="exchange_type" id="exchange_type" readonly>
             </div>
 
 
@@ -574,26 +604,38 @@ $(document).ready(function () {
             return true;
         }
     }
-    $('#total_weight, #per_weight,#per_pay_cost,#new_total').on('keyup change', function() {
+    $('#total_weight, #rates,#per_pay_cost,#new_total').on('keyup change', function() {
         var weight = parseFloat($('#total_weight').val()) || 0;
         var perWeight = parseFloat($('#per_weight').val()) || 0;
+        var rate = parseFloat($('#rates').val()) || 0;
         var perPayWeight = parseFloat($('#per_pay_cost').val()) || 0;
+        var per_weight_equalent = parseFloat($('#per_weight_equalent').val()) || 0;
         var total = weight * perWeight;
         var new_total = weight * perPayWeight;
+        var total_equalent = weight * per_weight_equalent;
 
         $('#total').val(total.toFixed(2));
         $('#new_total').val(new_total.toFixed(2));
+        $('#per_weight_equalent').val(perPayWeight * rate);
+        $('#total_equalent').val(weight * $('#per_weight_equalent').val());
+        $('#equalent_balance').val($('#total_equalent').val() - $('#paid_equalent').val());
+        $('#new_balance').val($('#new_total').val() - $('#paid').val());
+
     });
 
 
-    $('#paid').keyup(function() {
+    $('#paid,  #paid_equalent').keyup(function() {
 
         var total = parseFloat($('#total').val());
         var new_total = parseFloat($('#new_total').val());
+        var total_equalent = parseFloat($('#total_equalent').val());
         var paid = parseFloat($('#paid').val());
+        var paid_equalent = parseFloat($('#paid_equalent').val());
 
         $('#balance').val(total - paid);
         $('#new_balance').val(new_total - paid);
+        $('#equalent_balance').val(total_equalent-paid_equalent);
+
     });
 
     $('#client_id').change(function() {
@@ -658,41 +700,204 @@ $(document).ready(function () {
         // console.log(sellValue);
     }
 
-    function showData(value) {
-        $.ajax({
-            url: '/get-client-data/' + value,
-            type: 'GET',
-            success: function(response) {
-                var data = response.data;
-                // console.log('dd', data)
+    // function showData(value) {
 
-                var options = "<option value=''>Select Account</option>";
-                data.forEach(function(account) {
-                    options += "<option value='" + account.id + "'>" + account.name + " (" + account.amount + '-' + account.currency.name + ")</option>";
-                    console.log('ss', response.client.client.type)
-                    if (response.client.client.type == 'walkin') {
-                        $(".my_div").css('display', "block")
-                    } else {
-                        $(".my_div").css('display', "none")
+    //     $.ajax({
+    //         url: '/get_latest_exchange_rate/' + value,
+    //         type: 'GET',
+    //         success: function(response) {
+    //             var data = response.rate;
+    //             $('#rate').val(data.rate);
+    //             $('#exchange_type').val(data.operation);
+    //         },
+    //         error: function(xhr, status, error) {
+    //             // console.error(error);
+    //         }
+    //     });
+    //     // $.ajax({
+    //     //     url: '/get-client-data/' + value,
+    //     //     type: 'GET',
+    //     //     success: function(response) {
+    //     //         var data = response.data;
+    //     //         // console.log('dd', data)
 
-                    }
-                });
-                $('#account_id').html(options);
-                $('#rate').val(0);
-                $('#operation').val('');
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
+    //     //         var options = "<option value=''>Select Account</option>";
+    //     //         data.forEach(function(account) {
+    //     //             options += "<option value='" + account.id + "'>" + account.name + " (" + account.amount + '-' + account.currency.name + ")</option>";
+    //     //             console.log('ss', response.client.client.type)
+    //     //             if (response.client.client.type == 'walkin') {
+    //     //                 $(".my_div").css('display', "block")
+    //     //             } else {
+    //     //                 $(".my_div").css('display', "none")
 
+    //     //             }
+    //     //         });
+    //     //         $('#account_id').html(options);
+    //     //         $('#rate').val(0);
+    //     //         $('#operation').val('');
+    //     //     },
+    //     //     error: function(xhr, status, error) {
+    //     //         console.error(error);
+
+    //     //     }
+    //     });
+
+
+
+    // }
+
+$('#account_id').on('change', function () {
+    var accountId = $(this).val();
+    console.log('aaa',accountId)
+
+    // Fetch exchange rate if needed
+    $.ajax({
+        url: '/get_latest_exchange_rate/' + accountId,
+        type: 'GET',
+        success: function (response) {
+            var data = response.rate;
+
+            let rate = parseFloat(data.rate);
+            let operation = data.operation;
+
+            let TotalWeight = parseFloat($('#total_weight').val()) || 0;
+            let baseWeight = parseFloat($('#per_weight').val()) || 0;
+            let basePayCost = parseFloat($('#per_pay_cost').val()) || 0;
+
+            let convertedWeight, convertedPay;
+
+            if (rate === 0 || isNaN(rate)) {
+                alert("No exchange rate found.");
+                $('#per_weight').val(baseWeight);
+                $('#per_pay_cost').val(basePayCost);
+                return;
             }
-        });
+            console.log('sdfsdf',data.currency)
+            if ({!! $settings->currency_id !!} != data.currency) {
+
+                    $("#total_div").css('display', "block")
+                    $("#balance_dev").css('display', "block")
+                    $("#per_weight_div").css('display', "block")
+                    $("#exchange_rate_div").css('display', "block")
+                    $("#equalent_balance_dev").css('display', "block")
+                    $("#new_total_dev").css('display', "none")
+                    $("#balance_div").css('display', "none")
+                    $("#paid_div_equalent").css('display', "block")
+                    $("#paid_div").css('display', "none")
+
+                } else {
+                    $("#exchagne_type_div").css('display', "none")
+                    $("#total_div").css('display', "none")
+                    $("#per_weight_div").css('display', "none")
+                    $("#balance_dev").css('display', "none")
+                    $("#equalent_balance_dev").css('display', "none")
+                    $("#new_total_dev").css('display', "block")
+                    $("#balance_div").css('display', "block")
+                    $("#paid_div_equalent").css('display', "none")
+                    $("#paid_div").css('display', "block")
+            }
+            if (operation === 'multiply') {
+                convertedWeight = baseWeight * rate;
+                convertedPay = basePayCost * rate;
+            } else if (operation === 'divide') {
+                convertedWeight = baseWeight / rate;
+                convertedPay = basePayCost / rate;
+            } else {
+                convertedWeight = baseWeight;
+                convertedPay = basePayCost;
+            }
+
+
+            $('#per_weight_equalent').val(convertedPay.toFixed(2));
+            $('#total_equalent').val(TotalWeight * $('#per_weight_equalent').val());
+            $('#equalent_balance').val($('#total_equalent').val() - $('#paid_equalent').val());
+            $('#new_balance').val($('#new_total').val() - $('#paid').val());
+
+
+            // Optional: show rate details
+            $('#rates').val(rate);
+            $('#operations').val(operation);
+            $('#exchange_type').val(operation);
+        },
+        error: function (xhr) {
+            alert('Error fetching rate.');
+        }
+    });
+});
+    @isset($cargo)
+          $.ajax({
+        url: '/get_latest_exchange_rate/' + {!! $cargo->account_id !!},
+        type: 'GET',
+        success: function (response) {
+            var data = response.rate;
+
+            let rate = parseFloat(data.rate);
+            let operation = data.operation;
+
+            let TotalWeight = parseFloat($('#total_weight').val()) || 0;
+            let baseWeight = parseFloat($('#per_weight').val()) || 0;
+            let basePayCost = parseFloat($('#per_pay_cost').val()) || 0;
+
+            let convertedWeight, convertedPay;
+
+            if (rate === 0 || isNaN(rate)) {
+                alert("No exchange rate found.");
+                $('#per_weight').val(baseWeight);
+                $('#per_pay_cost').val(basePayCost);
+                return;
+            }
+            console.log('sdfsdf',data.currency)
+            if ({!! $settings->currency_id !!} != data.currency) {
+
+                    $("#total_div").css('display', "block")
+                    $("#balance_dev").css('display', "block")
+                    $("#per_weight_div").css('display', "block")
+                    $("#exchange_rate_div").css('display', "block")
+                    $("#equalent_balance_dev").css('display', "block")
+                    $("#new_total_dev").css('display', "none")
+                    $("#balance_div").css('display', "none")
+                       $("#paid_div_equalent").css('display', "block")
+                    $("#paid_div").css('display', "none")
+
+                } else {
+                    $("#exchagne_type_div").css('display', "none")
+                    $("#total_div").css('display', "none")
+                    $("#per_weight_div").css('display', "none")
+                    $("#balance_dev").css('display', "none")
+                    $("#equalent_balance_dev").css('display', "none")
+                    $("#new_total_dev").css('display', "block")
+                    $("#balance_div").css('display', "block")
+                       $("#paid_div_equalent").css('display', "none")
+                    $("#paid_div").css('display', "block")
+            }
+            if (operation === 'multiply') {
+                convertedWeight = baseWeight * rate;
+                convertedPay = basePayCost * rate;
+            } else if (operation === 'divide') {
+                convertedWeight = baseWeight / rate;
+                convertedPay = basePayCost / rate;
+            } else {
+                convertedWeight = baseWeight;
+                convertedPay = basePayCost;
+            }
+
+
+            $('#per_weight_equalent').val(convertedPay.toFixed(2));
+            $('#total_equalent').val(TotalWeight * $('#per_weight_equalent').val());
+            $('#equalent_balance').val($('#total_equalent').val() - $('#paid_equalent').val());
+            $('#new_balance').val($('#new_total').val() - $('#paid').val());
 
 
 
-    }
-
-
-
+            // Optional: show rate details
+            $('#rates').val(rate);
+            $('#exchange_type').val(operation);
+        },
+        error: function (xhr) {
+            alert('Error fetching rate.');
+        }
+    });
+    @endisset
 
     $(document).on('change', 'select.select2', function() {
         // Call calculateSell when product[] dropdown changes
