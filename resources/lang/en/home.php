@@ -415,6 +415,7 @@ return [
     'is_main_branch' => ' is main branch ?  ',
     'branch_receivable' => ' Branch Receivable ',
     'branch_payable' => ' Branch Payable ',
+    'kg' => ' KG ',
 
 
 

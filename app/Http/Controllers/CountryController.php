@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCountryRequest;
 use App\Models\Country;
+use App\Models\CountryRate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CountryController extends Controller
 {
@@ -26,7 +28,7 @@ class CountryController extends Controller
      */
     public function create()
     {
-         return view('country.create');
+        return view('country.create');
     }
 
     /**
@@ -35,19 +37,40 @@ class CountryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(StoreCountryRequest $request)
     {
-         $default = isset($request->default) ? 1 : 0;
+        DB::beginTransaction();
 
-        $country = new Country();
-        $attributes = $request->only($country->getFillable());
-        $attributes['user_id'] = auth()->user()->id;
-        $attributes['active'] = 1;
+        try {
+            $default = isset($request->default) ? 1 : 0;
 
-        $country =  $country->create($attributes);
-        $countrys = Country::all();
-        return redirect()->route('country.index')->with('success', 'country created successfully');
+            $country = new Country();
+            $attributes = $request->only($country->getFillable());
+            $attributes['user_id'] = auth()->user()->id;
+            $attributes['active'] = 1;
+
+            $country = $country->create($attributes);
+
+            for ($i = 0; $i < count($request->price); $i++) {
+                if ($request->price[$i] != 0 && !is_null($request->kg[$i])) {
+                    CountryRate::create([
+                        'kg' => $request->kg[$i],
+                        'price' => $request->price[$i],
+                        'country_id' => $country->id,
+                        'user_id' => auth()->user()->id,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('country.index')->with('success', 'Country created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to create country: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -57,7 +80,10 @@ class CountryController extends Controller
      */
     public function show(Country $country)
     {
-        //
+         $countries = Country::with(['detail'])->findOrFail($country->id);
+
+        return view('country.detail', compact('countries'));
+
     }
 
     /**
@@ -81,7 +107,7 @@ class CountryController extends Controller
      */
     public function update(StoreCountryRequest $request, Country $country)
     {
-         isset($request->active) ? $active = 1: $active = 0;
+        isset($request->active) ? $active = 1 : $active = 0;
         $country->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -101,18 +127,16 @@ class CountryController extends Controller
     {
         //
     }
-     public function changeStatus($id)
+    public function changeStatus($id)
     {
         $country = Country::find($id);
         try {
-            if ($country->active==1) {
-                $country->update(['active'  =>0]);
+            if ($country->active == 1) {
+                $country->update(['active'  => 0]);
                 $active = 'country Deactivated';
-
-            }else if ($country->active==0) {
-                $country->update(['active'  =>1]);
+            } else if ($country->active == 0) {
+                $country->update(['active'  => 1]);
                 $active = 'country Activated';
-
             }
             return redirect()->route('country.index')->with('success', $active);
         } catch (\Throwable $th) {

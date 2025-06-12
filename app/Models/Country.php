@@ -15,8 +15,8 @@ class Country extends Model
     {
         return $query->where('active', 1);
     }
-    public function country()
-    {
-        return $this->belongsTo(Country::class, 'country_id'); // 'country' is the foreign key in clients table
+
+      public function detail(){
+        return $this->hasMany(CountryRate::class,'country_id');
     }
 }

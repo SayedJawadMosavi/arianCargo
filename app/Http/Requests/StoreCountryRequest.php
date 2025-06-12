@@ -24,7 +24,11 @@ class StoreCountryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required'
+            'name' => ['required', 'string', 'max:255', 'unique:countries,name'],
+            'kg' => ['required', 'array'],
+            'kg.*' => ['required', 'numeric', 'distinct'], // <-- distinct prevents duplicates
+            'price' => ['required', 'array'],
+            'price.*' => ['required', 'numeric', 'gt:0'], // price must be greater than 0
         ];
     }
 }
