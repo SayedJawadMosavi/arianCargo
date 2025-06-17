@@ -31,3 +31,4 @@ Route::get('/cargo-payment/{id}/edit', [CargoPaymentController::class, 'edit'])-
 Route::delete('/cargo-payment/{id}', [CargoPaymentController::class, 'destroy'])->name('cargo.payment.destroy');
 Route::get('branch/receivable', [CargoController::class, 'branchReceivable'])->name('branch.receivable');
 Route::post('/branch/receivable', [CargoController::class, 'getBranchReceivableReport'])->name('report.branch_receivable.post');
+Route::get('/get-country-rates/{country}', [CargoController::class, 'getCountryRates']);

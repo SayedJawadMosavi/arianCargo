@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCountryRequest extends FormRequest
+class updateCountryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,7 @@ class StoreCountryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:countries,name'],
-            'kg' => ['required', 'array'],
-            'kg.*' => ['required', 'distinct'], // <-- distinct prevents duplicates
-            'price' => ['required', 'array'],
-            'price.*' => ['required', 'numeric', 'gt:0'], // price must be greater than 0
+
         ];
     }
 }

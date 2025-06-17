@@ -300,9 +300,8 @@ class AccountController extends Controller
 
 
 
-            // 3. آپدیت paid_amount
 
-            if ($amountToPay > $account->cargo_amount || $amountToPay > $account->amount) {
+            if ($amountToPay > $account->cargo_amount) {
                 return back()->with('error', 'Payment amount exceeds the remaining balance.');
             }
             $account->paid_amount += $amountToPay;

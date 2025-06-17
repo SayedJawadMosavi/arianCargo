@@ -59,7 +59,12 @@
                     <th>{{ __('home.address') }}</th>
                     <td>{{ $sell->client->address }}</td>
                     <th>{{ __('home.address') }}</th>
-                    <td>{{ $sell->receiver->address ?? '' }}</td>
+                 <td>
+    {{ $sell->receiver->address ?? '' }}
+    @if(!empty($sell->receiver->zipcode))
+        , ZIPCode: {{ $sell->receiver->zipcode }}
+    @endif
+</td>
                 </tr>
                 <tr>
                     <th>{{ __('home.mobile') }}</th>

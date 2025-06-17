@@ -75,7 +75,7 @@
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                    <form action="{{ route('cargo.detail.delete', $detail) }}" method="POST" class="d-inline">
+                                                                    <form action="{{ route('country.detail.delete', $detail) }}" method="POST" class="d-inline">
                                                                         @method('delete')
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -96,7 +96,7 @@
 
 
                             <div class="tab-pane " id="tab2">
-                                <form action="{{route('cargo.detail.insert', $cargos) }}" method="POST" enctype="multipart/form-data" id="dynamicForm">
+                                <form action="{{route('country.detail.insert', $country) }}" method="POST" enctype="multipart/form-data" id="dynamicForm">
                                     @csrf
                                     @method('POST')
 
@@ -109,7 +109,7 @@
                                                 <hr>
                                             </div>
 
-                                            <input type="hidden" name="currency_id" id="currency_id" value="{{$cargos->currency_id}}">
+                                            <input type="hidden" name="country_id" id="country_id" value="{{$country->id}}">
 
                                             <div class="col-sm-12">
                                                 <div class="table-responsive">
@@ -170,7 +170,7 @@
 
             // Add contenteditable attribute to the cells in the clicked row
             var row = $(this).closest('tr');
-            row.find('td:eq(2), td:eq(3),td:eq(4), td:eq(5),td:eq(6)').attr('contenteditable', 'true');
+            row.find('td:eq(2), td:eq(3)').attr('contenteditable', 'true');
 
             // Show the Save button for the clicked row
             row.find('.btn-save').show();
@@ -182,18 +182,16 @@
         // Handle Save button click
         $('#file-datatable tbody').on('click', '.btn-save', function() {
             var row = $(this).closest('tr');
-            var item_name = row.find('td:eq(2)').text().trim();
-            var quantity = row.find('td:eq(3)').text().trim();
-            var cbm = row.find('td:eq(4)').text().trim();
-            var type = row.find('td:eq(5)').text().trim();
-            var item_value = row.find('td:eq(6)').text().trim();
+            var kg = row.find('td:eq(2)').text().trim();
+            var price = row.find('td:eq(3)').text().trim();
+
             var id = row.find('td:eq(0)').text().trim();
 
-            // Ensure that both item_name and cost have values before sending the request
-            if (item_name !== '' && quantity !== '') {
-                sendDataToServer(row, item_name, quantity,cbm,type,item_value, id);
+            // Ensure that both kg and cost have values before sending the request
+            if (kg !== '' && price !== '') {
+                sendDataToServer(row, kg, price, id);
             } else {
-                alert('Please enter both item_name and cost before saving.');
+                alert('Please enter both kg and cost before saving.');
             }
 
             // Remove contenteditable attribute from all cells
@@ -208,7 +206,7 @@
         document.getElementById('dynamicForm').addEventListener('submit', function(e) {
 
             let valid = true;
-            document.querySelectorAll('input[name="item_name[]"],input[name="quantity[]"], input[name="cbm[]"],input[name="type[]"], input[name="values[]"]').forEach(function(input) {
+            document.querySelectorAll('input[name="kg[]"],input[name="price[]"]').forEach(function(input) {
                 if (!validateQuantity(input)) {
                     valid = false;
                 }
@@ -230,9 +228,9 @@
             }
         }
 
-        function sendDataToServer(row, item_name,quantity, cbm,type,item_value, id) {
+        function sendDataToServer(row, kg,price, id) {
             // AJAX request to submit data to the Laravel controller
-            var url = "{{ url('/cargo-detail/update') }}";
+            var url = "{{ url('/country-detail/update') }}";
             var _token = "{{ csrf_token() }}";
 
             $.ajaxSetup({
@@ -246,11 +244,9 @@
                 url: url,
                 type: 'POST',
                 data: {
-                    item_name: item_name,
-                    quantity: quantity,
-                    cbm: cbm,
-                    type: type,
-                    item_value: item_value,
+                    kg: kg,
+                    price: price,
+
                     id: id,
                     // Add more fields as needed
                 },

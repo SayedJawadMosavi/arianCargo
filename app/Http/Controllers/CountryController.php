@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCountryRequest;
+use App\Http\Requests\updateCountryRequest;
 use App\Models\Country;
 use App\Models\CountryRate;
 use Illuminate\Http\Request;
@@ -70,8 +71,68 @@ class CountryController extends Controller
             return redirect()->back()->with('error', 'Failed to create country: ' . $e->getMessage());
         }
     }
+    public function countryDetailInsert(Request $request, $id)
+    {
 
 
+        for ($i = 0; $i < count($request->price); $i++) {
+            if ($request->price[$i] != 0 && !is_null($request->kg[$i])) {
+                CountryRate::create([
+                    'kg' => $request->kg[$i],
+                    'price' => $request->price[$i],
+                    'country_id' => $request->country_id,
+                    'user_id' => auth()->user()->id,
+                ]);
+            }
+        }
+        return redirect()->back()->with('success', 'Country Rate created successfully.');
+    }
+    public function countryDetailUpdate(Request $request)
+    {
+
+
+        DB::beginTransaction();
+        try {
+            $old = CountryRate::find($request->id);
+            $flag = $old->update(['kg' => $request->kg, 'price' => $request->price]);
+
+
+            if ($flag) {
+                DB::commit();
+                return  response()->json(['success', 'updated successfully ']);
+            } else {
+                DB::rollBack();
+                return  response()->json(['success', ' خطا در ویرایش ']);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the exception
+            return redirect()->back()->with('error', 'Error updating Details: ' . $e->getMessage());
+        }
+    }
+
+    public function countryDetailDelete(Request $request, $id)
+    {
+
+        DB::beginTransaction();
+        try {
+
+            $detail = CountryRate::find($id);
+
+            $detail->delete();
+            if ($detail) {
+                DB::commit();
+                return redirect()->back()->with('success', 'Item deleted successfully');
+            } else {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Delete failed');
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the exception
+            return redirect()->back()->with('error', 'Error deleting sell item: ' . $e->getMessage());
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -80,10 +141,9 @@ class CountryController extends Controller
      */
     public function show(Country $country)
     {
-         $countries = Country::with(['detail'])->findOrFail($country->id);
+        $countries = Country::with(['detail'])->findOrFail($country->id);
 
-        return view('country.detail', compact('countries'));
-
+        return view('country.detail', compact('countries', 'country'));
     }
 
     /**
@@ -105,8 +165,9 @@ class CountryController extends Controller
      * @param  \App\Models\Country  $country
      * @return \Illuminate\Http\Response
      */
-    public function update(StoreCountryRequest $request, Country $country)
+    public function update(updateCountryRequest $request, Country $country)
     {
+
         isset($request->active) ? $active = 1 : $active = 0;
         $country->update([
             'name' => $request->name,

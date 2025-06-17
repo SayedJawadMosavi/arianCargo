@@ -84,21 +84,7 @@
                 </div>
 
 
-                <div class="col-xl-4 mb-3">
-                    <label for="validationServer01">{{ __('home.country') }}</label>
-                   <select class="form-select select2" name="country_id" id="country" onchange="setRateToPerWeight(this)" required>
-                        <option selected disabled value="">{{ __('home.please_select') }}</option>
-                        @foreach($countries as $country)
-                            <option value="{{ $country->id }}" data-rate="{{ $country->rate }}" @if(isset($cargo)) @if($cargo->country_id == $country->id) selected = 'selected' @endif @endif >
-                                {{ $country->name }}
-                            </option>
-                        @endforeach
-                    </select>
 
-                    @error('country_id')
-                    <div id="" class="invalid-feedback">{{$message}}</div>
-                    @enderror
-                </div>
 
 
                 @if ($settings->date_type=='shamsi')
@@ -165,11 +151,31 @@
         </div>
             @endif
             <div class="row mb-4" dir="{{ App::getLocale() == 'en' ? 'ltr' : 'rtl' }}">
+                  <div class="col-xl-4 mb-3">
+                    <label for="validationServer01">{{ __('home.country') }}</label>
+                   <select class="form-select select2" name="country_id" id="country" onchange="loadRate(this)"  required>
+                        <option selected disabled value="">{{ __('home.please_select') }}</option>
+                        @foreach($countries as $country)
+                            <option value="{{ $country->id }}"  @if(isset($cargo)) @if($cargo->country_id == $country->id) selected = 'selected' @endif @endif >
+                                {{ $country->name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('country_id')
+                    <div id="" class="invalid-feedback">{{$message}}</div>
+                    @enderror
+                </div>
+                <div class="col-xl-4 mb-3">
+                    <label for="rate_select">Rate Per Kg</label>
+                    <select class="form-select" name="rate_per_kg" id="rate_select" onchange="setRateToPerWeight(this)">
+                        <option value="">{{ __('home.please_select') }}</option>
+                    </select>
+                </div>
                 <div class="col-md-4">
                     <label for="total" class="form-label fw-bold text-right d-block">{{ __('home.total_weight') }}</label>
                     <input type="number" step="0.01" id="total_weight" name="total_weight" class="form-control" value="{{ isset($cargo) ? $cargo->total_weight : old('total_weight') }}">
                 </div>
-
 
                 <input type="hidden"readonly step="0.01" id="per_weight" name="per_weight" class="form-control" value="{{ isset($cargo) ? $cargo->per_weight : old('per_weight') }}">
                 <input type="hidden"readonly step="0.01" id="operations" name="operation" class="form-control" value="{{ isset($cargo) ? $cargo->operation : old('operation') }}">
@@ -370,7 +376,36 @@
             }
         }
     });
+    function loadRate(selectElement) {
+    const countryId = selectElement.value;
+
+    if (!countryId) return;
+
+    fetch(`/get-country-rates/${countryId}`)
+        .then(response => response.json())
+        .then(data => {
+            const rateSelect = document.getElementById('rate_select');
+            rateSelect.innerHTML = `<option selected disabled value="">Select rate</option>`;
+
+           data.rates.forEach(rate => {
+    const kg = rate.kg ?? '??';
+    const price = rate.price ?? '??';
+    const bgColor = parseFloat(price) > 500 ? '#f8d7da' : '#d1ecf1';
+
+    rateSelect.innerHTML += `
+        <option value="${rate.id}" data-rate="${price}" style="background-color: ${bgColor}; color: #000;">
+            ${kg} kg - ${price}
+        </option>`;
+});
+        })
+        .catch(error => {
+            console.error('Error fetching rates:', error);
+        });
+}
+
 </script>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const selectedAccount = "{{ request('accounts') }}";
@@ -547,7 +582,16 @@ $(document).ready(function () {
 
             html += '<td><input type="number" name="quantity[]"oninput="validateQuantity(this)";  class="form-control" value="0" /></td>';
             html += '<td><input type="text" name="cbm[]"  class="form-control"  /></td>';
-            html += '<td><input type="text" name="type[]"  class="form-control"  /></td>';
+        html += `
+            <td>
+                <select name="type[]" class="form-select" required>
+                    <option value="" disabled selected>Select Type</option>
+                    <option value="document">Document</option>
+                    <option value="carton">Carton</option>
+                    <option value="boji">Sack</option>
+                </select>
+            </td>`;
+
             html += '<td><input type="text" name="values[]"  class="form-control"  /></td>';
 
 
@@ -785,6 +829,10 @@ $('#account_id').on('change', function () {
                     $("#paid_div_equalent").css('display', "block")
                     $("#paid_div").css('display', "none")
 
+                        $('#new_total').val('');
+                        $('#paid').val('');
+                        $('#new_balance').val('');
+
                 } else {
                     $("#exchagne_type_div").css('display', "none")
                     $("#total_div").css('display', "none")
@@ -795,6 +843,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "block")
                     $("#paid_div_equalent").css('display', "none")
                     $("#paid_div").css('display', "block")
+                        $('#per_weight_equalent').val('');
+                    $('#total_equalent').val('');
+                    $('#equalent_balance').val('');
+                    $('#paid_equalent').val('');
             }
             if (operation === 'multiply') {
                 convertedWeight = baseWeight * rate;
@@ -858,6 +910,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "none")
                        $("#paid_div_equalent").css('display', "block")
                     $("#paid_div").css('display', "none")
+                         $('#per_pay_cost').val('');
+                        $('#new_total').val('');
+                        $('#paid').val('');
+                        $('#new_balance').val('');
 
                 } else {
                     $("#exchagne_type_div").css('display', "none")
@@ -869,6 +925,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "block")
                        $("#paid_div_equalent").css('display', "none")
                     $("#paid_div").css('display', "block")
+                    $('#per_weight_equalent').val('');
+                    $('#total_equalent').val('');
+                    $('#equalent_balance').val('');
+                    $('#paid_equalent').val('');
             }
             if (operation === 'multiply') {
                 convertedWeight = baseWeight * rate;

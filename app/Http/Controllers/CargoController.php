@@ -17,6 +17,7 @@ use App\Models\Client;
 use App\Models\ClientCurrency;
 use App\Models\ClientLog;
 use App\Models\Country;
+use App\Models\CountryRate;
 use App\Models\Currency;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -476,10 +477,10 @@ class CargoController extends Controller
                 $currencyId = $account->currency_id;
                 $clientCurrency = $this->GetClientCurrency($cargo->client_id, $currencyId, 0);
                 if ($clientCurrency) {
-                    if ($branch_base==$cargo->currency_id) {
+                    if ($branch_base == $cargo->currency_id) {
 
                         $clientCurrency->increment('amount', $cargo->new_balance);
-                    }else{
+                    } else {
 
                         $clientCurrency->increment('amount', $cargo->equalent_balance);
                     }
@@ -622,10 +623,9 @@ class CargoController extends Controller
             if ($branch_base == $cargo->currency_id) {
                 $cargo->paid += $amount;
                 $cargo->new_balance = $cargo->new_total - $cargo->paid;
-            }else{
+            } else {
                 $cargo->paid_equalent += $amount;
                 $cargo->equalent_balance = $cargo->equalent_total - $cargo->paid_equalent;
-
             }
             $cargo->save();
 
@@ -666,6 +666,7 @@ class CargoController extends Controller
     {
 
         DB::beginTransaction();
+        dd($request->all());
         try {
             $old = CargoDetail::find($request->id);
             // dd($request->all());
@@ -828,6 +829,23 @@ class CargoController extends Controller
             'account' => $account,
             'accounts' => $accounts,
             'selectedBranch' => $request->branch_id,
+        ]);
+    }
+
+    public function getCountryRates($countryId)
+    {
+        $rates = CountryRate::where('country_id', $countryId)
+            ->select('id', 'kg', 'price') // Assuming your table has `kg` and `price`
+            ->get();
+
+        return response()->json([
+            'rates' => $rates->map(function ($rate) {
+                return [
+                    'id' => $rate->id,
+                    'kg' => $rate->kg,
+                    'price' => $rate->price,
+                ];
+            }),
         ]);
     }
 }

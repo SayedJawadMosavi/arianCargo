@@ -55,9 +55,10 @@
                 </div>
             </div>
 
+
             <div class="form-row mb-3">
 
-
+             @if(!isset($country))
                 <div class="col-sm-12 mt-3">
                     <h4>{{__('home.price')}}</h4>
                     <hr>
@@ -81,6 +82,7 @@
                         </table>
                     </div>
                 </div>
+                @endisset
                 <div class="form-footer mt-2">
                     <input type="submit" class="btn btn-primary" value="@if(isset($shareholder))
                     {{ __('home.update') }}
@@ -88,6 +90,7 @@
                     {{ __('home.save') }}
                 @endif">
                 </div>
+
         </form>
 
         <div class="table-responsive mt-2">
@@ -97,7 +100,7 @@
                         <th>{{ __('home.sn') }}</th>
                         <th>{{ __('home.name') }}</th>
                         <th>{{ __('home.description') }}</th>
-                        <th>{{ __('home.rate') }}</th>
+
                         <th>{{ __('home.active') }}</th>
                         <th>{{ __('home.action') }}</th>
                     </tr>
@@ -108,7 +111,7 @@
                         <td>{{$obj->id}}</td>
                         <td>{{$obj->name}}</td>
                         <td>{{$obj->description}}</td>
-                        <td>{{$obj->rate}}</td>
+
 
                         <td>
                             <div class="form-group">
