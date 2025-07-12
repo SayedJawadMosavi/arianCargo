@@ -8,7 +8,7 @@
         @include('layouts.partials.components.alert')
     @endif
     <div class="card-header d-flex justify-content-between">
-        <h3 class="card-title">{{ __('home.expenses') }}</h3>
+        <h3 class="card-title">{{ __('home.expense') }}</h3>
         @can('expense.create')
         <a href="{{ route('expense.create') }}" class="btn btn-primary mx-5">{{ __('home.new_expense') }}</a>
         @endcan

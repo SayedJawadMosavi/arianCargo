@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
                 'mobile1' => '04535435534',
                 'mobile2' => '043534543543',
                 'active' => 1,
-                'is_main_branch' => 1,
+                'is_main_branch' => 0,
                 'user_id' => 1
             )
         );

@@ -199,9 +199,11 @@ class ExpenseController extends Controller
      */
     public function edit(Expense $expense)
     {
-        $categories = ExpenseCategory::get();
+           $categories = ExpenseCategory::get();
+        $main_currency = Setting::with('currency')->branch()->first();
+        $settings = Setting::with('currency')->branch()->first();
+
         $accounts = Account::branch()->orderBy('default', 'DESC')->get();
-        $main_currency = Setting::with('currency')->branch()->get();
         return view('expense.create', compact('expense', 'accounts', 'categories', 'main_currency'));
     }
 
@@ -248,7 +250,7 @@ class ExpenseController extends Controller
                 'main_amount' => $total,
                 'rate' => $rate,
 
-                'miladi_date' => $request->miladidate,
+                 'miladi_date' => $request->miladi_date,
                 'shamsi_date' => $request->shamsi_date,
                 'expense_category_id' => $request->category_id,
                 'branch_id' => auth()->user()->branch_id,

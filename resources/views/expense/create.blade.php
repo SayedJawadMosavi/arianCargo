@@ -8,12 +8,12 @@
     <div class="card-header d-flex justify-content-between">
         <h4 class="card-title">
             @if(isset($expense))
-            {{ __('home.edit_expense') }}
+                Edit {{$expense->type}}
             @else
             {{ __('home.new_expense') }}
             @endif
         </h4>
-        <a href="{{route('expense.index')}}" class="btn btn-primary">{{ __('home.all_expenses') }}</a>
+        <a href="{{route('expense.index')}}" class="btn btn-primary">{{ __('home.all') }}</a>
         @if (session()->has('success') || session()->has('error') )
             @include('layouts.partials.components.alert')
         @endif
@@ -46,7 +46,7 @@
                 </div>
                 <div class="col-12 col-sm-4 col-md-4 col-md-2">
                     <label class="" for="inlineFormInputGroup">{{__('home.type')}}</label>
-                    <select class="form-control " name="type" id="type" onchange="showData(this.value);">
+                    <select class="form-control" name="type" id="type" onchange="showData(this.value);">
                         <option value="income" @if(isset($expense)) @if($expense->type == 'income') selected = 'selected' @endif @endif >{{__('home.income')}}</option>
                         <option value="expense" @if(isset($expense)) @if($expense->type == 'expense') selected = 'selected' @endif @endif >{{__('home.expense')}}</option>
                     </select>
@@ -97,9 +97,7 @@
                     <div id="" class="invalid-feedback">{{$message}}</div>
                     @enderror
                 </div>
-
-                <input type="hidden"  class="form-control " id="exchange_type" name="exchange_type" value="{{isset($expense) ? $expense->rate : old('rate')}}">
-
+                <input type="hidden"  class="form-control" id="exchange_type" name="exchange_type" value="{{isset($expense) ? $expense->operation : old('operation')}}">
                 <div class="col-xl-4 mb-3" id="total_div" style="display: none;">
                     <label for="validationServer01">{{ __('home.main_currency_total') }}</label>
                     <input type="number" step="0.01" class="form-control " readonly id="main_amount" name="main_amount" value="{{isset($expense) ? $expense->main_amount : old('main_amount')}}">
@@ -127,7 +125,6 @@
                 @endif
 
             </div>
-
             <div class="form-footer mt-2">
                 <input type="submit" class="btn btn-primary" value="@if(isset($expense))
                     {{ __('home.update') }}
@@ -135,9 +132,7 @@
                     {{ __('home.save') }}
                 @endif">
             </div>
-
         </form>
-
     </div>
 </div>
 <div class="modal fade" id="modaldemo8">
@@ -148,14 +143,9 @@
             </div>
             <form action="{{route('expense_category.store')}}" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
-
                     @csrf
-
                     @method('POST')
-
-
                     <div class="form-row mb-3">
-
                         <div class="col-xl-12 mb-3">
                             <label for="validationServer01">{{ __('home.name') }}</label>
                             <input type="text" class="form-control @error('name') {{'is-invalid'}} @enderror" id="name" name="name" value="">
@@ -175,7 +165,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="form-footer mt-2">
                         <input type="submit" class="btn btn-primary" value="{{ __('home.send') }}">
                     </div>
@@ -187,6 +176,7 @@
 </div>
 @endsection
 @section('pagescript')
+{{--  @dd($settings)  --}}
 <script>
       function showHide(value) {
         $.ajax({
@@ -268,21 +258,22 @@
     });
 </script>
 <script>
-    showData('income');
+            @if(isset($expense))
+                showData($expense->type);
+            @else
+                showData('income');
+            @endif
 
     function showData(value) {
-
-
         $.ajax({
             url: "{{URL::asset('/')}}" + "expense-category/" + value,
             method: 'GET',
             success: function(data) {
                 $('.form-select').html(data.data);
-
             }
         });
-
     }
+
     function calculate(value) {
 
         var amount=$('#amount').val()

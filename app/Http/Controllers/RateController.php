@@ -155,8 +155,35 @@ class RateController extends Controller
     }
 
 
-
     function get_latest_rate($account_id){
+
+        $account = Account::find($account_id);
+
+        $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();
+        $branch_base = $base_currency->currency_id; //
+
+        $result = Rate::where('from_treasury', $account->currency_id)->where('to_treasury', $branch_base)->branch()->latest()->limit(1)->first();
+        if($result==null){
+            $result =0;
+        }
+
+        if ($account->currency_id == $branch_base) {
+            $rate = collect([
+                'rate' => 1,
+                'operation' => 'multiply',
+            ]);
+            return response()->json([
+                'rate' => $rate
+            ]);
+        }
+
+      return response()->json([
+          'rate'  => $result,
+        //   'from'  => $from,
+        ]);
+
+  }
+   function get_latest_rate2($account_id){
 
         $account = Account::find($account_id);
         $base_currency =  Setting::where('branch_id', auth()->user()->branch_id)->first();

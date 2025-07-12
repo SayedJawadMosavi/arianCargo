@@ -142,7 +142,7 @@ class AccountController extends Controller
      */
     public function edit(Account $account)
     {
-        $currencies = Currency::branch()->get();
+        $currencies = Currency::get();
         return view('account.create', compact('account', 'currencies'));
     }
 

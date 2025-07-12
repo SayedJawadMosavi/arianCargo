@@ -26,6 +26,7 @@ Route::get('/get-product-currency/{id}', [CargoController::class, 'getProductCur
 Route::post('/cargo/{id}/pay', [CargoController::class, 'pay'])->name('cargo.pay');
 
 Route::get('get_latest_exchange_rate/{account_id}', [RateController::class, 'get_latest_rate']);
+Route::get('get_latest_exchange_rate2/{account_id}', [RateController::class, 'get_latest_rate2']);
 
 Route::get('/cargo-payment/{id}/edit', [CargoPaymentController::class, 'edit'])->name('cargo.payment.edit');
 Route::delete('/cargo-payment/{id}', [CargoPaymentController::class, 'destroy'])->name('cargo.payment.destroy');

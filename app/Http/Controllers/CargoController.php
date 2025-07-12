@@ -119,7 +119,7 @@ class CargoController extends Controller
      */
     public function store(StoreCargoRequest $request)
     {
-
+       
         DB::beginTransaction();
         try {
             $balance = $request->total - $request->paid;

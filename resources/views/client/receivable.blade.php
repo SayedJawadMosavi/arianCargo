@@ -10,7 +10,7 @@
     <div class="card-header d-flex justify-content-between">
         <h3 class="card-title">{{ __('home.client_receivable') }}</h3>
         <a href="{{ route('client.create') }}" class="btn btn-primary mx-5">{{ __('home.new_client') }}</a>
-        <a href="{{ route('client_transaction.index') }}" class="btn btn-primary mx-5">{{ __('home.deposits') }}</a>
+        <!-- <a href="{{ route('client_transaction.index') }}" class="btn btn-primary mx-5">{{ __('home.deposits') }}</a> -->
     </div>
 
     <div class="card-body pt-4">

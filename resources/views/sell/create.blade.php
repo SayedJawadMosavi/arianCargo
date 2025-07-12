@@ -796,7 +796,7 @@ $('#account_id').on('change', function () {
 
     // Fetch exchange rate if needed
     $.ajax({
-        url: '/get_latest_exchange_rate/' + accountId,
+        url: '/get_latest_exchange_rate2/' + accountId,
         type: 'GET',
         success: function (response) {
             var data = response.rate;
@@ -829,9 +829,9 @@ $('#account_id').on('change', function () {
                     $("#paid_div_equalent").css('display', "block")
                     $("#paid_div").css('display', "none")
 
-                        $('#new_total').val('');
-                        $('#paid').val('');
-                        $('#new_balance').val('');
+                        // $('#new_total').val('');
+                        // $('#paid').val('');
+                        // $('#new_balance').val('');
 
                 } else {
                     $("#exchagne_type_div").css('display', "none")
@@ -843,10 +843,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "block")
                     $("#paid_div_equalent").css('display', "none")
                     $("#paid_div").css('display', "block")
-                        $('#per_weight_equalent').val('');
-                    $('#total_equalent').val('');
-                    $('#equalent_balance').val('');
-                    $('#paid_equalent').val('');
+                    //     $('#per_weight_equalent').val('');
+                    // $('#total_equalent').val('');
+                    // $('#equalent_balance').val('');
+                    // $('#paid_equalent').val('');
             }
             if (operation === 'multiply') {
                 convertedWeight = baseWeight * rate;
@@ -910,10 +910,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "none")
                        $("#paid_div_equalent").css('display', "block")
                     $("#paid_div").css('display', "none")
-                         $('#per_pay_cost').val('');
-                        $('#new_total').val('');
-                        $('#paid').val('');
-                        $('#new_balance').val('');
+                        //  $('#per_pay_cost').val('');
+                        // $('#new_total').val('');
+                        // $('#paid').val('');
+                        // $('#new_balance').val('');
 
                 } else {
                     $("#exchagne_type_div").css('display', "none")
@@ -925,10 +925,10 @@ $('#account_id').on('change', function () {
                     $("#balance_div").css('display', "block")
                        $("#paid_div_equalent").css('display', "none")
                     $("#paid_div").css('display', "block")
-                    $('#per_weight_equalent').val('');
-                    $('#total_equalent').val('');
-                    $('#equalent_balance').val('');
-                    $('#paid_equalent').val('');
+                        // $('#per_weight_equalent').val('');
+                        // $('#total_equalent').val('');
+                        // $('#equalent_balance').val('');
+                        // $('#paid_equalent').val('');
             }
             if (operation === 'multiply') {
                 convertedWeight = baseWeight * rate;
